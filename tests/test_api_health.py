@@ -10,4 +10,4 @@ def test_health():
     assert response.status_code == 200
     body = response.json()
     assert body["status"] == "ok"
-    assert body["slice"] == "1"
+    assert body["slice"] == "2"

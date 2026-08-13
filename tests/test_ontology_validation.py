@@ -14,6 +14,7 @@ def test_seed_yaml_is_valid():
     bundle = load_ontology()
     errors = validate_ontology(bundle)
     assert errors == []
+    assert 50 <= len(bundle.resources) <= 75
 
 
 def test_skill_and_role_uniqueness():
