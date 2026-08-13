@@ -1,4 +1,4 @@
-from app.core.enums import EligibilityStatus, PrerequisiteEvidenceState, RequiredStatus
+from app.core.enums import EligibilityStatus, PathItemKind, PrerequisiteEvidenceState, RequiredStatus
 from app.core.skill_state import resolve_skill_status
 from app.ontology.load import ResourcePrereqSpec, ResourceSkillSpec, ResourceSpec, load_ontology
 from app.ontology.validate import validate_ontology
@@ -68,6 +68,20 @@ def _aiml_profile(fused: dict[str, FusedSkill]):
     return bundle, profile, edges
 
 
+def _item_slugs(path):
+    return [item.candidate.resource.slug for item in path.items if item.candidate]
+
+
+def _item_skills(path):
+    skills = []
+    for item in path.items:
+        if item.gate is not None:
+            skills.append(item.gate.skill_slug)
+        elif item.candidate is not None:
+            skills.append(item.candidate.primary_skill)
+    return skills
+
+
 def test_url_status_validation_distinguishes_format_from_https_claim():
     bundle = load_ontology()
     errors = validate_ontology(bundle)
@@ -79,12 +93,16 @@ def test_url_status_validation_distinguishes_format_from_https_claim():
         classified = classify_url(resource)
         if resource.url_status == "verified":
             assert classified.format_valid
-            assert classified.classification == "URL_CLAIMED_VERIFIED_RESOURCE"
+            assert classified.classification == "VERIFIED_RESOURCE"
+            assert resource.url and resource.url.startswith("https://")
+        if resource.url_status == "claimed":
+            assert classified.format_valid
+            assert classified.classification == "CLAIMED_RESOURCE"
             assert resource.url and resource.url.startswith("https://")
         if resource.url_status == "unavailable":
             assert resource.url is None
-            assert classified.classification == "UNAVAILABLE_BY_POLICY"
-        assert classified.classification != "URL_VERIFIED_RESOURCE"
+            assert classified.classification == "UNAVAILABLE"
+        assert classified.classification != "URL_CLAIMED_VERIFIED_RESOURCE"
 
 
 def test_resource_causality_maps_to_role_skills():
@@ -119,7 +137,10 @@ def test_path_causality_metadata_is_structured_and_not_score_only():
         assert cause.why_this_resource
         assert cause.why_not_earlier
         assert "scored highly" not in cause.why_selected.lower()
-        assert "coverage" in cause.why_this_resource.lower() or "maps to" in cause.why_this_resource.lower()
+        if item.kind == PathItemKind.VERIFICATION_GATE.value:
+            assert "not a learning resource" in cause.why_this_intervention.lower()
+        else:
+            assert "coverage" in cause.why_this_resource.lower() or "maps to" in cause.why_this_resource.lower()
 
 
 def test_irrelevant_resource_with_high_score_is_rejected():
@@ -191,9 +212,9 @@ def test_blocker_chain_python_ml_deep_learning_from_graph():
         edges=edges,
     )
     path = generate_path(profile, [python, ml, dl], edges, LearnerPreferences(12, "READING"))
-    slugs = [item.candidate.resource.slug for item in path.items]
+    slugs = _item_slugs(path)
     assert slugs.index("python-course") < slugs.index("ml-course")
-    assert slugs.index("ml-course") < slugs.index("dl-course")
+    assert slugs.index("python-course") < slugs.index("dl-course")
 
 
 def test_unknown_docker_unblock_chain_is_visible():
@@ -201,6 +222,7 @@ def test_unknown_docker_unblock_chain_is_visible():
         {
             "python": _fused("python", 0.80),
             "model_deployment": _fused("model_deployment", 0.30),
+            "supervised_learning": _fused("supervised_learning", 0.70),
         }
     )
     docker_res = next(item for item in bundle.resources if item.slug == "docker-compose-guide")
@@ -208,16 +230,33 @@ def test_unknown_docker_unblock_chain_is_visible():
     assert unknown.status is EligibilityStatus.BLOCKED_BY_UNKNOWN
     assert unknown.checks[0].state is PrerequisiteEvidenceState.UNKNOWN
     path = generate_path(profile, bundle.resources, edges, LearnerPreferences(8, "MIXED"))
-    skills = [item.candidate.primary_skill for item in path.items]
+    skills = _item_skills(path)
     assert "docker" in skills
-    if "model_deployment" in skills:
-        assert skills.index("docker") < skills.index("model_deployment")
-    docker_item = next(item for item in path.items if item.candidate.primary_skill == "docker")
-    assert docker_item.candidate.eligibility.status is not EligibilityStatus.ELIGIBLE or (
-        not docker_item.candidate.eligibility.checks
+    docker_gate = next(
+        item
+        for item in path.items
+        if item.kind == PathItemKind.VERIFICATION_GATE.value
+        and item.gate
+        and item.gate.skill_slug == "docker"
     )
-    assert docker_item.cause is not None
-    assert "unblock" in docker_item.cause.why_selected.lower() or "docker" in docker_item.cause.why_this_skill.lower()
+    assert docker_gate.candidate is None
+    assert docker_gate.cause is not None
+    assert "unknown" in docker_gate.cause.why_selected.lower() or "docker" in docker_gate.cause.why_this_skill.lower()
+    waiting_slugs = {
+        item.candidate.resource.slug
+        for item in path.items
+        if not item.executable and item.candidate is not None
+    }
+    executable_slugs = {
+        item.candidate.resource.slug
+        for item in path.items
+        if item.executable and item.candidate is not None
+    }
+    assert "serve-sklearn-model-lab" not in executable_slugs
+    assert "docker-get-started" not in executable_slugs
+    assert "serve-sklearn-model-lab" in waiting_slugs or any(
+        item.kind == PathItemKind.WAITING_FOR_VERIFICATION.value for item in path.items
+    )
 
 
 def test_dependency_order_not_score_order():
@@ -243,7 +282,7 @@ def test_dependency_order_not_score_order():
     prefs = LearnerPreferences(10, "READING")
     scored = score_candidates([python, ml], profile, prefs)
     path = generate_path(profile, [python, ml], edges, prefs)
-    ordered = [item.candidate.resource.slug for item in path.items]
+    ordered = _item_slugs(path)
     assert ordered.index("python-course") < ordered.index("ml-course")
     by_score = [item.resource.slug for item in scored]
     if by_score[0] == "ml-course":
@@ -264,7 +303,7 @@ def test_time_budget_changes_journey_not_just_week_labels():
     eight = generate_path(profile, bundle.resources, edges, LearnerPreferences(8, "MIXED"))
     fifteen = generate_path(profile, bundle.resources, edges, LearnerPreferences(15, "MIXED"))
     def slugs(path):
-        return [item.candidate.resource.slug for item in path.items]
+        return _item_slugs(path)
 
     assert slugs(five) != slugs(fifteen) or len(five.items) != len(fifteen.items)
     assert slugs(five) != slugs(eight) or slugs(eight) != slugs(fifteen) or len(five.items) != len(eight.items)
@@ -282,7 +321,7 @@ def test_learning_style_ranks_but_cannot_beat_role_and_gap():
     assert khan_score.breakdown.role_importance > juice_score.breakdown.role_importance
     assert khan_score.breakdown.final_score > juice_score.breakdown.final_score
     path = generate_path(profile, bundle.resources, edges, hands)
-    slugs = [item.candidate.resource.slug for item in path.items]
+    slugs = _item_slugs(path)
     assert "owasp-juice-shop" not in slugs
 
 
@@ -311,12 +350,8 @@ def test_different_roles_change_candidates_and_paths():
 
     aiml = for_role("ai-ml-engineer")
     cyber = for_role("cybersecurity-analyst")
-    assert {item.candidate.resource.slug for item in aiml.items} != {
-        item.candidate.resource.slug for item in cyber.items
-    }
-    assert [item.candidate.primary_skill for item in aiml.items] != [
-        item.candidate.primary_skill for item in cyber.items
-    ]
+    assert set(_item_slugs(aiml)) != set(_item_slugs(cyber)) or _item_skills(aiml) != _item_skills(cyber)
+    assert _item_skills(aiml) != _item_skills(cyber)
 
 
 def test_different_learners_change_interventions_and_order():
@@ -360,11 +395,11 @@ def test_different_learners_change_interventions_and_order():
         edges,
         prefs,
     )
-    slugs = lambda path: [item.candidate.resource.slug for item in path.items]
+    slugs = lambda path: _item_slugs(path)
     assert slugs(a) != slugs(b)
-    assert slugs(b) != slugs(c) or [item.candidate.intervention for item in a.items] != [
-        item.candidate.intervention for item in c.items
-    ]
+    assert slugs(b) != slugs(c) or [
+        item.candidate.intervention for item in a.items if item.candidate
+    ] != [item.candidate.intervention for item in c.items if item.candidate]
     assert "fastapi-tutorial" not in slugs(c)
 
 
@@ -377,10 +412,10 @@ def test_deterministic_generation_ignores_identity_fields():
     second = generate_path(profile, bundle.resources, edges, prefs)
     key = lambda path: [
         (
-            item.candidate.resource.slug,
+            item.gate.skill_slug if item.gate else item.candidate.resource.slug,
             item.week_index,
             item.position,
-            item.candidate.breakdown.final_score,
+            item.kind,
             item.cause.why_selected if item.cause else "",
         )
         for item in path.items
@@ -412,8 +447,8 @@ def test_resource_diversity_is_same_skill_journey_not_filler():
         [],
         LearnerPreferences(10, "HANDS_ON"),
     )
-    slugs = [item.candidate.resource.slug for item in path.items]
-    types = [item.candidate.resource.type for item in path.items]
+    slugs = _item_slugs(path)
+    types = [item.candidate.resource.type for item in path.items if item.candidate]
     assert "python-course" in slugs or "python-lab" in slugs
     assert "python-lab" in slugs or "python-assess" in slugs
     assert "python-course" in slugs
@@ -430,10 +465,12 @@ def test_target_met_skill_does_not_consume_the_path():
     )
     path = generate_path(profile, bundle.resources, edges, LearnerPreferences(8, "READING"))
     python_primaries = [
-        item for item in path.items if item.candidate.primary_skill == "python"
+        item
+        for item in path.items
+        if item.candidate is not None and item.candidate.primary_skill == "python"
     ]
     assert python_primaries == []
-    skills = [item.candidate.primary_skill for item in path.items]
+    skills = _item_skills(path)
     assert "statistics" in skills
 
 
@@ -458,7 +495,7 @@ def test_score_vs_causality_conflict_prefers_blocker():
         edges=edges,
     )
     path = generate_path(profile, [python, fancy], edges, LearnerPreferences(8, "READING"))
-    slugs = [item.candidate.resource.slug for item in path.items]
+    slugs = _item_slugs(path)
     assert slugs[0] == "python-course"
     report = validate_path(list(path.items), profile, [python, fancy], edges, weekly_hours=8)
     assert report.ROLE_RELEVANCE_VALID

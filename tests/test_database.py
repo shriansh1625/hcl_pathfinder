@@ -116,6 +116,51 @@ def test_seed_is_idempotent(session: Session):
     assert after_res == before_res
 
 
+def test_stale_catalog_row_is_deactivated(session: Session):
+    orphan_slug = "fastapi-bigger-applications"
+    existing = session.scalar(select(LearningResource).where(LearningResource.slug == orphan_slug))
+    if existing is None:
+        session.add(
+            LearningResource(
+                id=ontology_uuid("resource", orphan_slug),
+                slug=orphan_slug,
+                title="Bigger Applications - Multiple Files",
+                description="Orphan row left after YAML removal.",
+                type="course",
+                difficulty=3,
+                duration_hours=2,
+                source="FastAPI",
+                url=None,
+                url_status="unavailable",
+                learning_modes=["reading"],
+                is_active=True,
+            )
+        )
+        session.commit()
+    else:
+        existing.is_active = True
+        session.commit()
+    seed_ontology(session)
+    session.expire_all()
+    row = session.scalar(select(LearningResource).where(LearningResource.slug == orphan_slug))
+    yaml_slugs = {item.slug for item in load_ontology().resources}
+    assert orphan_slug not in yaml_slugs
+    assert row is not None
+    assert row.is_active is False
+
+
+def test_active_catalog_matches_yaml(session: Session):
+    seed_ontology(session)
+    session.expire_all()
+    yaml_slugs = {item.slug for item in load_ontology().resources}
+    active = {
+        row.slug
+        for row in session.scalars(select(LearningResource).where(LearningResource.is_active.is_(True))).all()
+    }
+    assert active == yaml_slugs
+
+
+
 def test_skill_and_role_unique_in_db(session: Session):
     slugs = [row.slug for row in session.scalars(select(Skill)).all()]
     names = [row.canonical_name for row in session.scalars(select(Skill)).all()]

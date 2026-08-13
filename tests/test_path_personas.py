@@ -197,6 +197,11 @@ def test_path_items_are_catalog_resources_and_deterministic():
     assert listed.status_code == 200
     assert listed.json()[0]["id"] == first["id"]
     for item in first["items"]:
+        if item.get("kind") == "VERIFICATION_GATE":
+            assert item["target_skill"]
+            assert item["intervention"] == "VERIFY"
+            assert item["executable"] is True
+            continue
         assert item["resource"]
         assert item["explanation"]
         if item["url"]:

@@ -61,6 +61,8 @@ def test_catalog_has_slice2_volume_and_valid_urls():
     for item in bundle.resources:
         if item.url_status == "verified":
             assert item.url and item.url.startswith("https://")
+        if item.url_status == "claimed":
+            assert item.url and item.url.startswith("https://")
         if item.url_status == "unavailable":
             assert item.url is None
 
@@ -218,7 +220,8 @@ def test_generate_path_uses_only_catalog_resources():
     path = generate_path(profile, bundle.resources, edges, LearnerPreferences(5, "HANDS_ON"))
     assert path.items
     for item in path.items:
-        assert item.candidate.resource.slug in catalog_slugs
+        if item.candidate is not None:
+            assert item.candidate.resource.slug in catalog_slugs
     assert generate_path(
         profile, bundle.resources, edges, LearnerPreferences(5, "HANDS_ON")
     ).items == path.items
@@ -253,7 +256,7 @@ def test_blocker_chain_unblocks_then_assigns_target():
     path = generate_path(
         profile, [linux, python, ml], edges, LearnerPreferences(10, "READING")
     )
-    slugs = [item.candidate.resource.slug for item in path.items]
+    slugs = [item.candidate.resource.slug for item in path.items if item.candidate]
     assert slugs.index("linux-course") < slugs.index("python-course")
     assert slugs.index("python-course") < slugs.index("ml-course")
 
@@ -300,8 +303,8 @@ def test_personas_d_and_e_generate_different_paths():
     )
     path_d = generate_path(strong, bundle.resources, edges, LearnerPreferences(15, "READING"))
     path_e = generate_path(limited, bundle.resources, edges, LearnerPreferences(5, "HANDS_ON"))
-    slugs_d = [item.candidate.resource.slug for item in path_d.items]
-    slugs_e = [item.candidate.resource.slug for item in path_e.items]
+    slugs_d = [item.candidate.resource.slug for item in path_d.items if item.candidate]
+    slugs_e = [item.candidate.resource.slug for item in path_e.items if item.candidate]
     weeks_d = [item.week_index for item in path_d.items]
     weeks_e = [item.week_index for item in path_e.items]
     assert slugs_d
