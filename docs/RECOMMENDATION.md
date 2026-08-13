@@ -76,12 +76,31 @@ After each selected resource, waves are recomputed so Python remediation is foll
 
 A high score is not enough to enter the path.
 
-Selectable skills are:
+Selectable skills for **learning resources** are diagnosed gaps with evidence (`REMEDIATE` / `REINFORCE` / `REMEDIATE_BLOCKER`). UNKNOWN skills are not turned into courses.
 
-- diagnosed gaps with evidence (`REMEDIATE` / `REINFORCE` / `REMEDIATE_BLOCKER`)
-- UNKNOWN skills only when they HARD-block a diagnosed gap (unblock interventions)
+## Verification gates (Slice 2.2)
 
-Unknown role skills are **not** path-filler. They enter only as HARD unblockers of a diagnosed gap. A learner with no diagnosed gaps for the selected role receives an empty path rather than a catalog tour.
+UNKNOWN means "we need evidence", not "learner is weak".
+
+If a role-relevant skill is UNKNOWN, the system may emit a `VerificationGate` (`intervention_type = VERIFY`). Gates do not execute assessments and do not bind a catalog URL.
+
+- If the role has no diagnosed gaps, the path is verification-first (role competencies ranked by existing `verification_priority` and HARD-graph foundation order).
+- If diagnosed gaps exist, gates are limited to UNKNOWN skills that HARD-block a focal gap or an otherwise selected resource.
+
+## Path integrity
+
+Candidates may be `ELIGIBLE`, `BLOCKED_BY_UNKNOWN`, or `BLOCKED_BY_KNOWN_GAP`. Persisted path items distinguish:
+
+| kind | executable |
+|---|---|
+| `EXECUTABLE` | yes — `ELIGIBLE` learning resource |
+| `VERIFICATION_GATE` | yes — next action is verify, not a course |
+| `WAITING_FOR_VERIFICATION` | no |
+| `WAITING_FOR_REMEDIATION` | no |
+
+A blocked candidate can remain in the planning graph. It must not appear as a ready-to-start course.
+
+Unknown role skills are **not** path-filler courses. A learner with no diagnosed gaps for the selected role receives verification gates rather than an empty path or a catalog tour.
 
 
 Journey complements (lab / project / assessment) are added only for an already-selected skill, not as catalog filler.

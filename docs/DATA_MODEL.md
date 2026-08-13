@@ -62,7 +62,7 @@ Five careers. `target_level` and `importance` are in `[0, 1]`. `required_status`
 
 Types: `course`, `project`, `lab`, `assessment`.
 
-`url_status`: `verified` (URL required), `pending`, `unavailable` (URL must be null — do not invent links).
+`url_status`: `verified` (audit confirmed the endpoint), `claimed` (URL present but unconfirmed: 403/404/bot-block/transient), `pending`, `unavailable` (no usable URL — do not invent links). Never call a 403/404 URL `verified`.
 
 ### resource_skills
 

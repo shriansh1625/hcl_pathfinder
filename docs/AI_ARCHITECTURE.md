@@ -92,6 +92,9 @@ After validation, only code may:
 
 A high embedding similarity cannot select a resource with `role_importance = 0`.
 An LLM cannot mark an UNKNOWN prerequisite as mastered.
+UNKNOWN produces a verification gate, not a fabricated course or a numeric gap of 0.
+
+Future assessment results enter only through `AssessmentResult` → normalized evidence → fusion → eligibility recompute. Slice 2.2 defines that contract and does not score questions.
 
 ## Explanation grounding
 
@@ -116,3 +119,5 @@ It must not add claims that are absent from `score_breakdown` + `causality`.
 | Can the AI hallucinate a course? | No. Path items must be catalog slugs. Unresolved titles are rejected. |
 | Can the AI invent a skill? | No. Mentions that do not resolve to `skills.slug` are rejected. |
 | Can it explain without an LLM? | Yes. `PathCause` + deterministic explanation strings. |
+| What if Cybersecurity is selected with no evidence? | Verification gates for UNKNOWN role competencies. Not an empty path. |
+| Can a blocked resource appear as ready-to-start? | No. It is `WAITING_FOR_VERIFICATION` or `WAITING_FOR_REMEDIATION`. |
