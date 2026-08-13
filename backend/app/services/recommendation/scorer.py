@@ -136,7 +136,7 @@ def score_resource(
         difficulty_fit=difficulty_fit(resource.difficulty, _learner_level(resource, profile)),
         duration_fit=duration_fit(resource.duration_hours, prefs.weekly_hours),
         learning_style_fit=learning_style_fit(resource.learning_modes, prefs.learning_style),
-        semantic_similarity=retriever.similarity(resource, tuple(gap_index(profile))),
+        semantic_similarity=retriever.similarity(resource, profile),
         final_score=0.0,
     )
     total = cfg.weight_total() or 1.0

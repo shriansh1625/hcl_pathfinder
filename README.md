@@ -10,7 +10,7 @@ This repository is a **clean-room Round 2 product**. It does not depend on any p
 
 Slice 1.1 gap engine plus Slice 2 personalized paths plus Slice 2.1 causality forensics.
 
-- Structured resource retrieval (embeddings optional and unused)
+- Structured resource retrieval (structured filter + optional local embedding relevance)
 - Explainable resource scoring
 - HARD/UNKNOWN prerequisite eligibility
 - Dependency-aware sequencing and weekly packing
@@ -74,7 +74,7 @@ API: http://localhost:8000/health
 Frontend: http://localhost:3000  
 Postgres: localhost:5433 (user/password/db: `pathfinder`)
 
-Copy `.env.example` to `.env` only if you need to override defaults. Do not commit `.env`.
+Copy `.env.example` to `.env.local` only if you need to override defaults. Do not commit `.env.local` or create a repo-root `.env` file.
 
 ## Environment variables
 

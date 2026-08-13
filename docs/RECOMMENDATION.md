@@ -14,7 +14,7 @@ No LLM. No embeddings required. No assessment runtime.
 
 Structured only. A resource is a candidate if it is active and covers a role skill at `coverage_strength >= 0.35`.
 
-`SemanticRetriever` exists as an interface and currently returns a constant `0.50` so missing embeddings cannot break ranking.
+`SemanticRetriever` scores catalog relevance with local embeddings (`BAAI/bge-small-en-v1.5` via `fastembed`) against a deterministic gap/role query. Semantic relevance is an embedding-based catalog relevance signal with a **5% score contribution**. It is **not decision authority**. If embeddings are unavailable, the configured `fallback_similarity` (`0.50`) is used.
 
 ## Eligibility
 
@@ -54,7 +54,7 @@ semantic_similarity  0.05
 - **difficulty_fit**: `1 − |(difficulty−1)/4 − learner_level|`
 - **duration_fit**: 1.0 if duration ≤ weekly hours, then 0.70 / 0.40 / 0.20 bands
 - **learning_style_fit**: VIDEO/READING/HANDS_ON/PROJECT/MIXED vs resource modes
-- **semantic_similarity**: constant fallback
+- **semantic_similarity**: local embedding cosine similarity against a deterministic gap/role query (5% weight; fallback `0.50` if unavailable)
 
 Learning style cannot outrank gap + role weights (0.10 vs 0.50).
 

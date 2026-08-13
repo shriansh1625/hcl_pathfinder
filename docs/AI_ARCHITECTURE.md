@@ -18,7 +18,7 @@ AI INPUT
 | Capability | AI role | Authoritative owner |
 |---|---|---|
 | 1. Structured learner-state intelligence | none required | evidence fusion + gap engine |
-| 2. Semantic resource retrieval | optional embeddings behind `SemanticRetriever` | structured retrieval + scoring |
+| 2. Semantic resource retrieval | local embeddings behind `SemanticRetriever` (5% score signal) | structured retrieval + scoring |
 | 3. Resume/profile extraction | LLM/NER proposes skill mentions | canonical skill resolver |
 | 4. Natural-language explanation | LLM rewrites structured `PathCause` facts | `explanation.py` + `path/causality.py` |
 | 5. Assessment interpretation | LLM may summarize free-text | scored items + fusion |
@@ -74,12 +74,13 @@ Resolver rules:
 
 If resolution fails, the system must not create an ontology node.
 
-Embeddings, when added:
+Embeddings:
 
-- live in a side table keyed by `learning_resources.id`
-- optional
-- if the provider is down, `SemanticRetriever` keeps the constant fallback
+- live in `data/catalog/resource_embeddings.json` keyed by resource slug (offline precompute)
+- optional at runtime via `PATHFINDER_SEMANTIC_ENABLED`
+- if the provider is down or the artifact is missing, `SemanticRetriever` keeps the constant fallback (`0.50`)
 - must not change eligibility or HARD sequencing
+- semantic relevance is an embedding-based catalog relevance signal with a 5% score contribution; it is not decision authority
 
 ## DETERMINISTIC DOMAIN LOGIC
 
