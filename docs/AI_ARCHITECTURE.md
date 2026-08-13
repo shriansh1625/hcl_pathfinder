@@ -96,6 +96,19 @@ UNKNOWN produces a verification gate, not a fabricated course or a numeric gap o
 
 Future assessment results enter only through `AssessmentResult` → normalized evidence → fusion → eligibility recompute. Slice 2.2 defines that contract and does not score questions.
 
+## Slice 3: assessment → evidence → adaptation
+
+Slice 3 implements the loop as pure domain logic (no LLM):
+
+1. **Scoring** (`services/assessment/scoring.py`): per-skill difficulty-weighted correctness. `observed_level = Σ(difficulty × correct) / Σ(difficulty)` per skill; the overall score only decides `passed` against `assessment.pass_threshold`.
+2. **Confidence**: deterministic and documented — `0.50 + 0.05×questions (cap 10) + 0.05×avg_difficulty + 0.10 agreement − 0.10 mixed (≥3 questions)`, clamped to `[0.30, 0.95]`. A one-question quiz cannot overpower a strong evidence history because fusion weights (`reliability × confidence × recency`) stay authoritative.
+3. **Normalization** (`services/assessment/normalizer.py`): one append-only `skill_evidence` row per assessed skill, `source_type = ASSESSMENT` (reliability 0.90), payload carries assessment slug, attempt id, question count, difficulty, consistency.
+4. **Gate resolution**: `VerificationGate` state is recomputed from the fused profile against the ROLE's `target_level` — never against the assessment's pass threshold. `VERIFIED` means "competent for the role", not "passed the test".
+5. **Adaptation** (`services/adaptation/engine.py`): regenerates the ideal remaining plan from the new GapProfile, then reconciles against V1 — completed items are frozen (position, week, payload), still-justified items are kept, unjustified items removed with reasons, newly required items inserted, waiting items re-evaluated. Remaining positions are collision-safe around frozen completed positions; weeks re-pack after the last completed week. If nothing material changes, no V2 is created (`NO_ADAPTATION_REQUIRED`).
+6. **Atomicity**: attempt + evidence + fused refresh + V2 + adaptation event commit in one transaction; any failure rolls everything back and V1 stays ACTIVE.
+
+Path versioning: V1 becomes `SUPERSEDED`, V2 is a new row with `parent_path_id = V1.id`. V1 path items are never updated. Every mutation lands in `adaptation_events.changes` with a reason derived from the actual state transition.
+
 ## Explanation grounding
 
 Current explanations are generated from:

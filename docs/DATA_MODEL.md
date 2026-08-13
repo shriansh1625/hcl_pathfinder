@@ -123,7 +123,15 @@ Example shape:
 
 ### adaptation_events
 
-Why a path changed: `from_path_id` → `to_path_id` plus `event_type` and `summary`. Engine not implemented.
+Why a path changed: `from_path_id` → `to_path_id` plus `event_type` and `summary`. Slice 3 adds `trigger_type` (e.g. `ASSESSMENT_RESULT`), `changed_skills` (JSON list), and `changes` (JSON path diff: added / removed / moved / unchanged / blocked with deterministic reasons).
+
+### assessment_attempts (Slice 3)
+
+Immutable submitted attempts: `assessment_id + user_id + attempt_number` (unique), `answers` JSON, and a stored `result` JSON (overall score, per-skill results, adaptation outcome, produced path). The primary key doubles as the idempotency key: resubmitting the same `attempt_id` replays the stored result without duplicating evidence, paths, or events.
+
+### assessments (Slice 3 additions)
+
+`target_role_id` (nullable FK → roles) scopes an assessment to a role; NULL means usable for any role. `target_skills` (JSON list) declares the canonical skills the assessment covers. Both are validated at seed time: every `target_skills` entry must resolve to a canonical skill slug, every question skill must be declared in `target_skills`, and `target_role` must resolve to a role. Invalid slugs fail validation; nothing is silently created.
 
 ## Constraints worth knowing
 
