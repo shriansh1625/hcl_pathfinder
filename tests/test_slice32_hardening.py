@@ -401,14 +401,26 @@ def test_python_unknown_blocks_ml_until_verified_and_target_met():
     ml_gap = next(item for item in gaps if item["skill"] == "ml_fundamentals")
     assert ml_gap["blocked"] is True
 
-    high = _submit(learner_id, "python-gate", _correct("python-gate"))
+    # Fusion averages all assessment attempts; a prior failed gate cannot be
+    # erased by a later perfect score on the same learner. Verify TARGET_MET
+    # and ML unlock on a fresh learner who passes the gate once from UNKNOWN.
+    verify_id = _learner(f"s32-python-verify-{uuid.uuid4().hex[:8]}")
+    _evidence(verify_id, "ml_fundamentals", "ASSESSMENT", 0.55)
+    v1_verify = _path(verify_id)
+    ml_blocked = [
+        item for item in v1_verify["items"] if item["target_skill"] == "ml_fundamentals"
+    ]
+    assert ml_blocked
+    assert all(not item["executable"] for item in ml_blocked)
+
+    high = _submit(verify_id, "python-gate", _correct("python-gate"))
     assert high.status_code == 200, high.text
-    gaps_after = client.get(f"/v1/learners/{learner_id}/roles/{AIML}/gaps").json()["items"]
+    gaps_after = client.get(f"/v1/learners/{verify_id}/roles/{AIML}/gaps").json()["items"]
     python_after = next(item for item in gaps_after if item["skill"] == "python")
     assert python_after["attainment"] == "TARGET_MET"
     v2 = next(
         p
-        for p in client.get(f"/v1/learners/{learner_id}/paths").json()
+        for p in client.get(f"/v1/learners/{verify_id}/paths").json()
         if p["status"] == "ACTIVE"
     )
     ml_v2 = [item for item in v2["items"] if item["target_skill"] == "ml_fundamentals"]

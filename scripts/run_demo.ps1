@@ -10,6 +10,25 @@ function Write-Step($msg) {
     Write-Host ">> $msg" -ForegroundColor Cyan
 }
 
+function Invoke-External {
+    param(
+        [Parameter(Mandatory = $true)]
+        [scriptblock]$Command
+    )
+    $prev = $ErrorActionPreference
+    try {
+        $ErrorActionPreference = "Continue"
+        $output = & $Command 2>&1
+        $exit = $LASTEXITCODE
+    } finally {
+        $ErrorActionPreference = $prev
+    }
+    return [pscustomobject]@{
+        Output = $output
+        ExitCode = $exit
+    }
+}
+
 $sw = [System.Diagnostics.Stopwatch]::StartNew()
 
 Write-Step "Checking Docker..."
@@ -19,11 +38,17 @@ if (-not (Get-Command docker -ErrorAction SilentlyContinue)) {
 }
 
 Write-Step "Starting Postgres (docker compose)..."
-docker compose up -d db | Out-Null
+$docker = Invoke-External { docker compose up -d db }
+$docker.Output | ForEach-Object { Write-Host $_ }
+if ($docker.ExitCode -ne 0) {
+    Write-Host "docker compose failed with exit code $($docker.ExitCode)" -ForegroundColor Red
+    exit $docker.ExitCode
+}
 
 $ready = $false
 for ($i = 0; $i -lt 30; $i++) {
-    $health = docker inspect --format='{{.State.Health.Status}}' pathfinder-db 2>$null
+    $inspect = Invoke-External { docker inspect --format='{{.State.Health.Status}}' pathfinder-db }
+    $health = ($inspect.Output | Select-Object -Last 1)
     if ($health -eq "healthy") { $ready = $true; break }
     Start-Sleep -Seconds 2
 }
@@ -33,6 +58,7 @@ if (-not $ready) {
 }
 
 $env:DATABASE_URL = "postgresql+psycopg://pathfinder:pathfinder@localhost:5433/pathfinder"
+$env:PYTHONPATH = Join-Path $Root "backend"
 
 Write-Step "Running migrations..."
 Push-Location backend

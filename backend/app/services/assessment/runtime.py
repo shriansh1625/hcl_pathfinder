@@ -28,6 +28,7 @@ from app.services.adaptation.repository import (
     persist_adaptation_event,
     persist_adapted_path,
 )
+from app.services.assessment.loader import load_assessment_spec
 from app.services.assessment.normalizer import evidence_rows_from_score
 from app.services.assessment.scoring import AssessmentScore, score_attempt
 from app.services.profiling import repository as profiling
