@@ -78,7 +78,7 @@ class ScoreBreakdown(BaseModel):
 class UserSkillRead(ORMModel):
     skill_id: UUID
     proficiency: float | None
-    confidence: float
+    confidence: float | None
     status: str
     last_updated: datetime
 

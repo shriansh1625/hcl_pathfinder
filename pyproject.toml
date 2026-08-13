@@ -1,7 +1,7 @@
 [project]
 name = "pathfinder"
 version = "0.1.0"
-description = "PathFinder Slice 0 foundation — Adaptive Career Path Intelligence"
+description = "PathFinder Slice 1 — career gap intelligence"
 requires-python = ">=3.11"
 
 [tool.pytest.ini_options]
