@@ -6,18 +6,17 @@ PathFinder diagnoses the **learner-to-career gap**, then (in later slices) seque
 
 This repository is a **clean-room Round 2 product**. It does not depend on any prior challenge work.
 
-## Current scope — Slice 1.1 (career intelligence refinement)
+## Current scope — Slice 2 (personalized paths)
 
-Slice 0 foundation plus a deterministic gap engine:
+Slice 1.1 gap engine plus:
 
-- Evidence ingest (append-only)
-- Weighted fusion with reliability, observer confidence, and recency
-- Evidence state vs target attainment (`target_met` only when proficiency ≥ target)
-- Separate gap priority, verification priority, and immediate action
-- HARD blockers vs SOFT preparation vs RELATED
-- Explainable gap reasons (no LLM)
+- Structured resource retrieval (embeddings optional and unused)
+- Explainable resource scoring
+- HARD/UNKNOWN prerequisite eligibility
+- Dependency-aware sequencing and weekly packing
+- Versioned `learning_paths` / `path_items`
 
-**Not implemented yet:** resource recommendation, embeddings, sequencing, assessment runtime, adaptation, resume parsing, product UI.
+**Not implemented yet:** assessment runtime, adaptation, resume parsing, LLM, product UI.
 
 ## Product thesis
 
@@ -91,12 +90,11 @@ cd backend && alembic upgrade head && cd ..
 python scripts/validate_ontology.py
 python scripts/seed.py
 python -m pytest
-# Slice 1 verification
-# POST /v1/learners
-# POST /v1/learners/{id}/evidence
-# GET  /v1/learners/{id}/skills
-# GET  /v1/learners/{id}/roles/{role}/gaps
-# GET  /v1/roles/{role}/competencies
+# Slice 2
+# POST /v1/learners/{id}/paths
+# GET  /v1/learners/{id}/paths
+# GET  /v1/learners/{id}/paths/{path_id}
+# GET  /v1/learners/{id}/roles/{role}/recommendations
 cd backend && uvicorn app.main:app --port 8000
 cd frontend && npm run dev
 cd frontend && npm run build

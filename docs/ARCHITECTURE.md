@@ -1,6 +1,6 @@
 # PathFinder architecture
 
-Slice 0 is the data foundation. Slice 1 added the diagnostic gap engine. Slice 1.1 separates evidence, attainment, blocking, and immediate action. Retrieval, sequencing, and UI are still future slices.
+Slice 0 is the data foundation. Slice 1/1.1 diagnose the career gap. Slice 2 retrieves, scores, and sequences a personalized path. Assessment runtime, adaptation, and UI are still future slices.
 
 ## Product loop (future)
 
@@ -25,7 +25,7 @@ The core domain object is the **learner-to-career gap**, not a course list.
 | Layer | What it is | Status |
 |---|---|---|
 | **Data** | YAML ontology + Postgres runtime | Slice 0 |
-| **Domain logic** | Evidence fusion + gap engine + action classes | Slice 1.1 |
+| **Domain logic** | Gap engine + retrieval + scoring + sequencing | Slice 2 |
 | **AI/ML** | Resume extract, embeddings, explanation polish | Not started. No LLM. |
 | **UI** | Diagnostic → skill map → roadmap → prove-it | Next.js boots only |
 
@@ -41,7 +41,11 @@ Modular monolith:
 - `backend/app/services/profiling` — evidence ingest + fusion
 - `backend/app/services/skill_graph` — role competencies + downstream impact
 - `backend/app/services/gap_engine` — gap, priority, blocking, action classes, explanations
-- `backend/app/services/retrieval|sequencing|adaptation` — empty until later slices
+- `backend/app/services/retrieval` — structured candidate retrieval; optional semantic stub
+- `backend/app/services/recommendation` — eligibility, scoring, explanations
+- `backend/app/services/sequencing` — dependency order + weekly packing
+- `backend/app/services/path` — path generation and persistence
+- `backend/app/services/adaptation` — empty until later slices
 - `data/` — source of truth for skills, roles, edges, catalog, assessments
 
 Path generate must not wait on an LLM. The LLM, when added, interprets and explains. Code will calculate gaps, rank, sequence, and version paths.
@@ -52,9 +56,7 @@ Path generate must not wait on an LLM. The LLM, when added, interprets and expla
 
 **No evidence ≠ zero.** Missing evidence is `UNKNOWN`.
 
-See `docs/GAP_ENGINE.md` for fusion, attainment, gap priority, verification priority, blocking, and action classes.
-
-SATISFIED / `target_met` requires `proficiency >= target`. Close is not met.
+See `docs/GAP_ENGINE.md` and `docs/RECOMMENDATION.md`.
 
 ## Extension points (intentionally unused)
 
@@ -62,6 +64,6 @@ SATISFIED / `target_met` requires `proficiency >= target`. Close is not met.
 - LLM: `services/profiling` and `services/explanation` are the boundaries.
 - Graph UI: React Flow is deferred until edges actually gate recommendations.
 
-## What Slice 1.1 does not contain
+## What Slice 2 does not contain
 
-Resource scoring, embeddings, sequencing, assessment runtime, adaptation, resume parsing, dashboards.
+Assessment runtime, adaptation, embeddings backend, resume parsing, LLM, dashboards.

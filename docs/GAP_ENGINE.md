@@ -198,4 +198,4 @@ Immediate action for both Statistics and ML fundamentals is REMEDIATE (ML is not
 - Reliability and half-life are unvalidated priors.
 - Fusion is a weighted mean, not a Bayesian skill model.
 - Incoming blockers are **direct** edges only. Transitive blocking appears on the next node.
-- Catalog resources are unused in this slice on purpose.
+- Catalog resources are unused by the Slice 1.1 gap engine on purpose. Slice 2 consumes GapProfile plus the catalog.
