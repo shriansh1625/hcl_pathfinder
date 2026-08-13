@@ -34,3 +34,4 @@ Thumbs.db
 # Test / local artifacts
 *.log
 .cache/
+frontend/qa/

@@ -13,24 +13,65 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.core.enums import PathItemStatus
+from app.core.ids import ontology_uuid
 from app.db.session import get_session
-from app.models import AdaptationEvent, AssessmentAttempt, LearningPath, PathItem, User
+from app.models import Assessment, AdaptationEvent, AssessmentAttempt, LearningPath, PathItem, User
 from app.ontology.load import load_ontology
 from app.schemas.intelligence import (
     AssessmentAttemptCreate,
     AssessmentAttemptRead,
+    AssessmentPublicRead,
+    AssessmentQuestionPublic,
     CompleteItemCreate,
     PathDiffRead,
     PathItemCompleteRead,
     SkillResultRead,
     SuggestedAssessmentRead,
 )
-from app.services.assessment.loader import AssessmentDriftError
+from app.services.assessment.loader import AssessmentDriftError, load_assessment_spec
 from app.services.assessment import runtime
 from app.services.assessment.selection import select_assessment
 from app.services.profiling import repository as profiling
 
 router = APIRouter(prefix="/v1")
+
+
+@router.get("/assessments/{slug}", response_model=AssessmentPublicRead)
+def get_assessment(slug: str, session: Session = Depends(get_session)) -> AssessmentPublicRead:
+    """Public assessment copy. Correct answers are never returned."""
+    bundle = load_ontology()
+    yaml_spec = next((item for item in bundle.assessments if item.slug == slug), None)
+    if yaml_spec is None:
+        raise HTTPException(status_code=404, detail=f"Unknown assessment: {slug}")
+    assessment_uuid = ontology_uuid("assessment", slug)
+    if session.get(Assessment, assessment_uuid) is None:
+        raise HTTPException(status_code=404, detail=f"Assessment not seeded: {slug}")
+    try:
+        spec = load_assessment_spec(
+            session, assessment_id=assessment_uuid, yaml_spec=yaml_spec
+        )
+    except AssessmentDriftError as exc:
+        raise HTTPException(
+            status_code=409,
+            detail={"code": exc.code, "message": str(exc), "assessment": exc.slug},
+        ) from exc
+    return AssessmentPublicRead(
+        slug=spec.slug,
+        title=spec.title,
+        description=spec.description,
+        primary_skill=spec.primary_skill,
+        question_count=len(spec.questions),
+        questions=[
+            AssessmentQuestionPublic(
+                index=index,
+                prompt=question.prompt,
+                skill=question.skill,
+                difficulty=question.difficulty,
+                choices=list(question.choices),
+            )
+            for index, question in enumerate(spec.questions)
+        ],
+    )
 
 
 def _learner(session: Session, learner_id: UUID) -> User:

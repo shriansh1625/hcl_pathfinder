@@ -218,3 +218,20 @@ class PathTimelineEntry(BaseModel):
     parent_path_id: UUID | None
     created_at: datetime
 
+
+class AssessmentQuestionPublic(BaseModel):
+    index: int
+    prompt: str
+    skill: str
+    difficulty: int
+    choices: list[str]
+
+
+class AssessmentPublicRead(BaseModel):
+    slug: str
+    title: str
+    description: str
+    primary_skill: str
+    question_count: int
+    questions: list[AssessmentQuestionPublic]
+

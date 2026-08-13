@@ -1,11 +1,19 @@
 from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.db.session import get_session
+from app.models import Role
+from app.schemas import RoleRead
 from app.schemas.intelligence import CompetencyRead, RoleCompetencyRead
 from app.services.profiling.repository import load_role_competencies
 
 router = APIRouter(prefix="/v1")
+
+
+@router.get("/roles", response_model=list[RoleRead])
+def list_roles(session: Session = Depends(get_session)) -> list[Role]:
+    return list(session.scalars(select(Role).order_by(Role.name)).all())
 
 
 @router.get("/roles/{role_slug}/competencies", response_model=RoleCompetencyRead)
