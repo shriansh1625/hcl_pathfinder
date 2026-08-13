@@ -22,6 +22,7 @@ class ResourceType(StrEnum):
 
 class UrlStatus(StrEnum):
     VERIFIED = "verified"
+    CLAIMED = "claimed"
     PENDING = "pending"
     UNAVAILABLE = "unavailable"
 
@@ -123,6 +124,8 @@ class PathItemStatus(StrEnum):
     SKIPPED = "SKIPPED"
     INSERTED = "INSERTED"
     REMOVED = "REMOVED"
+    WAITING_FOR_VERIFICATION = "WAITING_FOR_VERIFICATION"
+    WAITING_FOR_REMEDIATION = "WAITING_FOR_REMEDIATION"
 
 
 class PathItemType(StrEnum):
@@ -130,6 +133,20 @@ class PathItemType(StrEnum):
     ASSESSMENT = "ASSESSMENT"
     MILESTONE = "MILESTONE"
     PROJECT = "PROJECT"
+    VERIFICATION_GATE = "VERIFICATION_GATE"
+
+
+class PathItemKind(StrEnum):
+    EXECUTABLE = "EXECUTABLE"
+    VERIFICATION_GATE = "VERIFICATION_GATE"
+    WAITING_FOR_VERIFICATION = "WAITING_FOR_VERIFICATION"
+    WAITING_FOR_REMEDIATION = "WAITING_FOR_REMEDIATION"
+
+
+class GateState(StrEnum):
+    PENDING = "PENDING"
+    VERIFIED = "VERIFIED"
+    FAILED = "FAILED"
 
 
 class AdaptationEventType(StrEnum):

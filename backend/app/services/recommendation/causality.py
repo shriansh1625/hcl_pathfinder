@@ -40,8 +40,6 @@ def is_selectable_skill(skill_slug: str, profile: GapProfile) -> bool:
         return False
     if is_known_focal(item):
         return True
-    if item.action is ActionClass.VERIFY and unblocks_focal(skill_slug, profile):
-        return True
     return False
 
 

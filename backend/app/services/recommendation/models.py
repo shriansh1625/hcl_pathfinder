@@ -4,9 +4,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from app.core.enums import EligibilityStatus, InterventionType, PrerequisiteEvidenceState
+from app.core.enums import EligibilityStatus, InterventionType, PathItemKind, PrerequisiteEvidenceState
 from app.ontology.load import ResourceSpec
 from app.services.gap_engine.profile import ExplainedGap, GapProfile
+from app.services.verification.gates import VerificationGate
 
 
 @dataclass(frozen=True)
@@ -85,10 +86,13 @@ class PathCause:
 
 @dataclass(frozen=True)
 class PlannedItem:
-    candidate: ScoredCandidate
+    candidate: ScoredCandidate | None
     position: int
-    week_index: int
+    week_index: int | None
     cause: PathCause | None = None
+    kind: str = PathItemKind.EXECUTABLE.value
+    executable: bool = True
+    gate: VerificationGate | None = None
 
 
 @dataclass(frozen=True)

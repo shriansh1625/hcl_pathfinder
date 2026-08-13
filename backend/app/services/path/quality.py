@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from app.core.enums import AttainmentStatus, EligibilityStatus
+from app.core.enums import AttainmentStatus, EligibilityStatus, PathItemKind
 from app.ontology.load import ResourceSpec
 from app.services.gap_engine.profile import GapProfile
 from app.services.recommendation.causality import is_known_focal
@@ -55,8 +55,32 @@ def validate_path(
     sequence_ok = True
     grounded = True
     seen_positions: set[int] = set()
+    has_gate = False
 
     for item in items:
+        if item.position in seen_positions:
+            sequence_ok = False
+            findings.append(f"duplicate_position:{item.position}")
+        seen_positions.add(item.position)
+        if item.cause is None:
+            grounded = False
+            findings.append(f"missing_cause:{item.position}")
+        elif "scored highly" in item.cause.why_selected.lower():
+            grounded = False
+            findings.append(f"score_only_reason:{item.position}")
+
+        if item.kind == PathItemKind.VERIFICATION_GATE.value or item.gate is not None:
+            has_gate = True
+            if item.candidate is not None:
+                resource_ok = False
+                findings.append("gate_bound_to_catalog_resource")
+            continue
+
+        if item.candidate is None:
+            resource_ok = False
+            findings.append(f"missing_candidate:{item.position}")
+            continue
+
         slug = item.candidate.resource.slug
         if slug not in catalog_slugs:
             resource_ok = False
@@ -64,10 +88,9 @@ def validate_path(
         if item.candidate.breakdown.role_importance <= 0:
             role_ok = False
             findings.append(f"zero_role_relevance:{slug}")
-        if item.position in seen_positions:
-            sequence_ok = False
-            findings.append(f"duplicate_position:{item.position}")
-        seen_positions.add(item.position)
+        if item.executable and item.candidate.eligibility.status is not EligibilityStatus.ELIGIBLE:
+            prereq_ok = False
+            findings.append(f"falsely_executable:{slug}")
         if item.candidate.eligibility.status is EligibilityStatus.ELIGIBLE:
             unknown = [
                 check.skill_slug
@@ -82,22 +105,26 @@ def validate_path(
             if "UNKNOWN" not in text:
                 grounded = False
                 findings.append(f"unknown_unexplained:{slug}")
+            if item.executable:
+                prereq_ok = False
+                findings.append(f"blocked_unknown_marked_executable:{slug}")
         gap = index.get(item.candidate.primary_skill)
         if gap is not None and gap.ranked.gap.attainment is AttainmentStatus.TARGET_MET:
             findings.append(f"target_met_consumes_budget:{slug}")
-        if item.cause is None:
-            grounded = False
-            findings.append(f"missing_cause:{slug}")
-        else:
-            if "scored highly" in item.cause.why_selected.lower():
-                grounded = False
-                findings.append(f"score_only_reason:{slug}")
 
-    types = [item.candidate.resource.type for item in items]
-    if len(items) >= 4 and len(set(types)) == 1 and types[0] == "course":
+    types = [
+        item.candidate.resource.type
+        for item in items
+        if item.candidate is not None and item.executable
+    ]
+    if len(types) >= 4 and len(set(types)) == 1 and types[0] == "course":
         findings.append("uniform_course_sequence")
 
-    hours = sum(item.candidate.resource.duration_hours for item in items)
+    hours = sum(
+        item.candidate.resource.duration_hours
+        for item in items
+        if item.executable and item.candidate is not None
+    )
     time_ok = weekly_hours <= 0 or hours <= weekly_hours * 12 + 1e-9
     if not time_ok:
         findings.append("budget_horizon_exceeded")
@@ -105,6 +132,8 @@ def validate_path(
     focal = [item for item in profile.items if is_known_focal(item)]
     covered_focal = set()
     for item in items:
+        if item.candidate is None:
+            continue
         for skill in item.candidate.resource.skills:
             if skill.coverage_strength >= 0.35:
                 covered_focal.add(skill.slug)
@@ -112,6 +141,9 @@ def validate_path(
     if focal and not any(row.ranked.gap.skill_slug in covered_focal for row in focal):
         gap_ok = False
         findings.append("no_focal_gap_covered")
+    if not focal and not has_gate and not any(item.executable for item in items):
+        gap_ok = False
+        findings.append("empty_path_without_verification")
 
     return PathQualityReport(
         PREREQUISITES_VALID=prereq_ok,

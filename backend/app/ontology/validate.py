@@ -125,6 +125,8 @@ def validate_ontology(bundle: OntologyBundle) -> list[str]:
             errors.append(f"Invalid url_status {resource.url_status} on {resource.slug}")
         if resource.url_status == UrlStatus.VERIFIED and not resource.url:
             errors.append(f"Verified resource {resource.slug} is missing a URL")
+        if resource.url_status == UrlStatus.CLAIMED and not resource.url:
+            errors.append(f"Claimed resource {resource.slug} is missing a URL")
         if resource.url_status == UrlStatus.UNAVAILABLE and resource.url:
             errors.append(f"Unavailable resource {resource.slug} should not invent a URL")
         if resource.duration_hours <= 0:

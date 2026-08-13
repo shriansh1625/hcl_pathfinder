@@ -35,22 +35,23 @@ def classify_url(resource: ResourceSpec) -> UrlClass:
             slug=resource.slug,
             format_valid=resource.url is None,
             claimed_verified=False,
-            classification="UNAVAILABLE_BY_POLICY",
+            classification="UNAVAILABLE",
         )
     url = resource.url or ""
     parsed = urlparse(url)
     format_valid = parsed.scheme == "https" and bool(parsed.netloc)
-    claimed = resource.url_status == UrlStatus.VERIFIED.value
     if not format_valid:
         classification = "URL_FORMAT_INVALID"
-    elif claimed:
-        classification = "URL_CLAIMED_VERIFIED_RESOURCE"
+    elif resource.url_status == UrlStatus.VERIFIED.value:
+        classification = "VERIFIED_RESOURCE"
+    elif resource.url_status == UrlStatus.CLAIMED.value:
+        classification = "CLAIMED_RESOURCE"
     else:
         classification = "URL_FORMAT_VALID"
     return UrlClass(
         slug=resource.slug,
         format_valid=format_valid,
-        claimed_verified=claimed,
+        claimed_verified=resource.url_status == UrlStatus.CLAIMED.value,
         classification=classification,
     )
 
@@ -103,6 +104,9 @@ def audit_catalog(bundle: OntologyBundle) -> CatalogAudit:
         if resource.url_status == UrlStatus.VERIFIED.value:
             if not resource.url or not resource.url.startswith("https://"):
                 errors.append(f"{resource.slug}: verified claim without https URL")
+        if resource.url_status == UrlStatus.CLAIMED.value:
+            if not resource.url or not resource.url.startswith("https://"):
+                errors.append(f"{resource.slug}: claimed resource without https URL")
         if resource.url_status == UrlStatus.UNAVAILABLE.value and resource.url:
             errors.append(f"{resource.slug}: unavailable resource still has a URL")
 

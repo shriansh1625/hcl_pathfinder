@@ -124,6 +124,9 @@ class PathItemRead(BaseModel):
     explanation: str
     prerequisites: list[dict]
     causality: dict = Field(default_factory=dict)
+    kind: str = "EXECUTABLE"
+    executable: bool = True
+    gate: dict | None = None
 
 
 class PathRead(BaseModel):

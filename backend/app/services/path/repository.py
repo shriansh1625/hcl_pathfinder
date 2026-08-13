@@ -8,10 +8,11 @@ from datetime import datetime, timezone
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.core.enums import PathItemType, PathStatus, ResourceType
+from app.core.enums import PathItemKind, PathItemStatus, PathItemType, ResourceType
 from app.core.ids import ontology_uuid
 from app.models import LearningPath, PathItem, Profile, Role, User
-from app.services.recommendation.models import LearnerPreferences, PlannedPath
+from app.services.recommendation.models import LearnerPreferences, PlannedItem, PlannedPath
+from app.core.enums import PathStatus
 
 
 def upsert_preferences(
@@ -45,6 +46,70 @@ def upsert_preferences(
     session.commit()
     session.refresh(profile)
     return profile
+
+
+def _item_type(item: PlannedItem) -> str:
+    if item.kind == PathItemKind.VERIFICATION_GATE.value or item.gate is not None:
+        return PathItemType.VERIFICATION_GATE.value
+    assert item.candidate is not None
+    if item.candidate.resource.type == ResourceType.ASSESSMENT.value:
+        return PathItemType.ASSESSMENT.value
+    return PathItemType.RESOURCE.value
+
+
+def _item_status(item: PlannedItem) -> str:
+    if item.kind == PathItemKind.WAITING_FOR_VERIFICATION.value:
+        return PathItemStatus.WAITING_FOR_VERIFICATION.value
+    if item.kind == PathItemKind.WAITING_FOR_REMEDIATION.value:
+        return PathItemStatus.WAITING_FOR_REMEDIATION.value
+    return PathItemStatus.PENDING.value
+
+
+def _explanation(item: PlannedItem) -> dict:
+    if item.gate is not None:
+        return {
+            "resource_slug": "",
+            "title": f"Verify {item.gate.skill_slug.replace('_', ' ')}",
+            "target_skill": item.gate.skill_slug,
+            "intervention": "VERIFY",
+            "eligibility": "GATE",
+            "prerequisites": [],
+            "explanation": item.gate.reason,
+            "url": None,
+            "url_status": None,
+            "duration_hours": 0,
+            "type": PathItemType.VERIFICATION_GATE.value,
+            "kind": item.kind,
+            "executable": item.executable,
+            "gate": item.gate.as_dict(),
+            "causality": item.cause.as_dict() if item.cause else {},
+        }
+    assert item.candidate is not None
+    return {
+        "resource_slug": item.candidate.resource.slug,
+        "title": item.candidate.resource.title,
+        "target_skill": item.candidate.primary_skill,
+        "intervention": item.candidate.intervention.value,
+        "eligibility": item.candidate.eligibility.status.value,
+        "prerequisites": [
+            {
+                "skill": check.skill_slug,
+                "min_level": check.min_level,
+                "state": check.state.value,
+                "observed": check.observed,
+            }
+            for check in item.candidate.eligibility.checks
+        ],
+        "explanation": item.candidate.explanation,
+        "url": item.candidate.resource.url,
+        "url_status": item.candidate.resource.url_status,
+        "duration_hours": item.candidate.resource.duration_hours,
+        "type": item.candidate.resource.type,
+        "kind": item.kind,
+        "executable": item.executable,
+        "gate": None,
+        "causality": item.cause.as_dict() if item.cause else {},
+    }
 
 
 def persist_path(
@@ -87,44 +152,23 @@ def persist_path(
     session.add(path)
     session.flush()
     for item in planned.items:
-        resource_type = item.candidate.resource.type
+        resource_id = None
+        if item.candidate is not None:
+            resource_id = ontology_uuid("resource", item.candidate.resource.slug)
         session.add(
             PathItem(
                 id=uuid.uuid4(),
                 learning_path_id=path.id,
-                resource_id=ontology_uuid("resource", item.candidate.resource.slug),
+                resource_id=resource_id,
                 assessment_id=None,
-                item_type=(
-                    PathItemType.ASSESSMENT.value
-                    if resource_type == ResourceType.ASSESSMENT.value
-                    else PathItemType.RESOURCE.value
-                ),
+                item_type=_item_type(item),
                 position=item.position,
                 week_index=item.week_index,
-                status="PENDING",
-                score_breakdown=item.candidate.breakdown.as_dict(),
-                explanation_metadata={
-                    "resource_slug": item.candidate.resource.slug,
-                    "title": item.candidate.resource.title,
-                    "target_skill": item.candidate.primary_skill,
-                    "intervention": item.candidate.intervention.value,
-                    "eligibility": item.candidate.eligibility.status.value,
-                    "prerequisites": [
-                        {
-                            "skill": check.skill_slug,
-                            "min_level": check.min_level,
-                            "state": check.state.value,
-                            "observed": check.observed,
-                        }
-                        for check in item.candidate.eligibility.checks
-                    ],
-                    "explanation": item.candidate.explanation,
-                    "url": item.candidate.resource.url,
-                    "url_status": item.candidate.resource.url_status,
-                    "duration_hours": item.candidate.resource.duration_hours,
-                    "type": item.candidate.resource.type,
-                    "causality": item.cause.as_dict() if item.cause else {},
-                },
+                status=_item_status(item),
+                score_breakdown=(
+                    item.candidate.breakdown.as_dict() if item.candidate is not None else {}
+                ),
+                explanation_metadata=_explanation(item),
             )
         )
     session.commit()

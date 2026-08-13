@@ -60,6 +60,9 @@ def _item_read(row: PathItem) -> PathItemRead:
         explanation=meta.get("explanation") or "",
         prerequisites=list(meta.get("prerequisites") or []),
         causality=dict(meta.get("causality") or {}),
+        kind=str(meta.get("kind") or row.item_type),
+        executable=bool(meta.get("executable", row.status == "PENDING")),
+        gate=meta.get("gate") if isinstance(meta.get("gate"), dict) else None,
     )
 
 

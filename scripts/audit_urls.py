@@ -53,9 +53,9 @@ def classify_live(resource: ResourceSpec) -> dict:
     payload["accessible"] = ok
     payload["http_status"] = code
     if ok:
-        payload["classification"] = "URL_ACCESSIBLE"
-        if resource.url_status == "verified":
-            payload["classification"] = "URL_VERIFIED_RESOURCE"
+        payload["classification"] = "VERIFIED_RESOURCE"
+        if resource.url_status == "claimed":
+            payload["classification"] = "CLAIMED_RESOURCE"
     else:
-        payload["classification"] = "URL_FORMAT_VALID_NOT_CONFIRMED_ACCESSIBLE"
+        payload["classification"] = "CLAIMED_RESOURCE"
     return payload

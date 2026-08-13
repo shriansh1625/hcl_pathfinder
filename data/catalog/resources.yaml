@@ -177,7 +177,7 @@ resources:
     duration_hours: 5
     source: Kaggle
     url: https://www.kaggle.com/learn/intro-to-machine-learning
-    url_status: verified
+    url_status: claimed
     learning_modes: [project, reading]
     is_active: true
     skills:

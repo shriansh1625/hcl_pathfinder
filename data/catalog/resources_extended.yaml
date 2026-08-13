@@ -1,5 +1,5 @@
 # Additional Slice 2 catalog. Official docs / reputable platforms only.
-# url_status: unavailable resources have a null URL on purpose.
+# url_status: verified = audit confirmed; claimed = URL present but unconfirmed; unavailable = no URL.
 resources:
   - slug: kaggle-python
     title: Kaggle Intro to Python
@@ -9,7 +9,7 @@ resources:
     duration_hours: 5
     source: Kaggle
     url: https://www.kaggle.com/learn/python
-    url_status: verified
+    url_status: claimed
     learning_modes: [project, reading]
     is_active: true
     skills:
@@ -294,7 +294,7 @@ resources:
     duration_hours: 4
     source: Kaggle
     url: https://www.kaggle.com/learn/data-visualization
-    url_status: verified
+    url_status: claimed
     learning_modes: [project, reading]
     is_active: true
     skills:
@@ -311,7 +311,7 @@ resources:
     duration_hours: 5
     source: Kaggle
     url: https://www.kaggle.com/learn/feature-engineering
-    url_status: verified
+    url_status: claimed
     learning_modes: [project, reading]
     is_active: true
     skills:
@@ -328,7 +328,7 @@ resources:
     duration_hours: 5
     source: Kaggle
     url: https://www.kaggle.com/learn/intermediate-machine-learning
-    url_status: verified
+    url_status: claimed
     learning_modes: [project, reading]
     is_active: true
     skills:
@@ -515,7 +515,7 @@ resources:
     duration_hours: 3
     source: Cloudflare
     url: https://www.cloudflare.com/learning/network-layer/what-is-a-computer-network/
-    url_status: verified
+    url_status: claimed
     learning_modes: [reading]
     is_active: true
     skills:
@@ -742,7 +742,7 @@ resources:
     duration_hours: 5
     source: Kaggle
     url: https://www.kaggle.com/learn/intro-to-sql
-    url_status: verified
+    url_status: claimed
     learning_modes: [project, reading]
     is_active: true
     skills:

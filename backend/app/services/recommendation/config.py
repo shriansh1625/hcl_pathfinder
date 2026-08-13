@@ -24,6 +24,7 @@ class RecommendationConfig:
     horizon_weeks: int
     max_items: int
     min_coverage: float
+    max_verification_gates: int
     unknown_prerequisite_fit: float
     unsatisfied_prerequisite_fit: float
     fallback_similarity: float
@@ -61,6 +62,7 @@ def load_recommendation_config() -> RecommendationConfig:
         horizon_weeks=int(selection["horizon_weeks"]),
         max_items=int(selection["max_items"]),
         min_coverage=float(selection["min_coverage"]),
+        max_verification_gates=int(selection.get("max_verification_gates", 8)),
         unknown_prerequisite_fit=float(eligibility["unknown_prerequisite_fit"]),
         unsatisfied_prerequisite_fit=float(eligibility["unsatisfied_prerequisite_fit"]),
         fallback_similarity=float(semantic["fallback_similarity"]),

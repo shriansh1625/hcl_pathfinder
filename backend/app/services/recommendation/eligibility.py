@@ -38,3 +38,11 @@ def evaluate_resource(
     else:
         status = EligibilityStatus.ELIGIBLE
     return Eligibility(status=status, checks=tuple(checks))
+
+
+def recompute_eligibility(
+    resource: ResourceSpec,
+    proficiency: dict[str, float | None],
+) -> Eligibility:
+    """Re-evaluate a resource after evidence changes. No assessment scoring."""
+    return evaluate_resource(resource, proficiency)

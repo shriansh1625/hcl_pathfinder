@@ -188,5 +188,10 @@ def seed_ontology(session: Session, bundle: OntologyBundle | None = None) -> Ont
                 )
             )
 
+    yaml_slugs = {spec.slug for spec in bundle.resources}
+    for row in session.scalars(select(LearningResource)).all():
+        if row.slug not in yaml_slugs and row.is_active:
+            row.is_active = False
+
     session.commit()
     return bundle
