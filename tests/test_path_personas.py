@@ -95,6 +95,8 @@ def test_personas_receive_different_aiml_paths():
     ]
     assert a["items"][0]["score_breakdown"]["final_score"] is not None
     assert "skill_gap_fit" in a["items"][0]["score_breakdown"]
+    assert c["items"][0].get("causality", {}).get("why_selected")
+    assert "fastapi-tutorial" not in slugs_c
 
 
 def test_same_learner_different_roles_select_different_resources():
