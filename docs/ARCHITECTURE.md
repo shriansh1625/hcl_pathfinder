@@ -1,6 +1,6 @@
 # PathFinder architecture
 
-Slice 0 documents the intended system. Only the data foundation exists today.
+Slice 0 is the data foundation. Slice 1 adds the diagnostic gap engine. Retrieval, sequencing, and UI are still future slices.
 
 ## Product loop (future)
 
@@ -22,12 +22,12 @@ The core domain object is the **learner-to-career gap**, not a course list.
 
 ## Layers
 
-| Layer | What it is | Slice 0 |
+| Layer | What it is | Status |
 |---|---|---|
-| **Data** | YAML ontology + Postgres runtime | Implemented |
-| **Domain logic** | Fusion, gap, retrieval, sequencing, adaptation | Schema + status semantics only |
-| **AI/ML** | Resume extract, normalize, embeddings, explanation polish | Service folders only. No LLM. No pgvector |
-| **UI** | Diagnostic → skill map → roadmap → prove-it → path changed | Next.js boots. No product screens |
+| **Data** | YAML ontology + Postgres runtime | Slice 0 |
+| **Domain logic** | Evidence fusion + gap engine | Slice 1 |
+| **AI/ML** | Resume extract, embeddings, explanation polish | Not started. No LLM. |
+| **UI** | Diagnostic → skill map → roadmap → prove-it | Next.js boots only |
 
 ## Runtime shape
 
@@ -38,7 +38,10 @@ Modular monolith:
 - `backend/app/models` — SQLAlchemy
 - `backend/app/schemas` — Pydantic contracts (not raw ORM leakage)
 - `backend/app/ontology` — YAML load + validation
-- `backend/app/services/*` — empty packages for later engines
+- `backend/app/services/profiling` — evidence ingest + fusion
+- `backend/app/services/skill_graph` — role competencies + downstream impact
+- `backend/app/services/gap_engine` — gap, priority, explanations
+- `backend/app/services/retrieval|sequencing|adaptation` — empty until later slices
 - `data/` — source of truth for skills, roles, edges, catalog, assessments
 
 Path generate must not wait on an LLM. The LLM, when added, interprets and explains. Code will calculate gaps, rank, sequence, and version paths.
@@ -49,7 +52,7 @@ Path generate must not wait on an LLM. The LLM, when added, interprets and expla
 
 **No evidence ≠ zero.** Missing evidence is `UNKNOWN`.
 
-Reliability weights live in `data/ontology/reliability.yaml` (prototype assumptions, not immutable truths).
+See `docs/GAP_ENGINE.md` for fusion, recency, classification, and priority formulas.
 
 ## Extension points (intentionally unused)
 
@@ -57,6 +60,6 @@ Reliability weights live in `data/ontology/reliability.yaml` (prototype assumpti
 - LLM: `services/profiling` and `services/explanation` are the boundaries.
 - Graph UI: React Flow is deferred until edges actually gate recommendations.
 
-## What Slice 0 does not contain
+## What Slice 1 does not contain
 
-Recommendation scoring, sequencing, assessment runtime, adaptation engine, resume parsing, chatbot, onboarding, dashboards.
+Resource scoring, embeddings, sequencing, assessment runtime, adaptation, resume parsing, dashboards.

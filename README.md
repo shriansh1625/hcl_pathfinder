@@ -6,20 +6,17 @@ PathFinder diagnoses the **learner-to-career gap**, then (in later slices) seque
 
 This repository is a **clean-room Round 2 product**. It does not depend on any prior challenge work.
 
-## Current scope — Slice 0 (foundation only)
+## Current scope — Slice 1 (career intelligence)
 
-Implemented:
+Slice 0 foundation plus a deterministic gap engine:
 
-- Git-ready monorepo
-- FastAPI backend skeleton
-- Minimal Next.js app (no product UI)
-- PostgreSQL via Docker
-- Alembic migrations
-- Canonical skill / role / resource / assessment ontology in YAML
-- Idempotent seed with validation (including HARD prerequisite cycle detection)
-- Domain schema for evidence, UNKNOWN skill state, versioned paths, and adaptation events
+- Evidence ingest (append-only)
+- Weighted fusion with reliability, observer confidence, and recency
+- UNKNOWN / GAP / DEVELOPING / SATISFIED vs a target role
+- Graph-aware gap priority (HARD prerequisites actually change ranking)
+- Explainable gap reasons (no LLM)
 
-**Not implemented yet:** recommendation engine, sequencing, assessments runtime, adaptation engine, resume parsing, LLM calls, skill-graph UI, onboarding.
+**Not implemented yet:** resource recommendation, embeddings, sequencing, assessment runtime, adaptation, resume parsing, product UI.
 
 ## Product thesis
 
@@ -27,7 +24,7 @@ Course recommenders answer “what should I take?”
 
 PathFinder is being built to answer: what capabilities am I missing for a target career, what should I learn first, why now, how do I prove it, and how should the path change when evidence arrives?
 
-## Architecture (Slice 0)
+## Architecture
 
 ```
 frontend/     Next.js 15 — placeholder shell only
@@ -93,6 +90,12 @@ cd backend && alembic upgrade head && cd ..
 python scripts/validate_ontology.py
 python scripts/seed.py
 python -m pytest
+# Slice 1 verification
+# POST /v1/learners
+# POST /v1/learners/{id}/evidence
+# GET  /v1/learners/{id}/skills
+# GET  /v1/learners/{id}/roles/{role}/gaps
+# GET  /v1/roles/{role}/competencies
 cd backend && uvicorn app.main:app --port 8000
 cd frontend && npm run dev
 cd frontend && npm run build
