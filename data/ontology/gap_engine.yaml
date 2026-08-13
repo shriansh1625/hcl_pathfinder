@@ -1,7 +1,9 @@
 # Gap-engine configuration. Prototype assumptions, not measured truth.
 # CORE role targets in the ontology cluster around 0.70–0.90, so:
-#   0.15 remaining gap ≈ still in-band of the target
+#   0.15 remaining gap ≈ near target, NOT target met
 #   0.40 remaining gap ≈ a full competency band missing
+#
+# satisfied_max_gap is the NEAR_TARGET band. It does not confer SATISFIED / target_met.
 
 fusion:
   recency_half_life_days: 180
@@ -18,3 +20,11 @@ priority:
   soft_descendant_weight: 0.05
   unknown_importance_weight: 0.45
   min_confidence_adjustment: 0.55
+
+# Immediate-action tiers. Within-tier scores are added at 0.05× so classes never cross.
+action:
+  remediate_tier: 3.0
+  reinforce_tier: 2.0
+  verify_tier: 1.0
+  remediate_blocker_tier: 0.5
+  advance_tier: 0.0

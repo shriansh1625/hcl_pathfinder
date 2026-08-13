@@ -4,8 +4,14 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from app.core.enums import GapStatus, SkillStatus
-from app.core.skill_state import resolve_skill_status, skill_status_to_gap_status
+from app.core.enums import AttainmentStatus, EvidenceState, GapStatus, SkillStatus
+from app.core.skill_state import (
+    resolve_attainment,
+    resolve_evidence_state,
+    resolve_skill_status,
+    resolve_target_met,
+    skill_status_to_gap_status,
+)
 from app.services.profiling.evidence_fusion import FusedSkill
 from app.services.skill_graph.competency import RoleCompetency
 
@@ -20,6 +26,9 @@ class SkillGap:
     proficiency: float | None
     confidence: float | None
     learner_status: SkillStatus
+    evidence_state: EvidenceState
+    attainment: AttainmentStatus
+    target_met: bool | None
     gap: float | None
     normalized_gap: float | None
     gap_status: GapStatus
@@ -40,6 +49,9 @@ def calculate_gap(fused: FusedSkill | None, competency: RoleCompetency) -> Skill
             proficiency=None,
             confidence=None,
             learner_status=SkillStatus.UNKNOWN,
+            evidence_state=EvidenceState.UNKNOWN,
+            attainment=AttainmentStatus.UNKNOWN,
+            target_met=None,
             gap=None,
             normalized_gap=None,
             gap_status=GapStatus.UNKNOWN,
@@ -56,6 +68,11 @@ def calculate_gap(fused: FusedSkill | None, competency: RoleCompetency) -> Skill
         proficiency=fused.proficiency,
         target_level=competency.target_level,
     )
+    attainment = resolve_attainment(
+        has_evidence=True,
+        proficiency=fused.proficiency,
+        target_level=competency.target_level,
+    )
     return SkillGap(
         skill_slug=competency.skill_slug,
         skill_name=competency.skill_name,
@@ -65,6 +82,11 @@ def calculate_gap(fused: FusedSkill | None, competency: RoleCompetency) -> Skill
         proficiency=fused.proficiency,
         confidence=fused.confidence,
         learner_status=learner_status,
+        evidence_state=EvidenceState.KNOWN,
+        attainment=attainment,
+        target_met=resolve_target_met(
+            proficiency=fused.proficiency, target_level=competency.target_level
+        ),
         gap=gap,
         normalized_gap=normalized,
         gap_status=skill_status_to_gap_status(learner_status),

@@ -22,6 +22,11 @@ class EngineConfig:
     soft_descendant_weight: float
     unknown_importance_weight: float
     min_confidence_adjustment: float
+    action_remediate_tier: float
+    action_reinforce_tier: float
+    action_verify_tier: float
+    action_remediate_blocker_tier: float
+    action_advance_tier: float
 
 
 @lru_cache(maxsize=1)
@@ -31,6 +36,7 @@ def load_engine_config() -> EngineConfig:
     fusion = payload["fusion"]
     classification = payload["classification"]
     priority = payload["priority"]
+    action = payload.get("action") or {}
     return EngineConfig(
         recency_half_life_days=float(fusion["recency_half_life_days"]),
         confidence_saturation=float(fusion["confidence_saturation"]),
@@ -42,4 +48,9 @@ def load_engine_config() -> EngineConfig:
         soft_descendant_weight=float(priority["soft_descendant_weight"]),
         unknown_importance_weight=float(priority["unknown_importance_weight"]),
         min_confidence_adjustment=float(priority["min_confidence_adjustment"]),
+        action_remediate_tier=float(action.get("remediate_tier", 3.0)),
+        action_reinforce_tier=float(action.get("reinforce_tier", 2.0)),
+        action_verify_tier=float(action.get("verify_tier", 1.0)),
+        action_remediate_blocker_tier=float(action.get("remediate_blocker_tier", 0.5)),
+        action_advance_tier=float(action.get("advance_tier", 0.0)),
     )

@@ -121,6 +121,18 @@ def learner_gaps(
                 conflict=item.ranked.gap.conflict,
                 dominant_source=item.ranked.gap.dominant_source,
                 explanation=item.explanation,
+                evidence_state=item.ranked.gap.evidence_state.value,
+                attainment=item.ranked.gap.attainment.value,
+                target_met=item.ranked.gap.target_met,
+                gap_priority=item.ranked.gap_priority,
+                verification_priority=item.ranked.verification_priority,
+                action=item.action.value,
+                action_priority=item.action_priority,
+                blocked=item.gate.blocked,
+                blockers=list(item.gate.blockers),
+                preparation_needed=item.gate.preparation_needed,
+                preparation_skills=list(item.gate.preparation_skills),
+                downstream_impact=item.downstream_impact,
             )
             for item in profile.items
         ],

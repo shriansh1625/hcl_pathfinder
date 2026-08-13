@@ -43,10 +43,32 @@ class SkillStatus(StrEnum):
 
 
 class GapStatus(StrEnum):
+    """Legacy role-relative status. SATISFIED means target_met, not 'close enough'."""
+
     UNKNOWN = "UNKNOWN"
     SATISFIED = "SATISFIED"
     DEVELOPING = "DEVELOPING"
     GAP = "GAP"
+
+
+class EvidenceState(StrEnum):
+    UNKNOWN = "UNKNOWN"
+    KNOWN = "KNOWN"
+
+
+class AttainmentStatus(StrEnum):
+    UNKNOWN = "UNKNOWN"
+    GAP = "GAP"
+    NEAR_TARGET = "NEAR_TARGET"
+    TARGET_MET = "TARGET_MET"
+
+
+class ActionClass(StrEnum):
+    VERIFY = "VERIFY"
+    REMEDIATE = "REMEDIATE"
+    REINFORCE = "REINFORCE"
+    ADVANCE = "ADVANCE"
+    REMEDIATE_BLOCKER = "REMEDIATE_BLOCKER"
 
 
 class GapSeverity(StrEnum):

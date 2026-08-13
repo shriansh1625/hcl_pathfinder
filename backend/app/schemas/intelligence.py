@@ -78,6 +78,18 @@ class GapItemRead(BaseModel):
     conflict: bool
     dominant_source: str | None
     explanation: str
+    evidence_state: str
+    attainment: str
+    target_met: bool | None
+    gap_priority: float
+    verification_priority: float
+    action: str
+    action_priority: float
+    blocked: bool
+    blockers: list[str]
+    preparation_needed: bool
+    preparation_skills: list[str]
+    downstream_impact: str
 
 
 class GapProfileRead(BaseModel):
