@@ -72,6 +72,33 @@ Path selection uses waves, not raw diagnostic `action_priority`:
 
 After each selected resource, waves are recomputed so Python remediation is followed by ML, not by a queue of UNKNOWN verifies. `BLOCKED_BY_KNOWN_GAP` resources are classified, not deleted, so they can appear later in the path.
 
+## Causality (Slice 2.1)
+
+A high score is not enough to enter the path.
+
+Selectable skills are:
+
+- diagnosed gaps with evidence (`REMEDIATE` / `REINFORCE` / `REMEDIATE_BLOCKER`)
+- UNKNOWN skills only when they HARD-block a diagnosed gap (unblock interventions)
+
+Unknown role skills are **not** path-filler. They enter only as HARD unblockers of a diagnosed gap. A learner with no diagnosed gaps for the selected role receives an empty path rather than a catalog tour.
+
+
+Journey complements (lab / project / assessment) are added only for an already-selected skill, not as catalog filler.
+
+Every path item stores `PathCause`:
+
+- `why_selected`
+- `why_this_skill`
+- `why_this_position`
+- `why_this_intervention`
+- `why_this_resource`
+- `why_not_earlier`
+
+Path quality is a categorical report (`PREREQUISITES_VALID`, …), not a vanity score.
+
+See `docs/AI_ARCHITECTURE.md` and `docs/CATALOG_AUDIT.md`.
+
 ## Sequencing
 
 Not sort-by-score.

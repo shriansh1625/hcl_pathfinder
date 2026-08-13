@@ -6,15 +6,17 @@ PathFinder diagnoses the **learner-to-career gap**, then (in later slices) seque
 
 This repository is a **clean-room Round 2 product**. It does not depend on any prior challenge work.
 
-## Current scope — Slice 2 (personalized paths)
+## Current scope — Slice 2.1 (recommendation forensics)
 
-Slice 1.1 gap engine plus:
+Slice 1.1 gap engine plus Slice 2 personalized paths plus Slice 2.1 causality forensics.
 
 - Structured resource retrieval (embeddings optional and unused)
 - Explainable resource scoring
 - HARD/UNKNOWN prerequisite eligibility
 - Dependency-aware sequencing and weekly packing
 - Versioned `learning_paths` / `path_items`
+- Causal selection (score is not sufficient)
+- Structured `PathCause` metadata and path-quality checks
 
 **Not implemented yet:** assessment runtime, adaptation, resume parsing, LLM, product UI.
 

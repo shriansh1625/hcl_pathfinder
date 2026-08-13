@@ -44,7 +44,7 @@ Modular monolith:
 - `backend/app/services/retrieval` — structured candidate retrieval; optional semantic stub
 - `backend/app/services/recommendation` — eligibility, scoring, explanations
 - `backend/app/services/sequencing` — dependency order + weekly packing
-- `backend/app/services/path` — path generation and persistence
+- `backend/app/services/path` — path generation, persistence, causality metadata, quality checks
 - `backend/app/services/adaptation` — empty until later slices
 - `data/` — source of truth for skills, roles, edges, catalog, assessments
 
@@ -56,7 +56,7 @@ Path generate must not wait on an LLM. The LLM, when added, interprets and expla
 
 **No evidence ≠ zero.** Missing evidence is `UNKNOWN`.
 
-See `docs/GAP_ENGINE.md` and `docs/RECOMMENDATION.md`.
+See `docs/GAP_ENGINE.md`, `docs/RECOMMENDATION.md`, and `docs/AI_ARCHITECTURE.md`.
 
 ## Extension points (intentionally unused)
 
