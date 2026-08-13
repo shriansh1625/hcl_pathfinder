@@ -1,0 +1,12 @@
+[project]
+name = "pathfinder"
+version = "0.1.0"
+description = "PathFinder Slice 0 foundation — Adaptive Career Path Intelligence"
+requires-python = ">=3.11"
+
+[tool.pytest.ini_options]
+pythonpath = ["backend"]
+testpaths = ["tests"]
+filterwarnings = [
+    "ignore::DeprecationWarning",
+]
