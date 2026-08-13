@@ -59,6 +59,7 @@ def _item_read(row: PathItem) -> PathItemRead:
         score_breakdown=row.score_breakdown or {},
         explanation=meta.get("explanation") or "",
         prerequisites=list(meta.get("prerequisites") or []),
+        causality=dict(meta.get("causality") or {}),
     )
 
 
@@ -78,6 +79,7 @@ def _path_read(session: Session, path: LearningPath, role_slug: str) -> PathRead
         learning_style=str(meta.get("learning_style") or "MIXED"),
         total_estimated_hours=path.total_estimated_hours,
         items=[_item_read(item) for item in items],
+        quality=(meta.get("quality") if isinstance(meta.get("quality"), dict) else None),
     )
 
 

@@ -81,6 +81,7 @@ def persist_path(
             "weekly_hours": planned.weekly_hours,
             "learning_style": planned.learning_style,
             "role": planned.role_slug,
+            "quality": planned.quality,
         },
     )
     session.add(path)
@@ -122,6 +123,7 @@ def persist_path(
                     "url_status": item.candidate.resource.url_status,
                     "duration_hours": item.candidate.resource.duration_hours,
                     "type": item.candidate.resource.type,
+                    "causality": item.cause.as_dict() if item.cause else {},
                 },
             )
         )

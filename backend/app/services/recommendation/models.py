@@ -64,10 +64,31 @@ class ScoredCandidate:
 
 
 @dataclass(frozen=True)
+class PathCause:
+    why_selected: str
+    why_this_skill: str
+    why_this_position: str
+    why_this_intervention: str
+    why_this_resource: str
+    why_not_earlier: str
+
+    def as_dict(self) -> dict[str, str]:
+        return {
+            "why_selected": self.why_selected,
+            "why_this_skill": self.why_this_skill,
+            "why_this_position": self.why_this_position,
+            "why_this_intervention": self.why_this_intervention,
+            "why_this_resource": self.why_this_resource,
+            "why_not_earlier": self.why_not_earlier,
+        }
+
+
+@dataclass(frozen=True)
 class PlannedItem:
     candidate: ScoredCandidate
     position: int
     week_index: int
+    cause: PathCause | None = None
 
 
 @dataclass(frozen=True)
@@ -78,6 +99,7 @@ class PlannedPath:
     learning_style: str
     items: tuple[PlannedItem, ...]
     total_estimated_hours: float
+    quality: dict | None = None
 
 
 def gap_index(profile: GapProfile) -> dict[str, ExplainedGap]:

@@ -5,6 +5,9 @@ from __future__ import annotations
 from app.core.enums import ActionClass, EligibilityStatus
 from app.ontology.load import ResourceSpec
 from app.services.gap_engine.profile import GapProfile
+from app.services.path.causality import attach_causes
+from app.services.path.quality import validate_path
+from app.services.recommendation.causality import has_role_relevance, is_selectable_skill
 from app.services.recommendation.config import load_recommendation_config
 from app.services.recommendation.models import LearnerPreferences, PlannedPath, ScoredCandidate, gap_index
 from app.services.recommendation.scorer import score_candidates
@@ -16,7 +19,11 @@ from app.services.skill_graph.dependency import SkillEdge
 
 def _skill_order(profile: GapProfile) -> list[str]:
     ranked = sorted(profile.items, key=lambda item: (-item.action_priority, item.ranked.gap.skill_slug))
-    return [item.ranked.gap.skill_slug for item in ranked if item.action is not ActionClass.ADVANCE]
+    return [
+        item.ranked.gap.skill_slug
+        for item in ranked
+        if is_selectable_skill(item.ranked.gap.skill_slug, profile)
+    ]
 
 
 def _covers(candidate: ScoredCandidate, skill: str) -> bool:
@@ -63,6 +70,8 @@ def select_for_path(
         nonlocal used_hours
         if candidate.resource.slug in selected_slugs:
             return False
+        if not has_role_relevance(candidate):
+            return False
         if used_hours + candidate.resource.duration_hours > budget + 1e-9:
             return False
         selected.append(candidate)
@@ -94,7 +103,11 @@ def select_for_path(
             if not blockers_ready(skill):
                 continue
             options = sorted(
-                [row for row in scored if _covers(row, skill)],
+                [
+                    row
+                    for row in scored
+                    if _covers(row, skill) and has_role_relevance(row)
+                ],
                 key=lambda row: (
                     0 if row.eligibility.status is EligibilityStatus.ELIGIBLE else 1,
                     0 if row.eligibility.status is not EligibilityStatus.BLOCKED_BY_KNOWN_GAP else 1,
@@ -115,19 +128,29 @@ def select_for_path(
         if not progressed:
             break
 
-    types_present = {row.resource.type for row in selected}
-    for wanted in ("lab", "project", "assessment"):
-        if wanted in types_present or len(selected) >= max_items:
-            continue
-        extras = [
-            row
-            for row in scored
-            if row.resource.type == wanted
-            and row.eligibility.status is not EligibilityStatus.BLOCKED_BY_KNOWN_GAP
-            and blockers_ready(row.primary_skill)
-        ]
-        if extras:
-            try_add(extras[0])
+    selected_skills = []
+    for row in selected:
+        if row.primary_skill not in selected_skills:
+            selected_skills.append(row.primary_skill)
+    for skill in selected_skills:
+        if len(selected) >= max_items:
+            break
+        types_have = {row.resource.type for row in selected if _covers(row, skill)}
+        for wanted in ("course", "lab", "project", "assessment"):
+            if wanted in types_have or len(selected) >= max_items:
+                continue
+            extras = [
+                row
+                for row in scored
+                if _covers(row, skill)
+                and row.resource.type == wanted
+                and has_role_relevance(row)
+                and row.eligibility.status is not EligibilityStatus.BLOCKED_BY_KNOWN_GAP
+                and blockers_ready(skill)
+            ]
+            extras.sort(key=lambda row: (-row.breakdown.final_score, row.resource.slug))
+            if extras:
+                try_add(extras[0])
 
     return selected[:max_items]
 
@@ -150,7 +173,15 @@ def generate_path(
     )
     ordered = sequence_resources(selected, edges)
     packed = pack_weeks(ordered, prefs.weekly_hours)
+    packed = attach_causes(packed, profile, edges)
     hours = round(sum(item.candidate.resource.duration_hours for item in packed), 4)
+    quality = validate_path(
+        packed,
+        profile,
+        catalog,
+        edges,
+        weekly_hours=prefs.weekly_hours,
+    )
     return PlannedPath(
         role_slug=profile.role_slug,
         role_name=profile.role_name,
@@ -158,4 +189,5 @@ def generate_path(
         learning_style=prefs.learning_style,
         items=tuple(packed),
         total_estimated_hours=hours,
+        quality=quality.as_dict(),
     )

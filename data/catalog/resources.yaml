@@ -116,8 +116,7 @@ resources:
     is_active: true
     skills:
       - { slug: docker, coverage_strength: 0.80, expected_level_delta: 0.30, is_primary: true }
-    prerequisites:
-      - { slug: linux, min_level: 0.30 }
+    prerequisites: []
 
   - slug: react-learn
     title: React Learn

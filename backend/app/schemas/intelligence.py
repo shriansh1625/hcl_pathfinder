@@ -123,6 +123,7 @@ class PathItemRead(BaseModel):
     score_breakdown: dict
     explanation: str
     prerequisites: list[dict]
+    causality: dict = Field(default_factory=dict)
 
 
 class PathRead(BaseModel):
@@ -134,6 +135,7 @@ class PathRead(BaseModel):
     learning_style: str
     total_estimated_hours: float | None
     items: list[PathItemRead]
+    quality: dict | None = None
 
 
 class RecommendationRead(BaseModel):
