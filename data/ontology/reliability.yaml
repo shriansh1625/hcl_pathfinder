@@ -1,0 +1,10 @@
+# Prototype assumptions — not immutable truths.
+# Engines must read this file instead of hardcoding source weights.
+
+sources:
+  ASSESSMENT: 0.90
+  PROJECT: 0.80
+  RESUME: 0.65
+  PROGRESS: 0.40
+  SELF_REPORT: 0.35
+  FEEDBACK: 0.30

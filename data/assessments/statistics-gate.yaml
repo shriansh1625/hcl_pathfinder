@@ -1,0 +1,34 @@
+assessment:
+  slug: statistics-gate
+  title: Statistics gate
+  description: Short prove-it check for probability and inferential statistics.
+  primary_skill: statistics
+  pass_threshold: 0.70
+  questions:
+    - prompt: A fair coin is flipped twice. What is P(two heads)?
+      skill: probability
+      difficulty: 1
+      choices: ["1/2", "1/4", "1/3", "1"]
+      correct_index: 1
+      explanation: Independent flips multiply. (1/2) * (1/2) = 1/4.
+      concept_tag: independent_events
+
+    - prompt: Which statement best describes a p-value?
+      skill: statistics
+      difficulty: 3
+      choices:
+        - "The probability that the null hypothesis is true"
+        - "The probability of data at least as extreme as observed, assuming the null is true"
+        - "The probability of making a Type II error"
+        - "The effect size of the treatment"
+      correct_index: 1
+      explanation: A p-value is computed under the null; it is not P(null | data).
+      concept_tag: p_values
+
+    - prompt: If a distribution is right-skewed, which is typically larger?
+      skill: statistics
+      difficulty: 2
+      choices: ["Mean", "Median", "Mode of a uniform", "They must be equal"]
+      correct_index: 0
+      explanation: Right skew pulls the mean toward the long tail.
+      concept_tag: distributions

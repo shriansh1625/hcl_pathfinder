@@ -1,0 +1,42 @@
+assessment:
+  slug: model-evaluation-gate
+  title: Model evaluation gate
+  description: Short prove-it check for classification metrics and validation.
+  primary_skill: model_evaluation
+  pass_threshold: 0.70
+  questions:
+    - prompt: For a rare-event classifier, accuracy can be misleading because
+      skill: model_evaluation
+      difficulty: 3
+      choices:
+        - "It ignores training time"
+        - "A majority-class predictor can still score highly"
+        - "It requires GPU hardware"
+        - "It cannot be computed from a confusion matrix"
+      correct_index: 1
+      explanation: Class imbalance lets a trivial baseline look accurate.
+      concept_tag: class_imbalance
+
+    - prompt: Cross-validation is primarily used to
+      skill: model_evaluation
+      difficulty: 2
+      choices:
+        - "Increase the number of features"
+        - "Estimate generalization more stably than a single split"
+        - "Guarantee a globally optimal model"
+        - "Remove the need for a holdout set forever"
+      correct_index: 1
+      explanation: CV rotates validation folds to reduce split luck.
+      concept_tag: cross_validation
+
+    - prompt: Precision is
+      skill: model_evaluation
+      difficulty: 2
+      choices:
+        - "TP / (TP + FN)"
+        - "TP / (TP + FP)"
+        - "TN / (TN + FP)"
+        - "(TP + TN) / all"
+      correct_index: 1
+      explanation: Precision is the fraction of positive predictions that were correct.
+      concept_tag: classification_metrics

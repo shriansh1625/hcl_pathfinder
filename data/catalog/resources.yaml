@@ -1,0 +1,263 @@
+resources:
+  - slug: python-official-tutorial
+    title: The Python Tutorial
+    description: Official language tutorial covering syntax, data structures, and modules.
+    type: course
+    difficulty: 2
+    duration_hours: 12
+    source: Python Software Foundation
+    url: https://docs.python.org/3/tutorial/
+    url_status: verified
+    learning_modes: [reading]
+    is_active: true
+    skills:
+      - { slug: python, coverage_strength: 0.85, expected_level_delta: 0.30, is_primary: true }
+      - { slug: data_structures, coverage_strength: 0.40, expected_level_delta: 0.15, is_primary: false }
+    prerequisites: []
+
+  - slug: sqlbolt
+    title: SQLBolt
+    description: Interactive lessons for SELECT, joins, and aggregations.
+    type: course
+    difficulty: 2
+    duration_hours: 6
+    source: SQLBolt
+    url: https://sqlbolt.com/
+    url_status: verified
+    learning_modes: [reading, project]
+    is_active: true
+    skills:
+      - { slug: sql, coverage_strength: 0.80, expected_level_delta: 0.30, is_primary: true }
+    prerequisites: []
+
+  - slug: google-ml-crash-course
+    title: Google Machine Learning Crash Course
+    description: Foundational ML concepts with short videos and exercises from Google.
+    type: course
+    difficulty: 3
+    duration_hours: 15
+    source: Google
+    url: https://developers.google.com/machine-learning/crash-course
+    url_status: verified
+    learning_modes: [video, reading]
+    is_active: true
+    skills:
+      - { slug: ml_fundamentals, coverage_strength: 0.85, expected_level_delta: 0.30, is_primary: true }
+      - { slug: supervised_learning, coverage_strength: 0.60, expected_level_delta: 0.20, is_primary: false }
+      - { slug: feature_engineering, coverage_strength: 0.45, expected_level_delta: 0.15, is_primary: false }
+    prerequisites:
+      - { slug: python, min_level: 0.40 }
+
+  - slug: sklearn-user-guide
+    title: scikit-learn User Guide
+    description: Canonical reference for classical ML estimators and model selection.
+    type: course
+    difficulty: 3
+    duration_hours: 14
+    source: scikit-learn developers
+    url: https://scikit-learn.org/stable/user_guide.html
+    url_status: verified
+    learning_modes: [reading]
+    is_active: true
+    skills:
+      - { slug: supervised_learning, coverage_strength: 0.80, expected_level_delta: 0.25, is_primary: true }
+      - { slug: unsupervised_learning, coverage_strength: 0.55, expected_level_delta: 0.15, is_primary: false }
+      - { slug: model_evaluation, coverage_strength: 0.70, expected_level_delta: 0.20, is_primary: false }
+    prerequisites:
+      - { slug: python, min_level: 0.50 }
+      - { slug: ml_fundamentals, min_level: 0.40 }
+
+  - slug: d2l-dive-into-deep-learning
+    title: Dive into Deep Learning
+    description: Interactive book covering neural networks, CNNs, and modern architectures.
+    type: course
+    difficulty: 4
+    duration_hours: 30
+    source: d2l.ai
+    url: https://d2l.ai/
+    url_status: verified
+    learning_modes: [reading, project]
+    is_active: true
+    skills:
+      - { slug: neural_networks, coverage_strength: 0.85, expected_level_delta: 0.30, is_primary: true }
+      - { slug: cnn, coverage_strength: 0.70, expected_level_delta: 0.25, is_primary: false }
+      - { slug: transformers, coverage_strength: 0.55, expected_level_delta: 0.20, is_primary: false }
+    prerequisites:
+      - { slug: python, min_level: 0.55 }
+      - { slug: ml_fundamentals, min_level: 0.50 }
+
+  - slug: fastapi-tutorial
+    title: FastAPI Tutorial
+    description: Official tutorial for typed Python APIs.
+    type: course
+    difficulty: 3
+    duration_hours: 8
+    source: FastAPI
+    url: https://fastapi.tiangolo.com/tutorial/
+    url_status: verified
+    learning_modes: [reading, project]
+    is_active: true
+    skills:
+      - { slug: fastapi, coverage_strength: 0.85, expected_level_delta: 0.30, is_primary: true }
+      - { slug: rest_apis, coverage_strength: 0.50, expected_level_delta: 0.15, is_primary: false }
+    prerequisites:
+      - { slug: python, min_level: 0.50 }
+
+  - slug: docker-get-started
+    title: Docker Get Started
+    description: Official orientation to images, containers, and Compose.
+    type: course
+    difficulty: 2
+    duration_hours: 6
+    source: Docker Inc.
+    url: https://docs.docker.com/get-started/
+    url_status: verified
+    learning_modes: [reading, lab]
+    is_active: true
+    skills:
+      - { slug: docker, coverage_strength: 0.80, expected_level_delta: 0.30, is_primary: true }
+    prerequisites:
+      - { slug: linux, min_level: 0.30 }
+
+  - slug: react-learn
+    title: React Learn
+    description: Official React documentation learning path.
+    type: course
+    difficulty: 3
+    duration_hours: 16
+    source: Meta
+    url: https://react.dev/learn
+    url_status: verified
+    learning_modes: [reading, project]
+    is_active: true
+    skills:
+      - { slug: react, coverage_strength: 0.85, expected_level_delta: 0.30, is_primary: true }
+      - { slug: javascript, coverage_strength: 0.40, expected_level_delta: 0.10, is_primary: false }
+    prerequisites:
+      - { slug: javascript, min_level: 0.45 }
+      - { slug: html_css, min_level: 0.40 }
+
+  - slug: owasp-top-ten
+    title: OWASP Top Ten
+    description: Current OWASP Top 10 web application risks.
+    type: course
+    difficulty: 3
+    duration_hours: 8
+    source: OWASP
+    url: https://owasp.org/www-project-top-ten/
+    url_status: verified
+    learning_modes: [reading]
+    is_active: true
+    skills:
+      - { slug: owasp_top10, coverage_strength: 0.90, expected_level_delta: 0.30, is_primary: true }
+    prerequisites:
+      - { slug: networking_basics, min_level: 0.30 }
+
+  - slug: aws-getting-started
+    title: AWS Getting Started
+    description: Official AWS getting-started hub for core cloud services.
+    type: course
+    difficulty: 2
+    duration_hours: 10
+    source: Amazon Web Services
+    url: https://aws.amazon.com/getting-started/
+    url_status: verified
+    learning_modes: [reading, lab]
+    is_active: true
+    skills:
+      - { slug: aws_core, coverage_strength: 0.70, expected_level_delta: 0.25, is_primary: true }
+      - { slug: cloud_fundamentals, coverage_strength: 0.50, expected_level_delta: 0.15, is_primary: false }
+    prerequisites:
+      - { slug: cloud_fundamentals, min_level: 0.35 }
+
+  - slug: kaggle-intro-ml
+    title: Kaggle Intro to Machine Learning
+    description: Short practical ML micro-course with notebooks.
+    type: lab
+    difficulty: 2
+    duration_hours: 5
+    source: Kaggle
+    url: https://www.kaggle.com/learn/intro-to-machine-learning
+    url_status: verified
+    learning_modes: [project, reading]
+    is_active: true
+    skills:
+      - { slug: ml_fundamentals, coverage_strength: 0.70, expected_level_delta: 0.20, is_primary: true }
+      - { slug: model_evaluation, coverage_strength: 0.45, expected_level_delta: 0.15, is_primary: false }
+    prerequisites:
+      - { slug: python, min_level: 0.40 }
+
+  - slug: pandas-getting-started
+    title: pandas Getting Started
+    description: Official pandas getting-started tutorials for tabular data.
+    type: lab
+    difficulty: 2
+    duration_hours: 8
+    source: pandas
+    url: https://pandas.pydata.org/docs/getting_started/index.html
+    url_status: verified
+    learning_modes: [reading, project]
+    is_active: true
+    skills:
+      - { slug: data_wrangling, coverage_strength: 0.85, expected_level_delta: 0.30, is_primary: true }
+      - { slug: exploratory_data_analysis, coverage_strength: 0.40, expected_level_delta: 0.10, is_primary: false }
+    prerequisites:
+      - { slug: python, min_level: 0.40 }
+
+  - slug: titanic-classification-project
+    title: End-to-end tabular classification project
+    description: >
+      Learner-built project: clean a tabular dataset, train a baseline classifier,
+      and report evaluation metrics. No external URL is bundled; the brief lives in-product later.
+    type: project
+    difficulty: 3
+    duration_hours: 12
+    source: PathFinder
+    url: null
+    url_status: unavailable
+    learning_modes: [project]
+    is_active: true
+    skills:
+      - { slug: supervised_learning, coverage_strength: 0.70, expected_level_delta: 0.20, is_primary: true }
+      - { slug: feature_engineering, coverage_strength: 0.60, expected_level_delta: 0.20, is_primary: false }
+      - { slug: model_evaluation, coverage_strength: 0.65, expected_level_delta: 0.20, is_primary: false }
+    prerequisites:
+      - { slug: python, min_level: 0.50 }
+      - { slug: ml_fundamentals, min_level: 0.45 }
+
+  - slug: serve-sklearn-model-lab
+    title: Serve a scikit-learn model with FastAPI
+    description: Lab brief to wrap a trained model in an HTTP endpoint and containerize it.
+    type: lab
+    difficulty: 4
+    duration_hours: 10
+    source: PathFinder
+    url: null
+    url_status: unavailable
+    learning_modes: [project, lab]
+    is_active: true
+    skills:
+      - { slug: model_deployment, coverage_strength: 0.80, expected_level_delta: 0.25, is_primary: true }
+      - { slug: fastapi, coverage_strength: 0.50, expected_level_delta: 0.15, is_primary: false }
+      - { slug: docker, coverage_strength: 0.45, expected_level_delta: 0.10, is_primary: false }
+    prerequisites:
+      - { slug: python, min_level: 0.55 }
+      - { slug: docker, min_level: 0.40 }
+      - { slug: supervised_learning, min_level: 0.45 }
+
+  - slug: statistics-gate-resource
+    title: Statistics gate assessment
+    description: Catalog pointer to the statistics prove-it assessment.
+    type: assessment
+    difficulty: 3
+    duration_hours: 0.5
+    source: PathFinder
+    url: null
+    url_status: unavailable
+    learning_modes: [reading]
+    is_active: true
+    skills:
+      - { slug: statistics, coverage_strength: 0.70, expected_level_delta: 0.00, is_primary: true }
+      - { slug: probability, coverage_strength: 0.50, expected_level_delta: 0.00, is_primary: false }
+    prerequisites:
+      - { slug: probability, min_level: 0.30 }

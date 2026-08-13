@@ -1,0 +1,30 @@
+assessment:
+  slug: python-gate
+  title: Python gate
+  description: Short prove-it check for Python language fundamentals.
+  primary_skill: python
+  pass_threshold: 0.70
+  questions:
+    - prompt: What does len({1, 2, 2, 3}) return?
+      skill: python
+      difficulty: 2
+      choices: ["4", "3", "2", "Error"]
+      correct_index: 1
+      explanation: A set deduplicates. Unique values are 1, 2, 3.
+      concept_tag: collections
+
+    - prompt: Which construct is the most idiomatic way to iterate index and value together?
+      skill: python
+      difficulty: 2
+      choices: ["for i in range(len(xs))", "for i, x in enumerate(xs)", "while i < len(xs)", "map(len, xs)"]
+      correct_index: 1
+      explanation: enumerate yields (index, value) pairs.
+      concept_tag: iteration
+
+    - prompt: What is the time complexity of dict membership tests on average?
+      skill: data_structures
+      difficulty: 3
+      choices: ["O(n)", "O(log n)", "O(1)", "O(n log n)"]
+      correct_index: 2
+      explanation: Hash table lookup is expected constant time.
+      concept_tag: complexity

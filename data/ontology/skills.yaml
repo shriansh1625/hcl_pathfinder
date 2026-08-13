@@ -1,0 +1,235 @@
+skills:
+  - slug: python
+    canonical_name: Python
+    category: Programming
+    description: General-purpose language used for data work, ML, and backend services.
+
+  - slug: javascript
+    canonical_name: JavaScript
+    category: Programming
+    description: Language of the web browser and Node.js runtime.
+
+  - slug: typescript
+    canonical_name: TypeScript
+    category: Programming
+    description: Typed superset of JavaScript used in large frontend and Node codebases.
+
+  - slug: html_css
+    canonical_name: HTML and CSS
+    category: Programming
+    description: Structure and visual presentation of web interfaces.
+
+  - slug: sql
+    canonical_name: SQL
+    category: Programming
+    description: Query language for relational data retrieval and transformation.
+
+  - slug: git
+    canonical_name: Git
+    category: Programming
+    description: Version control for collaborative software work.
+
+  - slug: linux
+    canonical_name: Linux
+    category: Programming
+    description: Command-line operation of Unix-like systems used in servers and cloud images.
+
+  - slug: data_structures
+    canonical_name: Data Structures
+    category: Programming
+    description: Arrays, maps, trees, and complexity tradeoffs used when writing reliable code.
+
+  - slug: probability
+    canonical_name: Probability
+    category: Mathematics
+    description: Random variables, distributions, and conditional probability.
+
+  - slug: statistics
+    canonical_name: Statistics
+    category: Mathematics
+    description: Descriptive stats, sampling, hypothesis testing, and uncertainty.
+
+  - slug: linear_algebra
+    canonical_name: Linear Algebra
+    category: Mathematics
+    description: Vectors, matrices, and linear transforms used in ML and deep learning.
+
+  - slug: calculus_basics
+    canonical_name: Calculus Basics
+    category: Mathematics
+    description: Derivatives and gradients at the level needed to follow optimization in ML.
+
+  - slug: data_wrangling
+    canonical_name: Data Wrangling
+    category: Data
+    description: Cleaning, joining, and reshaping tabular data for analysis or modeling.
+
+  - slug: data_visualization
+    canonical_name: Data Visualization
+    category: Data
+    description: Charts and visual encodings that communicate distributions and comparisons.
+
+  - slug: excel_bi
+    canonical_name: Spreadsheets and BI
+    category: Data
+    description: Spreadsheet analysis and business-intelligence dashboards.
+
+  - slug: exploratory_data_analysis
+    canonical_name: Exploratory Data Analysis
+    category: Data
+    description: Systematic inspection of datasets before modeling or reporting.
+
+  - slug: ml_fundamentals
+    canonical_name: ML Fundamentals
+    category: Machine Learning
+    description: Train/test splits, overfitting, and the supervised learning workflow.
+
+  - slug: supervised_learning
+    canonical_name: Supervised Learning
+    category: Machine Learning
+    description: Regression and classification models trained on labeled examples.
+
+  - slug: unsupervised_learning
+    canonical_name: Unsupervised Learning
+    category: Machine Learning
+    description: Clustering and dimensionality reduction without labels.
+
+  - slug: feature_engineering
+    canonical_name: Feature Engineering
+    category: Machine Learning
+    description: Transforming raw fields into model inputs that generalize.
+
+  - slug: model_evaluation
+    canonical_name: Model Evaluation
+    category: Machine Learning
+    description: Metrics, cross-validation, and error analysis for model selection.
+
+  - slug: neural_networks
+    canonical_name: Neural Networks
+    category: Deep Learning
+    description: Layered models, backpropagation, and representation learning.
+
+  - slug: cnn
+    canonical_name: Convolutional Networks
+    category: Deep Learning
+    description: Spatial feature extractors used in computer vision.
+
+  - slug: transformers
+    canonical_name: Transformers
+    category: Deep Learning
+    description: Attention-based sequence models used in NLP and modern multimodal systems.
+
+  - slug: rest_apis
+    canonical_name: REST APIs
+    category: Engineering
+    description: HTTP resource design, status codes, and client-server contracts.
+
+  - slug: fastapi
+    canonical_name: FastAPI
+    category: Engineering
+    description: Python API framework with typed request and response models.
+
+  - slug: docker
+    canonical_name: Docker
+    category: Engineering
+    description: Container images and runtime used to package services reproducibly.
+
+  - slug: databases
+    canonical_name: Databases
+    category: Engineering
+    description: Relational modeling, transactions, and indexing beyond ad-hoc queries.
+
+  - slug: software_testing
+    canonical_name: Software Testing
+    category: Engineering
+    description: Automated tests that lock behavior before deployment.
+
+  - slug: react
+    canonical_name: React
+    category: Web
+    description: Component UI library for interactive web applications.
+
+  - slug: nodejs
+    canonical_name: Node.js
+    category: Web
+    description: JavaScript runtime for server-side APIs and tooling.
+
+  - slug: authentication
+    canonical_name: Authentication
+    category: Web
+    description: Identity, sessions, and token-based access control in applications.
+
+  - slug: networking_basics
+    canonical_name: Networking Basics
+    category: Security
+    description: TCP/IP, DNS, ports, and traffic paths that security controls sit on.
+
+  - slug: owasp_top10
+    canonical_name: OWASP Top 10
+    category: Security
+    description: Common web application risks and the controls that mitigate them.
+
+  - slug: identity_access
+    canonical_name: Identity and Access
+    category: Security
+    description: Authentication, authorization, and least-privilege access design.
+
+  - slug: siem_logging
+    canonical_name: SIEM and Logging
+    category: Security
+    description: Collecting and querying security telemetry for detection.
+
+  - slug: incident_response
+    canonical_name: Incident Response
+    category: Security
+    description: Triage, containment, and recovery when a security event is active.
+
+  - slug: threat_modeling
+    canonical_name: Threat Modeling
+    category: Security
+    description: Structured identification of assets, threats, and mitigations before build.
+
+  - slug: cloud_fundamentals
+    canonical_name: Cloud Fundamentals
+    category: Cloud
+    description: Shared-responsibility, regions, and core IaaS/PaaS building blocks.
+
+  - slug: aws_core
+    canonical_name: AWS Core Services
+    category: Cloud
+    description: Foundational AWS compute, storage, and networking services.
+
+  - slug: ci_cd
+    canonical_name: CI/CD
+    category: Cloud
+    description: Automated build, test, and deploy pipelines.
+
+  - slug: infrastructure_as_code
+    canonical_name: Infrastructure as Code
+    category: Cloud
+    description: Declarative provisioning of cloud resources.
+
+  - slug: observability
+    canonical_name: Observability
+    category: Cloud
+    description: Metrics, logs, and traces used to operate production systems.
+
+  - slug: linux_admin
+    canonical_name: Linux Administration
+    category: Cloud
+    description: Users, services, networking, and hardening on Linux hosts.
+
+  - slug: experiment_tracking
+    canonical_name: Experiment Tracking
+    category: MLOps
+    description: Recording datasets, parameters, and metrics across model runs.
+
+  - slug: model_deployment
+    canonical_name: Model Deployment
+    category: MLOps
+    description: Serving a trained model behind an API or batch job.
+
+  - slug: ml_monitoring
+    canonical_name: ML Monitoring
+    category: MLOps
+    description: Watching drift, latency, and quality after a model is in production.

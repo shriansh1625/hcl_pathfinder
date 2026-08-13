@@ -1,0 +1,351 @@
+relationships:
+  # HARD — required before the target skill can be practiced honestly
+  - source: python
+    target: ml_fundamentals
+    type: HARD_PREREQUISITE
+    strength: 0.95
+    rationale: Standard ML tooling and examples assume Python fluency.
+
+  - source: python
+    target: fastapi
+    type: HARD_PREREQUISITE
+    strength: 0.95
+    rationale: FastAPI is a Python framework.
+
+  - source: python
+    target: data_wrangling
+    type: HARD_PREREQUISITE
+    strength: 0.85
+    rationale: Tabular wrangling in this ontology is taught in the Python data stack.
+
+  - source: python
+    target: feature_engineering
+    type: HARD_PREREQUISITE
+    strength: 0.85
+    rationale: Feature pipelines here are implemented in Python.
+
+  - source: javascript
+    target: react
+    type: HARD_PREREQUISITE
+    strength: 0.95
+    rationale: React components are written in JavaScript or TypeScript.
+
+  - source: javascript
+    target: nodejs
+    type: HARD_PREREQUISITE
+    strength: 0.95
+    rationale: Node.js executes JavaScript on the server.
+
+  - source: javascript
+    target: typescript
+    type: HARD_PREREQUISITE
+    strength: 0.90
+    rationale: TypeScript is a typed layer on JavaScript semantics.
+
+  - source: html_css
+    target: react
+    type: HARD_PREREQUISITE
+    strength: 0.80
+    rationale: React still renders HTML structure and CSS layout.
+
+  - source: ml_fundamentals
+    target: supervised_learning
+    type: HARD_PREREQUISITE
+    strength: 0.90
+    rationale: Supervised methods assume the train/test workflow.
+
+  - source: ml_fundamentals
+    target: unsupervised_learning
+    type: HARD_PREREQUISITE
+    strength: 0.85
+    rationale: Unsupervised methods still require split, leakage, and evaluation hygiene.
+
+  - source: ml_fundamentals
+    target: neural_networks
+    type: HARD_PREREQUISITE
+    strength: 0.90
+    rationale: Deep learning is a specialization of the ML workflow, not a replacement.
+
+  - source: neural_networks
+    target: cnn
+    type: HARD_PREREQUISITE
+    strength: 0.95
+    rationale: CNNs are a neural network architecture.
+
+  - source: neural_networks
+    target: transformers
+    type: HARD_PREREQUISITE
+    strength: 0.95
+    rationale: Transformers are a neural network architecture.
+
+  - source: docker
+    target: model_deployment
+    type: HARD_PREREQUISITE
+    strength: 0.80
+    rationale: Production model serving in this catalog is packaged as containers.
+
+  - source: git
+    target: ci_cd
+    type: HARD_PREREQUISITE
+    strength: 0.90
+    rationale: Pipelines operate on versioned source.
+
+  - source: cloud_fundamentals
+    target: aws_core
+    type: HARD_PREREQUISITE
+    strength: 0.85
+    rationale: AWS services sit on shared-responsibility and regional cloud concepts.
+
+  - source: model_deployment
+    target: ml_monitoring
+    type: HARD_PREREQUISITE
+    strength: 0.90
+    rationale: You cannot monitor a model that is not served.
+
+  - source: data_wrangling
+    target: exploratory_data_analysis
+    type: HARD_PREREQUISITE
+    strength: 0.80
+    rationale: EDA requires a cleaned, joinable table.
+
+  - source: siem_logging
+    target: incident_response
+    type: HARD_PREREQUISITE
+    strength: 0.80
+    rationale: Response depends on being able to query telemetry.
+
+  - source: sql
+    target: databases
+    type: HARD_PREREQUISITE
+    strength: 0.85
+    rationale: Relational database work assumes SQL literacy.
+
+  - source: linux
+    target: linux_admin
+    type: HARD_PREREQUISITE
+    strength: 0.90
+    rationale: Host administration is a deepening of Linux command-line use.
+
+  - source: supervised_learning
+    target: model_evaluation
+    type: HARD_PREREQUISITE
+    strength: 0.80
+    rationale: Evaluation metrics are practiced on supervised tasks first.
+
+  - source: networking_basics
+    target: siem_logging
+    type: HARD_PREREQUISITE
+    strength: 0.75
+    rationale: Security telemetry is meaningless without a network model.
+
+  # SOFT — strongly recommended before, but not a hard gate
+  - source: probability
+    target: statistics
+    type: SOFT_PREREQUISITE
+    strength: 0.80
+    rationale: Inferential statistics is easier with probability already in place.
+
+  - source: statistics
+    target: ml_fundamentals
+    type: SOFT_PREREQUISITE
+    strength: 0.75
+    rationale: Bias/variance and metrics make more sense with stats fluency.
+
+  - source: linear_algebra
+    target: neural_networks
+    type: SOFT_PREREQUISITE
+    strength: 0.70
+    rationale: Weight matrices and embeddings are linear-algebra objects.
+
+  - source: linux
+    target: docker
+    type: SOFT_PREREQUISITE
+    strength: 0.65
+    rationale: Container debugging is faster with Linux process and filesystem literacy.
+
+  - source: rest_apis
+    target: fastapi
+    type: SOFT_PREREQUISITE
+    strength: 0.80
+    rationale: FastAPI implements REST; HTTP semantics should come first.
+
+  - source: python
+    target: rest_apis
+    type: SOFT_PREREQUISITE
+    strength: 0.50
+    rationale: APIs can be learned in any language; this catalog implements them in Python.
+
+  - source: sql
+    target: data_wrangling
+    type: SOFT_PREREQUISITE
+    strength: 0.70
+    rationale: Many wrangling steps are SQL-shaped even when done in pandas.
+
+  - source: docker
+    target: ci_cd
+    type: SOFT_PREREQUISITE
+    strength: 0.60
+    rationale: Modern pipelines often build and publish images.
+
+  - source: aws_core
+    target: infrastructure_as_code
+    type: SOFT_PREREQUISITE
+    strength: 0.75
+    rationale: IaC is easier after you know the services being declared.
+
+  - source: react
+    target: authentication
+    type: SOFT_PREREQUISITE
+    strength: 0.55
+    rationale: Session UX is usually implemented in the frontend.
+
+  - source: nodejs
+    target: rest_apis
+    type: SOFT_PREREQUISITE
+    strength: 0.50
+    rationale: Node is one common way to host APIs in the full-stack track.
+
+  - source: experiment_tracking
+    target: model_deployment
+    type: SOFT_PREREQUISITE
+    strength: 0.60
+    rationale: You should know which run you are promoting.
+
+  - source: feature_engineering
+    target: supervised_learning
+    type: SOFT_PREREQUISITE
+    strength: 0.55
+    rationale: Better features often matter more than a fancier estimator.
+
+  - source: identity_access
+    target: incident_response
+    type: SOFT_PREREQUISITE
+    strength: 0.60
+    rationale: Many incidents are identity failures.
+
+  - source: data_visualization
+    target: exploratory_data_analysis
+    type: SOFT_PREREQUISITE
+    strength: 0.70
+    rationale: EDA is largely visual inspection.
+
+  - source: excel_bi
+    target: data_visualization
+    type: SOFT_PREREQUISITE
+    strength: 0.50
+    rationale: Analysts often learn encoding first in spreadsheets.
+
+  - source: software_testing
+    target: ci_cd
+    type: SOFT_PREREQUISITE
+    strength: 0.70
+    rationale: A pipeline without tests is only a deploy script.
+
+  - source: databases
+    target: data_wrangling
+    type: SOFT_PREREQUISITE
+    strength: 0.45
+    rationale: Warehouse-shaped data is easier to wrangle with schema literacy.
+
+  - source: owasp_top10
+    target: identity_access
+    type: SOFT_PREREQUISITE
+    strength: 0.65
+    rationale: Broken access control is a top web risk.
+
+  - source: calculus_basics
+    target: linear_algebra
+    type: SOFT_PREREQUISITE
+    strength: 0.40
+    rationale: Gradients connect calculus to the linear maps used in models.
+
+  - source: statistics
+    target: exploratory_data_analysis
+    type: SOFT_PREREQUISITE
+    strength: 0.65
+    rationale: Distributions and outliers are statistical objects.
+
+  - source: python
+    target: software_testing
+    type: SOFT_PREREQUISITE
+    strength: 0.45
+    rationale: This catalog's tests are shown in Python.
+
+  - source: observability
+    target: ml_monitoring
+    type: SOFT_PREREQUISITE
+    strength: 0.70
+    rationale: ML monitoring reuses metrics/logs/traces from service ops.
+
+  - source: authentication
+    target: identity_access
+    type: SOFT_PREREQUISITE
+    strength: 0.75
+    rationale: IAM generalizes application authentication.
+
+  - source: typescript
+    target: react
+    type: SOFT_PREREQUISITE
+    strength: 0.50
+    rationale: Production React codebases are often typed.
+
+  - source: threat_modeling
+    target: incident_response
+    type: SOFT_PREREQUISITE
+    strength: 0.45
+    rationale: Knowing likely threats speeds triage.
+
+  - source: git
+    target: software_testing
+    type: SOFT_PREREQUISITE
+    strength: 0.40
+    rationale: Tests live in the same versioned tree as the product.
+
+  # RELATED — useful association, not an ordering constraint
+  - source: data_structures
+    target: python
+    type: RELATED
+    strength: 0.55
+    rationale: Idiomatic Python uses lists, dicts, and complexity awareness.
+
+  - source: threat_modeling
+    target: owasp_top10
+    type: RELATED
+    strength: 0.70
+    rationale: STRIDE-style models map cleanly onto common web risks.
+
+  - source: observability
+    target: siem_logging
+    type: RELATED
+    strength: 0.60
+    rationale: Both are telemetry disciplines with different consumers.
+
+  - source: excel_bi
+    target: sql
+    type: RELATED
+    strength: 0.50
+    rationale: Analysts often move from spreadsheet filters to SQL.
+
+  - source: html_css
+    target: javascript
+    type: RELATED
+    strength: 0.60
+    rationale: Front-end work almost always combines structure, style, and behavior.
+
+  - source: experiment_tracking
+    target: software_testing
+    type: RELATED
+    strength: 0.40
+    rationale: Both are about reproducible evidence of system behavior.
+
+  - source: calculus_basics
+    target: probability
+    type: RELATED
+    strength: 0.45
+    rationale: Density functions and expectations sit on calculus.
+
+  - source: rest_apis
+    target: authentication
+    type: RELATED
+    strength: 0.65
+    rationale: Most APIs need an identity story.
