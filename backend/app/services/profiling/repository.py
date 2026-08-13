@@ -35,6 +35,8 @@ def append_evidence(
     observed_level: float,
     confidence: float,
     created_at: datetime | None = None,
+    payload: dict | None = None,
+    commit: bool = True,
 ) -> SkillEvidence:
     EvidenceSource(source)
     skill = session.scalar(select(Skill).where(Skill.slug == skill_slug))
@@ -53,13 +55,16 @@ def append_evidence(
         observed_level=observed_level,
         reliability=reliability_for(source),
         confidence=confidence,
-        evidence_payload={"skill_slug": skill_slug},
+        evidence_payload=payload or {"skill_slug": skill_slug},
         created_at=created_at or datetime.now(timezone.utc),
     )
     session.add(row)
     session.flush()
     _refresh_fused_skill(session, user_id=user_id, skill=skill)
-    session.commit()
+    if commit:
+        session.commit()
+    else:
+        session.flush()
     session.refresh(row)
     return row
 

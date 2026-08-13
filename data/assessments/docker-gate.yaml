@@ -1,0 +1,52 @@
+assessment:
+  slug: docker-gate
+  title: Docker gate
+  description: Short prove-it check for containers, images, and Docker workflows.
+  primary_skill: docker
+  target_role: null
+  target_skills: [docker]
+  pass_threshold: 0.70
+  questions:
+    - prompt: What is the key difference between a Docker image and a container?
+      skill: docker
+      difficulty: 1
+      choices:
+        - "An image is a running process; a container is a static template"
+        - "An image is a read-only template; a container is a runnable instance of it"
+        - "They are two names for the same thing"
+        - "A container can only run on Linux; an image runs anywhere"
+      correct_index: 1
+      explanation: Images are immutable templates; containers are their running instances.
+      concept_tag: images_vs_containers
+
+    - prompt: Which instruction in a Dockerfile installs packages at image build time?
+      skill: docker
+      difficulty: 2
+      choices: ["CMD", "RUN", "EXPOSE", "ENTRYPOINT"]
+      correct_index: 1
+      explanation: RUN executes commands at build time; CMD/ENTRYPOINT define runtime defaults.
+      concept_tag: dockerfile
+
+    - prompt: Why are multi-stage builds used?
+      skill: docker
+      difficulty: 3
+      choices:
+        - "To run multiple containers in one image"
+        - "To keep final images small by discarding build tooling"
+        - "To bypass the Docker daemon"
+        - "To enable GPU passthrough"
+      correct_index: 1
+      explanation: Build stages compile/package; the final stage keeps only runtime artifacts.
+      concept_tag: image_size
+
+    - prompt: What does `docker compose up` primarily do?
+      skill: docker
+      difficulty: 2
+      choices:
+        - "Builds a single container from a Dockerfile"
+        - "Starts the services defined in a compose file with their networks and volumes"
+        - "Pushes images to a registry"
+        - "Upgrades the Docker engine"
+      correct_index: 1
+      explanation: Compose orchestrates multi-service applications declaratively.
+      concept_tag: compose

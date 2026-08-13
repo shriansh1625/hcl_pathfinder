@@ -3,6 +3,8 @@ assessment:
   title: Python gate
   description: Short prove-it check for Python language fundamentals.
   primary_skill: python
+  target_role: null
+  target_skills: [python, data_structures]
   pass_threshold: 0.70
   questions:
     - prompt: What does len({1, 2, 2, 3}) return?

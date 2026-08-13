@@ -3,6 +3,8 @@ assessment:
   title: Statistics gate
   description: Short prove-it check for probability and inferential statistics.
   primary_skill: statistics
+  target_role: null
+  target_skills: [statistics, probability]
   pass_threshold: 0.70
   questions:
     - prompt: A fair coin is flipped twice. What is P(two heads)?

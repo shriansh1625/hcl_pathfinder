@@ -1,5 +1,5 @@
 from app.db.base import Base
-from app.models.assessment import Assessment, AssessmentQuestion
+from app.models.assessment import Assessment, AssessmentAttempt, AssessmentQuestion
 from app.models.catalog import LearningResource, ResourcePrerequisite, ResourceSkill
 from app.models.learner import Profile, SkillEvidence, User, UserSkill
 from app.models.ontology import Role, RoleSkill, Skill, SkillRelationship
@@ -16,6 +16,7 @@ __all__ = [
     "ResourcePrerequisite",
     "Assessment",
     "AssessmentQuestion",
+    "AssessmentAttempt",
     "User",
     "Profile",
     "SkillEvidence",

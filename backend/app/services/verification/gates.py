@@ -74,6 +74,23 @@ def select_verification_skills(
     return ranked[:max_gates]
 
 
+def resolve_gate_state(skill_slug: str, profile: GapProfile) -> GateState:
+    """Resolve a gate from the learner's fused state against the ROLE target.
+
+    The role's target_level decides VERIFIED/FAILED. An assessment's
+    pass_threshold is about test performance and is never used here.
+    """
+    for item in profile.items:
+        if item.ranked.gap.skill_slug != skill_slug:
+            continue
+        if item.ranked.gap.evidence_state is EvidenceState.UNKNOWN:
+            return GateState.PENDING
+        if item.ranked.gap.target_met is True:
+            return GateState.VERIFIED
+        return GateState.FAILED
+    return GateState.PENDING
+
+
 def build_gates(
     profile: GapProfile,
     edges: list[SkillEdge],

@@ -101,6 +101,9 @@ class AdaptationEvent(Base):
     event_type: Mapped[str] = mapped_column(String(40), nullable=False)
     summary: Mapped[str] = mapped_column(Text, nullable=False)
     details: Mapped[dict | None] = mapped_column(JSONB, nullable=True)
+    trigger_type: Mapped[str | None] = mapped_column(String(40), nullable=True)
+    changed_skills: Mapped[list | None] = mapped_column(JSONB, nullable=True)
+    changes: Mapped[dict | None] = mapped_column(JSONB, nullable=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )

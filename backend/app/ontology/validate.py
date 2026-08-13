@@ -162,12 +162,34 @@ def validate_ontology(bundle: OntologyBundle) -> list[str]:
             )
         referenced_by_assessment.add(assessment.primary_skill)
         _unit_interval(f"{assessment.slug} pass_threshold", assessment.pass_threshold, errors)
+        if assessment.target_role is not None and assessment.target_role not in role_slugs:
+            errors.append(
+                f"Assessment {assessment.slug} target role missing: {assessment.target_role}"
+            )
+        if not assessment.target_skills:
+            errors.append(f"Assessment {assessment.slug} declares no target_skills")
+        for target in assessment.target_skills:
+            if target not in skill_set:
+                errors.append(
+                    f"Assessment {assessment.slug} target_skills references missing skill {target}"
+                )
+            referenced_by_assessment.add(target)
+        if assessment.primary_skill not in assessment.target_skills:
+            errors.append(
+                f"Assessment {assessment.slug} primary skill {assessment.primary_skill} "
+                f"is not listed in target_skills"
+            )
         if not assessment.questions:
             errors.append(f"Assessment {assessment.slug} has no questions")
         for idx, question in enumerate(assessment.questions):
             if question.skill not in skill_set:
                 errors.append(
                     f"Assessment {assessment.slug} question {idx} missing skill {question.skill}"
+                )
+            if question.skill not in assessment.target_skills:
+                errors.append(
+                    f"Assessment {assessment.slug} question {idx} skill {question.skill} "
+                    f"is not declared in target_skills"
                 )
             referenced_by_assessment.add(question.skill)
             if not question.choices:

@@ -1,1 +1,1 @@
-"""Not implemented in Slice 0."""
+"""Adaptive path engine. Minimal mutation, never blind regeneration."""

@@ -48,6 +48,7 @@ def _item_read(row: PathItem) -> PathItemRead:
     return PathItemRead(
         position=row.position,
         week=row.week_index,
+        status=row.status,
         resource=meta.get("resource_slug") or "",
         title=meta.get("title") or "",
         type=meta.get("type") or row.item_type,

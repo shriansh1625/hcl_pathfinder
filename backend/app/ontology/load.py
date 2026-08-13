@@ -91,6 +91,8 @@ class AssessmentSpec:
     primary_skill: str
     pass_threshold: float
     questions: list[QuestionSpec]
+    target_role: str | None = None
+    target_skills: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -216,6 +218,8 @@ def load_ontology(data_dir: Path | None = None) -> OntologyBundle:
                 primary_skill=item["primary_skill"],
                 pass_threshold=float(item["pass_threshold"]),
                 questions=questions,
+                target_role=item.get("target_role"),
+                target_skills=[str(s) for s in item.get("target_skills") or []],
             )
         )
 

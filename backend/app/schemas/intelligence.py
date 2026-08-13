@@ -112,6 +112,7 @@ class PathCreate(BaseModel):
 class PathItemRead(BaseModel):
     position: int
     week: int | None
+    status: str = "PENDING"
     resource: str
     title: str
     type: str
@@ -150,4 +151,62 @@ class RecommendationRead(BaseModel):
     final_score: float
     score_breakdown: dict
     explanation: str
+
+
+class AssessmentAttemptCreate(BaseModel):
+    answers: list[int]
+    attempt_id: UUID | None = None
+
+
+class SkillResultRead(BaseModel):
+    skill: str
+    question_count: int
+    correct_count: int
+    observed_level: float
+    confidence: float
+    difficulty_avg: float
+    consistency: str
+
+
+class AssessmentAttemptRead(BaseModel):
+    attempt_id: UUID
+    attempt_number: int
+    assessment: str
+    overall_score: float
+    passed: bool
+    skill_results: list[SkillResultRead]
+    adaptation: str
+    path_id: UUID | None
+    diff: dict | None
+
+
+class CompleteItemCreate(BaseModel):
+    position: int
+
+
+class PathItemCompleteRead(BaseModel):
+    path_id: UUID
+    position: int
+    status: str
+    item_type: str
+
+
+class PathDiffRead(BaseModel):
+    path_id: UUID
+    from_path_id: UUID | None
+    trigger_type: str | None
+    changed_skills: list[str]
+    added: list[dict]
+    removed: list[dict]
+    moved: list[dict]
+    unchanged: list[dict]
+    blocked: list[dict]
+
+
+class SuggestedAssessmentRead(BaseModel):
+    assessment: str | None
+    title: str | None
+    question_count: int | None
+    covers: list[str]
+    reason: str
 

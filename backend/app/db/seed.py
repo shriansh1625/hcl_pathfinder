@@ -157,6 +157,10 @@ def seed_ontology(session: Session, bundle: OntologyBundle | None = None) -> Ont
             description=spec.description,
             primary_skill_id=ontology_uuid("skill", spec.primary_skill),
             pass_threshold=spec.pass_threshold,
+            target_role_id=(
+                ontology_uuid("role", spec.target_role) if spec.target_role else None
+            ),
+            target_skills=list(spec.target_skills),
         )
         if assessment is None:
             session.add(Assessment(id=a_id, **fields))
