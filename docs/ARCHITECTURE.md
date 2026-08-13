@@ -1,6 +1,6 @@
 # PathFinder architecture
 
-Slice 0 is the data foundation. Slice 1 adds the diagnostic gap engine. Retrieval, sequencing, and UI are still future slices.
+Slice 0 is the data foundation. Slice 1 added the diagnostic gap engine. Slice 1.1 separates evidence, attainment, blocking, and immediate action. Retrieval, sequencing, and UI are still future slices.
 
 ## Product loop (future)
 
@@ -25,7 +25,7 @@ The core domain object is the **learner-to-career gap**, not a course list.
 | Layer | What it is | Status |
 |---|---|---|
 | **Data** | YAML ontology + Postgres runtime | Slice 0 |
-| **Domain logic** | Evidence fusion + gap engine | Slice 1 |
+| **Domain logic** | Evidence fusion + gap engine + action classes | Slice 1.1 |
 | **AI/ML** | Resume extract, embeddings, explanation polish | Not started. No LLM. |
 | **UI** | Diagnostic → skill map → roadmap → prove-it | Next.js boots only |
 
@@ -40,7 +40,7 @@ Modular monolith:
 - `backend/app/ontology` — YAML load + validation
 - `backend/app/services/profiling` — evidence ingest + fusion
 - `backend/app/services/skill_graph` — role competencies + downstream impact
-- `backend/app/services/gap_engine` — gap, priority, explanations
+- `backend/app/services/gap_engine` — gap, priority, blocking, action classes, explanations
 - `backend/app/services/retrieval|sequencing|adaptation` — empty until later slices
 - `data/` — source of truth for skills, roles, edges, catalog, assessments
 
@@ -52,7 +52,9 @@ Path generate must not wait on an LLM. The LLM, when added, interprets and expla
 
 **No evidence ≠ zero.** Missing evidence is `UNKNOWN`.
 
-See `docs/GAP_ENGINE.md` for fusion, recency, classification, and priority formulas.
+See `docs/GAP_ENGINE.md` for fusion, attainment, gap priority, verification priority, blocking, and action classes.
+
+SATISFIED / `target_met` requires `proficiency >= target`. Close is not met.
 
 ## Extension points (intentionally unused)
 
@@ -60,6 +62,6 @@ See `docs/GAP_ENGINE.md` for fusion, recency, classification, and priority formu
 - LLM: `services/profiling` and `services/explanation` are the boundaries.
 - Graph UI: React Flow is deferred until edges actually gate recommendations.
 
-## What Slice 1 does not contain
+## What Slice 1.1 does not contain
 
 Resource scoring, embeddings, sequencing, assessment runtime, adaptation, resume parsing, dashboards.

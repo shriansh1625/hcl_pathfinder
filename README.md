@@ -6,14 +6,15 @@ PathFinder diagnoses the **learner-to-career gap**, then (in later slices) seque
 
 This repository is a **clean-room Round 2 product**. It does not depend on any prior challenge work.
 
-## Current scope — Slice 1 (career intelligence)
+## Current scope — Slice 1.1 (career intelligence refinement)
 
 Slice 0 foundation plus a deterministic gap engine:
 
 - Evidence ingest (append-only)
 - Weighted fusion with reliability, observer confidence, and recency
-- UNKNOWN / GAP / DEVELOPING / SATISFIED vs a target role
-- Graph-aware gap priority (HARD prerequisites actually change ranking)
+- Evidence state vs target attainment (`target_met` only when proficiency ≥ target)
+- Separate gap priority, verification priority, and immediate action
+- HARD blockers vs SOFT preparation vs RELATED
 - Explainable gap reasons (no LLM)
 
 **Not implemented yet:** resource recommendation, embeddings, sequencing, assessment runtime, adaptation, resume parsing, product UI.

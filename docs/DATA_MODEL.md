@@ -92,7 +92,9 @@ Reliability is stored on the row and sourced from `data/ontology/reliability.yam
 
 Fused cache. `proficiency` and `confidence` are **NULL** when `status = UNKNOWN`. Missing evidence is not stored as 0.
 
-Statuses: `UNKNOWN`, `DEVELOPING`, `STRONG`, `GAP`. Role-relative gap status (`SATISFIED` / `GAP` / …) is computed by the gap engine, not stored on this row.
+Statuses: `UNKNOWN`, `DEVELOPING`, `STRONG`, `GAP`. Role-relative gap status (`SATISFIED` only when `target_met`, plus `NEAR_TARGET` attainment) is computed by the gap engine, not stored on this row.
+
+Immediate action (`VERIFY` / `REMEDIATE` / `REINFORCE` / `ADVANCE` / `REMEDIATE_BLOCKER`) is also computed, not stored.
 
 ## Paths
 
