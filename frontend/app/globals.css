@@ -2,7 +2,30 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  color-scheme: dark;
+}
+
 html,
 body {
   min-height: 100%;
+  background: #090b0e;
+}
+
+body {
+  background-image:
+    radial-gradient(1200px 500px at 80% -10%, rgba(94, 234, 212, 0.08), transparent 55%),
+    radial-gradient(800px 400px at 0% 100%, rgba(125, 211, 252, 0.05), transparent 50%);
+}
+
+*:focus-visible {
+  outline: 2px solid #5eead4;
+  outline-offset: 2px;
+}
+
+.pf-grid {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 48px 48px;
 }

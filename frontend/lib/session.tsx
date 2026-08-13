@@ -1,0 +1,425 @@
+"use client";
+
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from "react";
+import { api } from "./api";
+import { DEMO_EVIDENCE } from "./status";
+import type {
+  AssessmentAttempt,
+  AssessmentPublic,
+  GapItem,
+  GapSnapshot,
+  PathDiff,
+  PathRead,
+  SuggestedAssessment,
+  TimelineEntry,
+  ViewId,
+} from "./types";
+
+const STORAGE_KEY = "pathfinder.session.v1";
+
+export type SessionSnapshot = {
+  learnerId: string;
+  displayName: string;
+  role: string;
+  roleName: string;
+  weeklyHours: number;
+  learningStyle: string;
+  v1PathId: string | null;
+  view: ViewId;
+};
+
+type IntelligenceContext = {
+  learnerId: string | null;
+  hydrated: boolean;
+  displayName: string;
+  role: string;
+  roleName: string;
+  weeklyHours: number;
+  learningStyle: string;
+  view: ViewId;
+  gaps: GapItem[];
+  paths: PathRead[];
+  activePath: PathRead | null;
+  previousPath: PathRead | null;
+  timeline: TimelineEntry[];
+  suggested: SuggestedAssessment | null;
+  assessment: AssessmentPublic | null;
+  attempt: AssessmentAttempt | null;
+  diff: PathDiff | null;
+  beforeGaps: GapSnapshot[];
+  loading: boolean;
+  mutating: boolean;
+  error: string | null;
+  updatingModel: boolean;
+  setView: (view: ViewId) => void;
+  refresh: () => Promise<void>;
+  launchDemo: (opts?: { role?: string; weeklyHours?: number; learningStyle?: string }) => Promise<void>;
+  startCustom: (opts: {
+    role: string;
+    roleName: string;
+    weeklyHours: number;
+    learningStyle: string;
+    withDemoEvidence: boolean;
+  }) => Promise<void>;
+  completeFirstExecutable: () => Promise<void>;
+  loadAssessment: (slug: string) => Promise<void>;
+  submitAnswers: (answers: number[]) => Promise<void>;
+  reset: () => void;
+};
+
+const Ctx = createContext<IntelligenceContext | null>(null);
+
+function readStored(): SessionSnapshot | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = sessionStorage.getItem(STORAGE_KEY);
+    return raw ? (JSON.parse(raw) as SessionSnapshot) : null;
+  } catch {
+    return null;
+  }
+}
+
+function writeStored(snapshot: SessionSnapshot | null) {
+  if (typeof window === "undefined") return;
+  if (!snapshot) {
+    sessionStorage.removeItem(STORAGE_KEY);
+    return;
+  }
+  sessionStorage.setItem(STORAGE_KEY, JSON.stringify(snapshot));
+}
+
+function snapshotGaps(items: GapItem[]): GapSnapshot[] {
+  return items.map((item) => ({
+    skill: item.skill,
+    name: item.name,
+    evidence_state: item.evidence_state,
+    attainment: item.attainment,
+    proficiency: item.proficiency,
+    target_level: item.target_level,
+    action: item.action,
+    blocked: item.blocked,
+  }));
+}
+
+export function IntelligenceProvider({ children }: { children: ReactNode }) {
+  const [hydrated, setHydrated] = useState(false);
+  const [learnerId, setLearnerId] = useState<string | null>(null);
+  const [displayName, setDisplayName] = useState("");
+  const [role, setRole] = useState("ai-ml-engineer");
+  const [roleName, setRoleName] = useState("AI/ML Engineer");
+  const [weeklyHours, setWeeklyHours] = useState(8);
+  const [learningStyle, setLearningStyle] = useState("MIXED");
+  const [view, setViewState] = useState<ViewId>("overview");
+  const [v1PathId, setV1PathId] = useState<string | null>(null);
+  const [gaps, setGaps] = useState<GapItem[]>([]);
+  const [paths, setPaths] = useState<PathRead[]>([]);
+  const [timeline, setTimeline] = useState<TimelineEntry[]>([]);
+  const [suggested, setSuggested] = useState<SuggestedAssessment | null>(null);
+  const [assessment, setAssessment] = useState<AssessmentPublic | null>(null);
+  const [attempt, setAttempt] = useState<AssessmentAttempt | null>(null);
+  const [diff, setDiff] = useState<PathDiff | null>(null);
+  const [beforeGaps, setBeforeGaps] = useState<GapSnapshot[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [mutating, setMutating] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [updatingModel, setUpdatingModel] = useState(false);
+
+  const persist = useCallback(
+    (next: Partial<SessionSnapshot> & { learnerId: string }) => {
+      const snapshot: SessionSnapshot = {
+        learnerId: next.learnerId,
+        displayName: next.displayName ?? displayName,
+        role: next.role ?? role,
+        roleName: next.roleName ?? roleName,
+        weeklyHours: next.weeklyHours ?? weeklyHours,
+        learningStyle: next.learningStyle ?? learningStyle,
+        v1PathId: next.v1PathId === undefined ? v1PathId : next.v1PathId,
+        view: next.view ?? view,
+      };
+      writeStored(snapshot);
+    },
+    [displayName, role, roleName, weeklyHours, learningStyle, v1PathId, view],
+  );
+
+  const setView = useCallback(
+    (next: ViewId) => {
+      setViewState(next);
+      if (learnerId) {
+        persist({ learnerId, view: next });
+      }
+    },
+    [learnerId, persist],
+  );
+
+  const refresh = useCallback(async () => {
+    if (!learnerId) return;
+    setLoading(true);
+    setError(null);
+    try {
+      const [gapProfile, pathList, time, suggest] = await Promise.all([
+        api.gaps(learnerId, role),
+        api.paths(learnerId),
+        api.timeline(learnerId, role),
+        api.suggested(learnerId, role),
+      ]);
+      setGaps(gapProfile.items);
+      setRoleName(gapProfile.name);
+      setPaths(pathList);
+      setTimeline(time);
+      setSuggested(suggest);
+      const active = pathList.find((item) => item.status === "ACTIVE") ?? null;
+      if (active && pathList.some((item) => item.version > 1)) {
+        const diffBody = await api.pathDiff(learnerId, active.id);
+        setDiff(diffBody);
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to load intelligence");
+    } finally {
+      setLoading(false);
+    }
+  }, [learnerId, role]);
+
+  useEffect(() => {
+    const stored = readStored();
+    if (stored) {
+      setLearnerId(stored.learnerId);
+      setDisplayName(stored.displayName);
+      setRole(stored.role);
+      setRoleName(stored.roleName);
+      setWeeklyHours(stored.weeklyHours);
+      setLearningStyle(stored.learningStyle);
+      setV1PathId(stored.v1PathId);
+      setViewState(stored.view);
+    }
+    setHydrated(true);
+  }, []);
+
+  useEffect(() => {
+    if (!hydrated || !learnerId) return;
+    void refresh();
+  }, [hydrated, learnerId, refresh]);
+
+  const bootstrapLearner = useCallback(
+    async (opts: {
+      role: string;
+      roleName: string;
+      weeklyHours: number;
+      learningStyle: string;
+      withDemoEvidence: boolean;
+      demo: boolean;
+    }) => {
+      setMutating(true);
+      setError(null);
+      try {
+        const tag = opts.demo ? "pathfinder-live-demo" : "pathfinder-learner";
+        const learner = await api.createLearner(`${tag}-${crypto.randomUUID().slice(0, 6)}`);
+        if (opts.withDemoEvidence) {
+          for (const row of DEMO_EVIDENCE) {
+            await api.addEvidence(learner.id, {
+              skill: row.skill,
+              source: "ASSESSMENT",
+              observed_level: row.observed_level,
+              confidence: 0.85,
+            });
+          }
+        }
+        const path = await api.createPath(learner.id, {
+          role: opts.role,
+          weekly_hours: opts.weeklyHours,
+          learning_style: opts.learningStyle,
+        });
+        const first = path.items.find((item) => item.executable && item.kind === "EXECUTABLE");
+        if (first) {
+          await api.completeItem(learner.id, path.id, first.position);
+        }
+        setLearnerId(learner.id);
+        setDisplayName(learner.display_name);
+        setRole(opts.role);
+        setRoleName(opts.roleName);
+        setWeeklyHours(opts.weeklyHours);
+        setLearningStyle(opts.learningStyle);
+        setV1PathId(path.id);
+        setViewState("overview");
+        persist({
+          learnerId: learner.id,
+          displayName: learner.display_name,
+          role: opts.role,
+          roleName: opts.roleName,
+          weeklyHours: opts.weeklyHours,
+          learningStyle: opts.learningStyle,
+          v1PathId: path.id,
+          view: "overview",
+        });
+        const [gapProfile, pathList, time, suggest] = await Promise.all([
+          api.gaps(learner.id, opts.role),
+          api.paths(learner.id),
+          api.timeline(learner.id, opts.role),
+          api.suggested(learner.id, opts.role),
+        ]);
+        setGaps(gapProfile.items);
+        setRoleName(gapProfile.name);
+        setPaths(pathList);
+        setTimeline(time);
+        setSuggested(suggest);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Could not start PathFinder");
+        throw err;
+      } finally {
+        setMutating(false);
+      }
+    },
+    [persist],
+  );
+
+  const launchDemo = useCallback(
+    async (opts?: { role?: string; weeklyHours?: number; learningStyle?: string }) => {
+      await bootstrapLearner({
+        role: opts?.role ?? "ai-ml-engineer",
+        roleName: "AI/ML Engineer",
+        weeklyHours: opts?.weeklyHours ?? 8,
+        learningStyle: opts?.learningStyle ?? "MIXED",
+        withDemoEvidence: true,
+        demo: true,
+      });
+    },
+    [bootstrapLearner],
+  );
+
+  const startCustom = useCallback(
+    async (opts: {
+      role: string;
+      roleName: string;
+      weeklyHours: number;
+      learningStyle: string;
+      withDemoEvidence: boolean;
+    }) => {
+      await bootstrapLearner({ ...opts, demo: false });
+    },
+    [bootstrapLearner],
+  );
+
+  const completeFirstExecutable = useCallback(async () => {
+    if (!learnerId) return;
+    const active = paths.find((item) => item.status === "ACTIVE");
+    const first = active?.items.find((item) => item.executable && item.status !== "COMPLETED");
+    if (!active || !first) return;
+    await api.completeItem(learnerId, active.id, first.position);
+    await refresh();
+  }, [learnerId, paths, refresh]);
+
+  const loadAssessment = useCallback(async (slug: string) => {
+    setMutating(true);
+    setError(null);
+    try {
+      setBeforeGaps(snapshotGaps(gaps));
+      const spec = await api.assessment(slug);
+      setAssessment(spec);
+      setView("assess");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not load assessment");
+    } finally {
+      setMutating(false);
+    }
+  }, [gaps, setView]);
+
+  const submitAnswers = useCallback(
+    async (answers: number[]) => {
+      if (!learnerId || !assessment) return;
+      setUpdatingModel(true);
+      setError(null);
+      try {
+        const result = await api.submitAttempt(learnerId, assessment.slug, answers);
+        setAttempt(result);
+        if (result.diff) setDiff(result.diff);
+        else if (result.path_id) {
+          const body = await api.pathDiff(learnerId, result.path_id);
+          setDiff(body);
+        }
+        await refresh();
+        setView("result");
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Assessment submit failed");
+      } finally {
+        setUpdatingModel(false);
+      }
+    },
+    [learnerId, assessment, refresh, setView],
+  );
+
+  const reset = useCallback(() => {
+    writeStored(null);
+    setLearnerId(null);
+    setDisplayName("");
+    setGaps([]);
+    setPaths([]);
+    setTimeline([]);
+    setSuggested(null);
+    setAssessment(null);
+    setAttempt(null);
+    setDiff(null);
+    setBeforeGaps([]);
+    setV1PathId(null);
+    setViewState("overview");
+  }, []);
+
+  const activePath = useMemo(
+    () => paths.find((item) => item.status === "ACTIVE") ?? null,
+    [paths],
+  );
+  const previousPath = useMemo(() => {
+    if (v1PathId) {
+      return paths.find((item) => item.id === v1PathId) ?? null;
+    }
+    const superseded = paths.filter((item) => item.status === "SUPERSEDED");
+    return superseded.sort((a, b) => a.version - b.version)[0] ?? null;
+  }, [paths, v1PathId]);
+
+  const value: IntelligenceContext = {
+    learnerId,
+    hydrated,
+    displayName,
+    role,
+    roleName,
+    weeklyHours,
+    learningStyle,
+    view,
+    gaps,
+    paths,
+    activePath,
+    previousPath,
+    timeline,
+    suggested,
+    assessment,
+    attempt,
+    diff,
+    beforeGaps,
+    loading,
+    mutating,
+    error,
+    updatingModel,
+    setView,
+    refresh,
+    launchDemo,
+    startCustom,
+    completeFirstExecutable,
+    loadAssessment,
+    submitAnswers,
+    reset,
+  };
+
+  return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
+}
+
+export function useIntelligence() {
+  const ctx = useContext(Ctx);
+  if (!ctx) throw new Error("useIntelligence must be used within IntelligenceProvider");
+  return ctx;
+}

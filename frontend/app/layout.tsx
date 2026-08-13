@@ -1,9 +1,23 @@
 import type { Metadata } from "next";
+import { IBM_Plex_Mono, IBM_Plex_Sans } from "next/font/google";
+import { Providers } from "@/components/shell/Providers";
 import "./globals.css";
+
+const sans = IBM_Plex_Sans({
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  variable: "--font-sans",
+});
+
+const mono = IBM_Plex_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500"],
+  variable: "--font-mono",
+});
 
 export const metadata: Metadata = {
   title: "PathFinder",
-  description: "Adaptive Career Path Intelligence — Slice 0 foundation",
+  description: "Evidence-driven adaptive career intelligence",
 };
 
 export default function RootLayout({
@@ -13,8 +27,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="min-h-screen bg-zinc-50 text-zinc-900 antialiased">
-        {children}
+      <body className={`${sans.variable} ${mono.variable} min-h-screen bg-ink-950 font-sans text-paper antialiased`}>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );
