@@ -1,1 +1,1 @@
-"""Not implemented in Slice 0."""
+"""Candidate retrieval. Structured first; semantic is optional."""

@@ -12,7 +12,7 @@ router = APIRouter()
 
 @router.get("/health", response_model=HealthResponse)
 def health() -> HealthResponse:
-    return HealthResponse(status="ok", service="pathfinder-api", slice="1")
+    return HealthResponse(status="ok", service="pathfinder-api", slice="2")
 
 
 @router.get("/ready", response_model=ReadyResponse)

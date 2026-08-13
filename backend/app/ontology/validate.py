@@ -131,6 +131,10 @@ def validate_ontology(bundle: OntologyBundle) -> list[str]:
             errors.append(f"Invalid duration_hours on {resource.slug}")
         if not 1 <= resource.difficulty <= 5:
             errors.append(f"Invalid difficulty on {resource.slug}")
+        allowed_modes = {"reading", "video", "project", "lab"}
+        for mode in resource.learning_modes:
+            if mode not in allowed_modes:
+                errors.append(f"Invalid learning mode {mode} on {resource.slug}")
         for rs in resource.skills:
             referenced_by_resource.add(rs.slug)
             if rs.slug not in skill_set:

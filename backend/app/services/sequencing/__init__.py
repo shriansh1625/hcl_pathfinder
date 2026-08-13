@@ -1,1 +1,1 @@
-"""Not implemented in Slice 0."""
+"""Dependency-aware ordering and weekly packing. Not resource scoring."""

@@ -115,6 +115,12 @@ def load_ontology(data_dir: Path | None = None) -> OntologyBundle:
     rel_raw = _load_yaml(root / "ontology" / "relationships.yaml")
     roles_raw = _load_yaml(root / "ontology" / "roles.yaml")
     resources_raw = _load_yaml(root / "catalog" / "resources.yaml")
+    extra_path = root / "catalog" / "resources_extended.yaml"
+    if extra_path.exists():
+        extra = _load_yaml(extra_path)
+        resources_raw["resources"] = list(resources_raw.get("resources") or []) + list(
+            extra.get("resources") or []
+        )
 
     skills = [
         SkillSpec(

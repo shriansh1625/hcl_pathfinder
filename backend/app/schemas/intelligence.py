@@ -96,3 +96,53 @@ class GapProfileRead(BaseModel):
     role: str
     name: str
     items: list[GapItemRead]
+
+
+class LearnerPreferencesUpdate(BaseModel):
+    weekly_hours: float = Field(gt=0, le=80, default=8)
+    learning_style: str = "MIXED"
+
+
+class PathCreate(BaseModel):
+    role: str
+    weekly_hours: float = Field(gt=0, le=80, default=8)
+    learning_style: str = "MIXED"
+
+
+class PathItemRead(BaseModel):
+    position: int
+    week: int | None
+    resource: str
+    title: str
+    type: str
+    target_skill: str
+    intervention: str
+    eligibility: str
+    duration_hours: float
+    url: str | None
+    score_breakdown: dict
+    explanation: str
+    prerequisites: list[dict]
+
+
+class PathRead(BaseModel):
+    id: UUID
+    role: str
+    version: int
+    status: str
+    weekly_hours: float
+    learning_style: str
+    total_estimated_hours: float | None
+    items: list[PathItemRead]
+
+
+class RecommendationRead(BaseModel):
+    resource: str
+    title: str
+    primary_skill: str
+    intervention: str
+    eligibility: str
+    final_score: float
+    score_breakdown: dict
+    explanation: str
+

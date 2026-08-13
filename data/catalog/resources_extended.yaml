@@ -1,0 +1,785 @@
+# Additional Slice 2 catalog. Official docs / reputable platforms only.
+# url_status: unavailable resources have a null URL on purpose.
+resources:
+  - slug: kaggle-python
+    title: Kaggle Intro to Python
+    description: Hands-on Python notebooks covering syntax, functions, and lists.
+    type: lab
+    difficulty: 1
+    duration_hours: 5
+    source: Kaggle
+    url: https://www.kaggle.com/learn/python
+    url_status: verified
+    learning_modes: [project, reading]
+    is_active: true
+    skills:
+      - { slug: python, coverage_strength: 0.75, expected_level_delta: 0.25, is_primary: true }
+    prerequisites: []
+
+  - slug: git-pro-book
+    title: Pro Git
+    description: Official Git book covering commits, branches, and remotes.
+    type: course
+    difficulty: 2
+    duration_hours: 10
+    source: git-scm
+    url: https://git-scm.com/book/en/v2
+    url_status: verified
+    learning_modes: [reading]
+    is_active: true
+    skills:
+      - { slug: git, coverage_strength: 0.90, expected_level_delta: 0.30, is_primary: true }
+    prerequisites: []
+
+  - slug: github-skills
+    title: GitHub Skills
+    description: Guided GitHub exercises for pull requests and collaboration.
+    type: lab
+    difficulty: 2
+    duration_hours: 4
+    source: GitHub
+    url: https://skills.github.com/
+    url_status: verified
+    learning_modes: [lab, project]
+    is_active: true
+    skills:
+      - { slug: git, coverage_strength: 0.70, expected_level_delta: 0.20, is_primary: true }
+    prerequisites: []
+
+  - slug: ubuntu-cli-beginners
+    title: Command line for beginners
+    description: Ubuntu tutorial for navigating the Linux shell.
+    type: course
+    difficulty: 1
+    duration_hours: 3
+    source: Canonical
+    url: https://ubuntu.com/tutorials/command-line-for-beginners
+    url_status: verified
+    learning_modes: [reading, lab]
+    is_active: true
+    skills:
+      - { slug: linux, coverage_strength: 0.75, expected_level_delta: 0.25, is_primary: true }
+    prerequisites: []
+
+  - slug: mdn-html-css
+    title: MDN Learn HTML and CSS
+    description: Mozilla curriculum for page structure and styling.
+    type: course
+    difficulty: 2
+    duration_hours: 14
+    source: MDN
+    url: https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Structuring_content
+    url_status: verified
+    learning_modes: [reading, project]
+    is_active: true
+    skills:
+      - { slug: html_css, coverage_strength: 0.85, expected_level_delta: 0.30, is_primary: true }
+    prerequisites: []
+
+  - slug: mdn-javascript
+    title: MDN JavaScript Guide
+    description: Core JavaScript language guide from Mozilla.
+    type: course
+    difficulty: 3
+    duration_hours: 16
+    source: MDN
+    url: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide
+    url_status: verified
+    learning_modes: [reading]
+    is_active: true
+    skills:
+      - { slug: javascript, coverage_strength: 0.85, expected_level_delta: 0.30, is_primary: true }
+    prerequisites:
+      - { slug: html_css, min_level: 0.30 }
+
+  - slug: typescript-handbook
+    title: TypeScript Handbook
+    description: Official TypeScript language handbook.
+    type: course
+    difficulty: 3
+    duration_hours: 10
+    source: Microsoft
+    url: https://www.typescriptlang.org/docs/handbook/intro.html
+    url_status: verified
+    learning_modes: [reading]
+    is_active: true
+    skills:
+      - { slug: typescript, coverage_strength: 0.85, expected_level_delta: 0.30, is_primary: true }
+      - { slug: javascript, coverage_strength: 0.35, expected_level_delta: 0.05, is_primary: false }
+    prerequisites:
+      - { slug: javascript, min_level: 0.45 }
+
+  - slug: nodejs-learn
+    title: Node.js Learn
+    description: Official Node.js learning materials for the JavaScript runtime.
+    type: course
+    difficulty: 3
+    duration_hours: 8
+    source: OpenJS Foundation
+    url: https://nodejs.org/en/learn
+    url_status: verified
+    learning_modes: [reading]
+    is_active: true
+    skills:
+      - { slug: nodejs, coverage_strength: 0.80, expected_level_delta: 0.25, is_primary: true }
+      - { slug: javascript, coverage_strength: 0.40, expected_level_delta: 0.10, is_primary: false }
+    prerequisites:
+      - { slug: javascript, min_level: 0.45 }
+
+  - slug: mdn-http
+    title: MDN HTTP
+    description: HTTP methods, status codes, and headers.
+    type: course
+    difficulty: 2
+    duration_hours: 6
+    source: MDN
+    url: https://developer.mozilla.org/en-US/docs/Web/HTTP
+    url_status: verified
+    learning_modes: [reading]
+    is_active: true
+    skills:
+      - { slug: rest_apis, coverage_strength: 0.80, expected_level_delta: 0.25, is_primary: true }
+    prerequisites: []
+
+  - slug: jwt-introduction
+    title: Introduction to JSON Web Tokens
+    description: Compact primer on JWT structure and verification.
+    type: course
+    difficulty: 2
+    duration_hours: 2
+    source: Auth0
+    url: https://jwt.io/introduction
+    url_status: verified
+    learning_modes: [reading]
+    is_active: true
+    skills:
+      - { slug: authentication, coverage_strength: 0.70, expected_level_delta: 0.20, is_primary: true }
+    prerequisites:
+      - { slug: rest_apis, min_level: 0.30 }
+
+  - slug: pytest-docs
+    title: pytest documentation
+    description: Official pytest getting-started and fixture guide.
+    type: course
+    difficulty: 2
+    duration_hours: 6
+    source: pytest
+    url: https://docs.pytest.org/en/stable/
+    url_status: verified
+    learning_modes: [reading, lab]
+    is_active: true
+    skills:
+      - { slug: software_testing, coverage_strength: 0.85, expected_level_delta: 0.30, is_primary: true }
+    prerequisites:
+      - { slug: python, min_level: 0.40 }
+
+  - slug: postgresql-tutorial
+    title: PostgreSQL Tutorial
+    description: Official PostgreSQL getting-started tutorial.
+    type: course
+    difficulty: 3
+    duration_hours: 10
+    source: PostgreSQL
+    url: https://www.postgresql.org/docs/current/tutorial.html
+    url_status: verified
+    learning_modes: [reading, lab]
+    is_active: true
+    skills:
+      - { slug: databases, coverage_strength: 0.80, expected_level_delta: 0.25, is_primary: true }
+      - { slug: sql, coverage_strength: 0.50, expected_level_delta: 0.10, is_primary: false }
+    prerequisites:
+      - { slug: sql, min_level: 0.35 }
+
+  - slug: seeing-theory-probability
+    title: Seeing Theory
+    description: Visual introduction to probability and distributions.
+    type: course
+    difficulty: 2
+    duration_hours: 4
+    source: Brown University
+    url: https://seeing-theory.brown.edu/
+    url_status: verified
+    learning_modes: [reading]
+    is_active: true
+    skills:
+      - { slug: probability, coverage_strength: 0.80, expected_level_delta: 0.25, is_primary: true }
+    prerequisites: []
+
+  - slug: khan-statistics-probability
+    title: Khan Academy Statistics and Probability
+    description: Video lessons on descriptive stats, sampling, and inference.
+    type: course
+    difficulty: 2
+    duration_hours: 18
+    source: Khan Academy
+    url: https://www.khanacademy.org/math/statistics-probability
+    url_status: verified
+    learning_modes: [video, reading]
+    is_active: true
+    skills:
+      - { slug: statistics, coverage_strength: 0.85, expected_level_delta: 0.30, is_primary: true }
+      - { slug: probability, coverage_strength: 0.70, expected_level_delta: 0.25, is_primary: false }
+    prerequisites: []
+
+  - slug: 3blue1brown-linear-algebra
+    title: Essence of linear algebra
+    description: Visual video series on vectors, matrices, and linear maps.
+    type: course
+    difficulty: 2
+    duration_hours: 8
+    source: 3Blue1Brown
+    url: https://www.3blue1brown.com/topics/linear-algebra
+    url_status: verified
+    learning_modes: [video]
+    is_active: true
+    skills:
+      - { slug: linear_algebra, coverage_strength: 0.80, expected_level_delta: 0.25, is_primary: true }
+    prerequisites: []
+
+  - slug: khan-differential-calculus
+    title: Khan Academy Differential Calculus
+    description: Derivatives and rates of change at introductory calculus level.
+    type: course
+    difficulty: 3
+    duration_hours: 16
+    source: Khan Academy
+    url: https://www.khanacademy.org/math/differential-calculus
+    url_status: verified
+    learning_modes: [video, reading]
+    is_active: true
+    skills:
+      - { slug: calculus_basics, coverage_strength: 0.80, expected_level_delta: 0.30, is_primary: true }
+    prerequisites: []
+
+  - slug: numpy-absolute-beginners
+    title: NumPy for absolute beginners
+    description: Official NumPy intro to arrays and vectorized computation.
+    type: lab
+    difficulty: 2
+    duration_hours: 5
+    source: NumPy
+    url: https://numpy.org/doc/stable/user/absolute_beginners.html
+    url_status: verified
+    learning_modes: [reading, lab]
+    is_active: true
+    skills:
+      - { slug: data_structures, coverage_strength: 0.55, expected_level_delta: 0.15, is_primary: false }
+      - { slug: python, coverage_strength: 0.40, expected_level_delta: 0.10, is_primary: false }
+      - { slug: linear_algebra, coverage_strength: 0.45, expected_level_delta: 0.10, is_primary: true }
+    prerequisites:
+      - { slug: python, min_level: 0.35 }
+
+  - slug: matplotlib-quick-start
+    title: Matplotlib quick start
+    description: Official pyplot tutorial for basic charts.
+    type: lab
+    difficulty: 2
+    duration_hours: 4
+    source: Matplotlib
+    url: https://matplotlib.org/stable/users/explain/quick_start.html
+    url_status: verified
+    learning_modes: [reading, lab]
+    is_active: true
+    skills:
+      - { slug: data_visualization, coverage_strength: 0.80, expected_level_delta: 0.25, is_primary: true }
+      - { slug: exploratory_data_analysis, coverage_strength: 0.40, expected_level_delta: 0.10, is_primary: false }
+    prerequisites:
+      - { slug: python, min_level: 0.35 }
+
+  - slug: kaggle-data-visualization
+    title: Kaggle Data Visualization
+    description: Hands-on plotting notebooks for exploratory charts.
+    type: lab
+    difficulty: 2
+    duration_hours: 4
+    source: Kaggle
+    url: https://www.kaggle.com/learn/data-visualization
+    url_status: verified
+    learning_modes: [project, reading]
+    is_active: true
+    skills:
+      - { slug: data_visualization, coverage_strength: 0.75, expected_level_delta: 0.20, is_primary: true }
+      - { slug: exploratory_data_analysis, coverage_strength: 0.50, expected_level_delta: 0.15, is_primary: false }
+    prerequisites:
+      - { slug: python, min_level: 0.35 }
+
+  - slug: kaggle-feature-engineering
+    title: Kaggle Feature Engineering
+    description: Practical feature transforms for tabular models.
+    type: lab
+    difficulty: 3
+    duration_hours: 5
+    source: Kaggle
+    url: https://www.kaggle.com/learn/feature-engineering
+    url_status: verified
+    learning_modes: [project, reading]
+    is_active: true
+    skills:
+      - { slug: feature_engineering, coverage_strength: 0.85, expected_level_delta: 0.25, is_primary: true }
+    prerequisites:
+      - { slug: python, min_level: 0.45 }
+      - { slug: ml_fundamentals, min_level: 0.35 }
+
+  - slug: kaggle-intermediate-ml
+    title: Kaggle Intermediate Machine Learning
+    description: Pipelines, cross-validation, and XGBoost practice.
+    type: lab
+    difficulty: 3
+    duration_hours: 5
+    source: Kaggle
+    url: https://www.kaggle.com/learn/intermediate-machine-learning
+    url_status: verified
+    learning_modes: [project, reading]
+    is_active: true
+    skills:
+      - { slug: supervised_learning, coverage_strength: 0.75, expected_level_delta: 0.20, is_primary: true }
+      - { slug: model_evaluation, coverage_strength: 0.60, expected_level_delta: 0.15, is_primary: false }
+    prerequisites:
+      - { slug: python, min_level: 0.45 }
+      - { slug: ml_fundamentals, min_level: 0.40 }
+
+  - slug: sklearn-clustering
+    title: scikit-learn clustering
+    description: Official clustering user guide for unsupervised methods.
+    type: course
+    difficulty: 3
+    duration_hours: 6
+    source: scikit-learn developers
+    url: https://scikit-learn.org/stable/modules/clustering.html
+    url_status: verified
+    learning_modes: [reading]
+    is_active: true
+    skills:
+      - { slug: unsupervised_learning, coverage_strength: 0.85, expected_level_delta: 0.25, is_primary: true }
+    prerequisites:
+      - { slug: python, min_level: 0.45 }
+      - { slug: ml_fundamentals, min_level: 0.40 }
+
+  - slug: sklearn-model-evaluation
+    title: scikit-learn model evaluation
+    description: Metrics, cross-validation, and scoring APIs.
+    type: course
+    difficulty: 3
+    duration_hours: 5
+    source: scikit-learn developers
+    url: https://scikit-learn.org/stable/modules/model_evaluation.html
+    url_status: verified
+    learning_modes: [reading]
+    is_active: true
+    skills:
+      - { slug: model_evaluation, coverage_strength: 0.90, expected_level_delta: 0.25, is_primary: true }
+    prerequisites:
+      - { slug: python, min_level: 0.45 }
+      - { slug: ml_fundamentals, min_level: 0.40 }
+
+  - slug: pytorch-basics
+    title: PyTorch Basics
+    description: Official beginner tensors, autograd, and training loop tutorial.
+    type: course
+    difficulty: 4
+    duration_hours: 12
+    source: PyTorch
+    url: https://docs.pytorch.org/tutorials/beginner/basics/intro.html
+    url_status: verified
+    learning_modes: [reading, project]
+    is_active: true
+    skills:
+      - { slug: neural_networks, coverage_strength: 0.80, expected_level_delta: 0.25, is_primary: true }
+    prerequisites:
+      - { slug: python, min_level: 0.55 }
+      - { slug: ml_fundamentals, min_level: 0.50 }
+
+  - slug: huggingface-nlp-course
+    title: Hugging Face NLP Course
+    description: Transformers, tokenization, and fine-tuning on the Hub.
+    type: course
+    difficulty: 4
+    duration_hours: 20
+    source: Hugging Face
+    url: https://huggingface.co/learn/nlp-course
+    url_status: verified
+    learning_modes: [reading, project]
+    is_active: true
+    skills:
+      - { slug: transformers, coverage_strength: 0.85, expected_level_delta: 0.30, is_primary: true }
+      - { slug: neural_networks, coverage_strength: 0.45, expected_level_delta: 0.10, is_primary: false }
+    prerequisites:
+      - { slug: python, min_level: 0.55 }
+      - { slug: neural_networks, min_level: 0.40 }
+
+  - slug: tensorflow-tutorials
+    title: TensorFlow tutorials
+    description: Official Keras/TensorFlow beginner tutorials including convnets.
+    type: course
+    difficulty: 4
+    duration_hours: 14
+    source: TensorFlow
+    url: https://www.tensorflow.org/tutorials
+    url_status: verified
+    learning_modes: [reading, project]
+    is_active: true
+    skills:
+      - { slug: cnn, coverage_strength: 0.70, expected_level_delta: 0.20, is_primary: true }
+      - { slug: neural_networks, coverage_strength: 0.55, expected_level_delta: 0.15, is_primary: false }
+    prerequisites:
+      - { slug: python, min_level: 0.55 }
+      - { slug: ml_fundamentals, min_level: 0.45 }
+
+  - slug: mlflow-docs
+    title: MLflow documentation
+    description: Tracking experiments, models, and artifacts.
+    type: course
+    difficulty: 3
+    duration_hours: 6
+    source: MLflow
+    url: https://mlflow.org/docs/latest/index.html
+    url_status: verified
+    learning_modes: [reading, lab]
+    is_active: true
+    skills:
+      - { slug: experiment_tracking, coverage_strength: 0.85, expected_level_delta: 0.25, is_primary: true }
+    prerequisites:
+      - { slug: python, min_level: 0.45 }
+      - { slug: ml_fundamentals, min_level: 0.35 }
+
+  - slug: docker-compose-guide
+    title: Docker Compose overview
+    description: Official Compose guide for multi-container apps.
+    type: course
+    difficulty: 3
+    duration_hours: 4
+    source: Docker Inc.
+    url: https://docs.docker.com/compose/
+    url_status: verified
+    learning_modes: [reading, lab]
+    is_active: true
+    skills:
+      - { slug: docker, coverage_strength: 0.70, expected_level_delta: 0.20, is_primary: true }
+    prerequisites:
+      - { slug: docker, min_level: 0.30 }
+
+  - slug: github-actions-learn
+    title: GitHub Actions
+    description: Official Learn GitHub Actions documentation.
+    type: course
+    difficulty: 3
+    duration_hours: 6
+    source: GitHub
+    url: https://docs.github.com/en/actions/learn-github-actions
+    url_status: verified
+    learning_modes: [reading, lab]
+    is_active: true
+    skills:
+      - { slug: ci_cd, coverage_strength: 0.85, expected_level_delta: 0.25, is_primary: true }
+    prerequisites:
+      - { slug: git, min_level: 0.40 }
+
+  - slug: terraform-tutorials
+    title: Terraform tutorials
+    description: HashiCorp tutorials for declarative cloud provisioning.
+    type: lab
+    difficulty: 3
+    duration_hours: 8
+    source: HashiCorp
+    url: https://developer.hashicorp.com/terraform/tutorials
+    url_status: verified
+    learning_modes: [lab, reading]
+    is_active: true
+    skills:
+      - { slug: infrastructure_as_code, coverage_strength: 0.85, expected_level_delta: 0.25, is_primary: true }
+    prerequisites:
+      - { slug: cloud_fundamentals, min_level: 0.35 }
+
+  - slug: prometheus-overview
+    title: Prometheus overview
+    description: Official introduction to metrics, scraping, and alerting.
+    type: course
+    difficulty: 3
+    duration_hours: 5
+    source: Prometheus
+    url: https://prometheus.io/docs/introduction/overview/
+    url_status: verified
+    learning_modes: [reading]
+    is_active: true
+    skills:
+      - { slug: observability, coverage_strength: 0.80, expected_level_delta: 0.25, is_primary: true }
+      - { slug: ml_monitoring, coverage_strength: 0.35, expected_level_delta: 0.10, is_primary: false }
+    prerequisites:
+      - { slug: linux, min_level: 0.30 }
+
+  - slug: cloudflare-networking
+    title: What is a computer network?
+    description: Cloudflare Learning Center primer on packets, IPs, and routing.
+    type: course
+    difficulty: 1
+    duration_hours: 3
+    source: Cloudflare
+    url: https://www.cloudflare.com/learning/network-layer/what-is-a-computer-network/
+    url_status: verified
+    learning_modes: [reading]
+    is_active: true
+    skills:
+      - { slug: networking_basics, coverage_strength: 0.75, expected_level_delta: 0.25, is_primary: true }
+    prerequisites: []
+
+  - slug: nist-incident-response
+    title: NIST SP 800-61 Computer Security Incident Handling
+    description: Federal guidance for incident triage, containment, and recovery.
+    type: course
+    difficulty: 3
+    duration_hours: 8
+    source: NIST
+    url: https://csrc.nist.gov/pubs/sp/800/61/r2/final
+    url_status: verified
+    learning_modes: [reading]
+    is_active: true
+    skills:
+      - { slug: incident_response, coverage_strength: 0.85, expected_level_delta: 0.25, is_primary: true }
+    prerequisites:
+      - { slug: networking_basics, min_level: 0.30 }
+
+  - slug: owasp-threat-modeling
+    title: OWASP Threat Modeling
+    description: OWASP community pages on threat modeling methods.
+    type: course
+    difficulty: 3
+    duration_hours: 5
+    source: OWASP
+    url: https://owasp.org/www-community/Threat_Modeling
+    url_status: verified
+    learning_modes: [reading]
+    is_active: true
+    skills:
+      - { slug: threat_modeling, coverage_strength: 0.80, expected_level_delta: 0.25, is_primary: true }
+    prerequisites: []
+
+  - slug: elastic-what-is-siem
+    title: What is SIEM?
+    description: Elastic primer on security information and event management.
+    type: course
+    difficulty: 2
+    duration_hours: 2
+    source: Elastic
+    url: https://www.elastic.co/what-is/siem
+    url_status: verified
+    learning_modes: [reading]
+    is_active: true
+    skills:
+      - { slug: siem_logging, coverage_strength: 0.70, expected_level_delta: 0.20, is_primary: true }
+    prerequisites:
+      - { slug: networking_basics, min_level: 0.25 }
+
+  - slug: aws-iam-docs
+    title: AWS IAM User Guide
+    description: Identities, policies, and least-privilege on AWS.
+    type: course
+    difficulty: 3
+    duration_hours: 8
+    source: Amazon Web Services
+    url: https://docs.aws.amazon.com/IAM/latest/UserGuide/introduction.html
+    url_status: verified
+    learning_modes: [reading]
+    is_active: true
+    skills:
+      - { slug: identity_access, coverage_strength: 0.80, expected_level_delta: 0.25, is_primary: true }
+      - { slug: aws_core, coverage_strength: 0.35, expected_level_delta: 0.10, is_primary: false }
+    prerequisites:
+      - { slug: cloud_fundamentals, min_level: 0.30 }
+
+  - slug: microsoft-power-bi-fundamentals
+    title: Power BI fundamentals
+    description: Microsoft overview of reports, datasets, and dashboards.
+    type: course
+    difficulty: 2
+    duration_hours: 6
+    source: Microsoft
+    url: https://learn.microsoft.com/en-us/power-bi/fundamentals/
+    url_status: verified
+    learning_modes: [reading, video]
+    is_active: true
+    skills:
+      - { slug: excel_bi, coverage_strength: 0.80, expected_level_delta: 0.25, is_primary: true }
+      - { slug: data_visualization, coverage_strength: 0.40, expected_level_delta: 0.10, is_primary: false }
+    prerequisites: []
+
+  - slug: owasp-juice-shop
+    title: OWASP Juice Shop
+    description: Intentionally insecure app for practicing common web risks.
+    type: lab
+    difficulty: 3
+    duration_hours: 10
+    source: OWASP
+    url: https://owasp.org/www-project-juice-shop/
+    url_status: verified
+    learning_modes: [lab, project]
+    is_active: true
+    skills:
+      - { slug: owasp_top10, coverage_strength: 0.80, expected_level_delta: 0.25, is_primary: true }
+    prerequisites:
+      - { slug: owasp_top10, min_level: 0.30 }
+
+  - slug: python-gate-resource
+    title: Python gate assessment
+    description: Catalog pointer to the Python prove-it assessment.
+    type: assessment
+    difficulty: 2
+    duration_hours: 0.5
+    source: PathFinder
+    url: null
+    url_status: unavailable
+    learning_modes: [reading]
+    is_active: true
+    skills:
+      - { slug: python, coverage_strength: 0.70, expected_level_delta: 0.00, is_primary: true }
+    prerequisites: []
+
+  - slug: model-evaluation-gate-resource
+    title: Model evaluation gate assessment
+    description: Catalog pointer to the model-evaluation prove-it assessment.
+    type: assessment
+    difficulty: 3
+    duration_hours: 0.5
+    source: PathFinder
+    url: null
+    url_status: unavailable
+    learning_modes: [reading]
+    is_active: true
+    skills:
+      - { slug: model_evaluation, coverage_strength: 0.70, expected_level_delta: 0.00, is_primary: true }
+    prerequisites:
+      - { slug: ml_fundamentals, min_level: 0.35 }
+
+  - slug: house-prices-regression-project
+    title: Tabular regression project
+    description: In-product brief to train and evaluate a regression model on tabular data.
+    type: project
+    difficulty: 3
+    duration_hours: 10
+    source: PathFinder
+    url: null
+    url_status: unavailable
+    learning_modes: [project]
+    is_active: true
+    skills:
+      - { slug: supervised_learning, coverage_strength: 0.70, expected_level_delta: 0.20, is_primary: true }
+      - { slug: feature_engineering, coverage_strength: 0.50, expected_level_delta: 0.15, is_primary: false }
+    prerequisites:
+      - { slug: python, min_level: 0.50 }
+      - { slug: ml_fundamentals, min_level: 0.40 }
+
+  - slug: eda-notebook-project
+    title: Exploratory analysis notebook
+    description: In-product brief to profile a dataset and write an EDA memo.
+    type: project
+    difficulty: 2
+    duration_hours: 6
+    source: PathFinder
+    url: null
+    url_status: unavailable
+    learning_modes: [project]
+    is_active: true
+    skills:
+      - { slug: exploratory_data_analysis, coverage_strength: 0.80, expected_level_delta: 0.25, is_primary: true }
+      - { slug: data_wrangling, coverage_strength: 0.45, expected_level_delta: 0.10, is_primary: false }
+    prerequisites:
+      - { slug: python, min_level: 0.40 }
+
+  - slug: linux-admin-hardening-lab
+    title: Linux hardening lab
+    description: In-product lab for users, services, and basic host hardening.
+    type: lab
+    difficulty: 3
+    duration_hours: 7
+    source: PathFinder
+    url: null
+    url_status: unavailable
+    learning_modes: [lab]
+    is_active: true
+    skills:
+      - { slug: linux_admin, coverage_strength: 0.80, expected_level_delta: 0.25, is_primary: true }
+      - { slug: linux, coverage_strength: 0.40, expected_level_delta: 0.10, is_primary: false }
+    prerequisites:
+      - { slug: linux, min_level: 0.40 }
+
+  - slug: siem-query-lab
+    title: SIEM query lab
+    description: In-product lab to write detection queries over sample logs.
+    type: lab
+    difficulty: 3
+    duration_hours: 5
+    source: PathFinder
+    url: null
+    url_status: unavailable
+    learning_modes: [lab, project]
+    is_active: true
+    skills:
+      - { slug: siem_logging, coverage_strength: 0.80, expected_level_delta: 0.25, is_primary: true }
+    prerequisites:
+      - { slug: networking_basics, min_level: 0.30 }
+
+  - slug: react-tic-tac-toe
+    title: React tic-tac-toe tutorial
+    description: Official React tutorial building an interactive board.
+    type: project
+    difficulty: 2
+    duration_hours: 4
+    source: Meta
+    url: https://react.dev/learn/tutorial-tic-tac-toe
+    url_status: verified
+    learning_modes: [project, reading]
+    is_active: true
+    skills:
+      - { slug: react, coverage_strength: 0.75, expected_level_delta: 0.20, is_primary: true }
+      - { slug: javascript, coverage_strength: 0.35, expected_level_delta: 0.05, is_primary: false }
+    prerequisites:
+      - { slug: javascript, min_level: 0.40 }
+
+  - slug: kaggle-intro-sql
+    title: Kaggle Intro to SQL
+    description: BigQuery notebooks for SELECT, GROUP BY, and JOINs.
+    type: lab
+    difficulty: 2
+    duration_hours: 5
+    source: Kaggle
+    url: https://www.kaggle.com/learn/intro-to-sql
+    url_status: verified
+    learning_modes: [project, reading]
+    is_active: true
+    skills:
+      - { slug: sql, coverage_strength: 0.75, expected_level_delta: 0.20, is_primary: true }
+    prerequisites: []
+
+  - slug: evidently-ml-monitoring
+    title: Evidently ML monitoring docs
+    description: Data and target drift reports for production models.
+    type: course
+    difficulty: 3
+    duration_hours: 5
+    source: Evidently AI
+    url: https://docs.evidentlyai.com/
+    url_status: verified
+    learning_modes: [reading, lab]
+    is_active: true
+    skills:
+      - { slug: ml_monitoring, coverage_strength: 0.80, expected_level_delta: 0.25, is_primary: true }
+    prerequisites:
+      - { slug: python, min_level: 0.45 }
+      - { slug: model_deployment, min_level: 0.30 }
+
+  - slug: fastapi-bigger-applications
+    title: FastAPI bigger applications
+    description: Official guide to structuring larger FastAPI projects.
+    type: course
+    difficulty: 3
+    duration_hours: 4
+    source: FastAPI
+    url: https://fastapi.tiangolo.com/tutorial/bigger-applications/
+    url_status: verified
+    learning_modes: [reading]
+    is_active: true
+    skills:
+      - { slug: fastapi, coverage_strength: 0.70, expected_level_delta: 0.15, is_primary: true }
+      - { slug: rest_apis, coverage_strength: 0.40, expected_level_delta: 0.10, is_primary: false }
+    prerequisites:
+      - { slug: python, min_level: 0.50 }
+      - { slug: fastapi, min_level: 0.35 }

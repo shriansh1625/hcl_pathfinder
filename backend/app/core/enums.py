@@ -80,6 +80,36 @@ class GapSeverity(StrEnum):
     CRITICAL = "critical"
 
 
+class LearningStyle(StrEnum):
+    VIDEO = "VIDEO"
+    READING = "READING"
+    HANDS_ON = "HANDS_ON"
+    PROJECT = "PROJECT"
+    MIXED = "MIXED"
+
+
+class InterventionType(StrEnum):
+    VERIFY = "VERIFY"
+    FOUNDATION = "FOUNDATION"
+    REMEDIATION = "REMEDIATION"
+    PRACTICE = "PRACTICE"
+    APPLICATION = "APPLICATION"
+    ASSESSMENT = "ASSESSMENT"
+    ADVANCEMENT = "ADVANCEMENT"
+
+
+class EligibilityStatus(StrEnum):
+    ELIGIBLE = "ELIGIBLE"
+    BLOCKED_BY_KNOWN_GAP = "BLOCKED_BY_KNOWN_GAP"
+    BLOCKED_BY_UNKNOWN = "BLOCKED_BY_UNKNOWN"
+
+
+class PrerequisiteEvidenceState(StrEnum):
+    SATISFIED = "SATISFIED"
+    UNSATISFIED = "UNSATISFIED"
+    UNKNOWN = "UNKNOWN"
+
+
 class PathStatus(StrEnum):
     DRAFT = "DRAFT"
     ACTIVE = "ACTIVE"
