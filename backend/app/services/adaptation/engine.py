@@ -75,6 +75,129 @@ class AdaptationResult:
     quality: dict | None
 
 
+@dataclass(frozen=True)
+class PathMaterialState:
+    key: str
+    kind: str
+    status: str
+    executable: bool
+    week_index: int | None
+    position: int
+    target_skill: str
+    intervention: str
+    eligibility: str
+    prereq_states: tuple[tuple[str, str], ...]
+
+
+def _prereq_states(meta: dict) -> tuple[tuple[str, str], ...]:
+    return tuple(
+        sorted(
+            (str(item.get("skill", "")), str(item.get("state", "")))
+            for item in meta.get("prerequisites") or []
+        )
+    )
+
+
+def _material_from_snapshot(snapshot: PathItemSnapshot) -> PathMaterialState:
+    meta = snapshot.explanation_metadata or {}
+    return PathMaterialState(
+        key=snapshot.key,
+        kind=snapshot.kind,
+        status=snapshot.status,
+        executable=bool(meta.get("executable")),
+        week_index=snapshot.week_index,
+        position=snapshot.position,
+        target_skill=str(meta.get("target_skill") or snapshot.gate_skill or ""),
+        intervention=str(meta.get("intervention") or ""),
+        eligibility=str(meta.get("eligibility") or ""),
+        prereq_states=_prereq_states(meta),
+    )
+
+
+def _material_from_v2(item: V2Item) -> PathMaterialState:
+    meta = item.explanation_metadata or {}
+    gate_skill = (item.gate or {}).get("skill") if item.gate else None
+    key = f"gate:{gate_skill}" if gate_skill else f"resource:{item.resource_slug}"
+    return PathMaterialState(
+        key=key,
+        kind=item.kind,
+        status=item.status,
+        executable=item.executable,
+        week_index=item.week_index,
+        position=item.position,
+        target_skill=str(meta.get("target_skill") or gate_skill or ""),
+        intervention=str(meta.get("intervention") or ""),
+        eligibility=str(meta.get("eligibility") or ""),
+        prereq_states=_prereq_states(meta),
+    )
+
+
+def _material_signature(
+    snapshots: list[PathItemSnapshot],
+) -> tuple[PathMaterialState, ...]:
+    return tuple(
+        sorted(
+            (_material_from_snapshot(item) for item in snapshots),
+            key=lambda row: (row.position, row.key),
+        )
+    )
+
+
+def _material_signature_v2(items: list[V2Item]) -> tuple[PathMaterialState, ...]:
+    return tuple(
+        sorted(
+            (_material_from_v2(item) for item in items),
+            key=lambda row: (row.position, row.key),
+        )
+    )
+
+
+def _move_reason(
+    snapshot: PathItemSnapshot,
+    v2_item: V2Item,
+    *,
+    added: list[DiffEntry],
+    new_profile: GapProfile,
+    week_offset: int,
+) -> str:
+    was_executable = bool(snapshot.explanation_metadata.get("executable"))
+    if not v2_item.executable:
+        return "Waiting: prerequisite evidence or remediation is still required."
+    if not was_executable:
+        skill = snapshot.gate_skill or snapshot.explanation_metadata.get("target_skill") or ""
+        target = _target(new_profile, skill)
+        proficiency = _proficiency(new_profile, skill)
+        if target is not None and proficiency is not None:
+            return (
+                f"Moved to Week {v2_item.week_index} because prerequisite "
+                f"{skill.replace('_', ' ')} evidence reached {proficiency:.2f} "
+                f"(role target {target:.2f}), making this item executable."
+            )
+        return "New evidence satisfied its prerequisites; the item is now executable."
+    if snapshot.week_index == v2_item.week_index:
+        return "Still justified; unchanged."
+
+    inserted_before = [
+        entry
+        for entry in added
+        if entry.to_week is not None
+        and v2_item.week_index is not None
+        and entry.to_week <= v2_item.week_index
+    ]
+    if inserted_before:
+        blocker = inserted_before[0]
+        return (
+            f"Moved from Week {snapshot.week_index} to Week {v2_item.week_index} "
+            f"because {blocker.title} was inserted for {blocker.skill.replace('_', ' ')}."
+        )
+    if week_offset > 0:
+        return (
+            f"Moved from Week {snapshot.week_index} to Week {v2_item.week_index} "
+            f"because completed work through Week {week_offset} shifted the remaining schedule."
+        )
+    return "Re-sequenced after path changes."
+
+
 def _planned_key(item: PlannedItem) -> str:
     if item.gate is not None:
         return f"gate:{item.gate.skill_slug}"
@@ -339,33 +462,6 @@ def adapt_path(
     ]
     removed_keys = [key for key in remaining_by_key if key not in new_by_key]
 
-    # No-op: identical remaining work with identical kinds/eligibility.
-    if not added_keys and not removed_keys:
-        identical = True
-        for key in kept_keys:
-            old = remaining_by_key[key]
-            new_item = new_by_key[key]
-            new_kind = (
-                PathItemKind.VERIFICATION_GATE.value if new_item.gate is not None else new_item.kind
-            )
-            if old.kind != new_kind:
-                identical = False
-                break
-            if new_item.candidate is not None:
-                old_eligibility = old.explanation_metadata.get("eligibility")
-                if old_eligibility != new_item.candidate.eligibility.status.value:
-                    identical = False
-                    break
-        if identical:
-            return AdaptationResult(
-                items=tuple(frozen),
-                diff=PathDiff(changed_skills=changed),
-                changed_skills=changed,
-                no_adaptation=True,
-                total_estimated_hours=0.0,
-                quality=None,
-            )
-
     # Re-plan remaining work in generated order, weeks shifted past completed work.
     completed_weeks = [item.week_index or 0 for item in frozen]
     week_offset = max(completed_weeks, default=0)
@@ -393,6 +489,17 @@ def adapt_path(
     remaining_v2 = _assign_positions(frozen, remaining_v2)
     items = tuple(sorted([*frozen, *remaining_v2], key=lambda i: i.position))
 
+    # Material no-op: evidence may change without learner-visible path mutation.
+    if _material_signature(previous_items) == _material_signature_v2(list(items)):
+        return AdaptationResult(
+            items=items,
+            diff=PathDiff(changed_skills=changed),
+            changed_skills=changed,
+            no_adaptation=True,
+            total_estimated_hours=0.0,
+            quality=None,
+        )
+
     # Diff with deterministic reasons.
     added: list[DiffEntry] = []
     removed: list[DiffEntry] = []
@@ -408,8 +515,15 @@ def adapt_path(
             if item.gate
             else item.candidate.resource.title
         )
+        planned_week = item.week_index + week_offset if item.week_index is not None else None
         added.append(
-            DiffEntry(key=key, skill=skill, title=title, reason=_addition_reason(item, previous_profile, new_profile))
+            DiffEntry(
+                key=key,
+                skill=skill,
+                title=title,
+                reason=_addition_reason(item, previous_profile, new_profile),
+                to_week=planned_week,
+            )
         )
     for key in removed_keys:
         snapshot = remaining_by_key[key]
@@ -428,43 +542,41 @@ def adapt_path(
         v2_item = next(item for item in remaining_v2 if _v2_key(item) == key)
         skill = snapshot.gate_skill or snapshot.explanation_metadata.get("target_skill") or ""
         title = snapshot.explanation_metadata.get("title") or key
-        was_executable = bool(snapshot.explanation_metadata.get("executable"))
+        reason = _move_reason(
+            snapshot,
+            v2_item,
+            added=added,
+            new_profile=new_profile,
+            week_offset=week_offset,
+        )
         if not v2_item.executable:
             blocked.append(
                 DiffEntry(
                     key=key,
                     skill=skill,
                     title=title,
-                    reason="Waiting: prerequisite evidence or remediation is still required.",
+                    reason=reason,
                     from_week=snapshot.week_index,
                     to_week=v2_item.week_index,
                 )
             )
-        elif not was_executable:
+        elif (
+            snapshot.week_index != v2_item.week_index
+            or bool(snapshot.explanation_metadata.get("executable")) != v2_item.executable
+        ):
             moved.append(
                 DiffEntry(
                     key=key,
                     skill=skill,
                     title=title,
-                    reason="New evidence satisfied its prerequisites; the item is now executable.",
-                    from_week=snapshot.week_index,
-                    to_week=v2_item.week_index,
-                )
-            )
-        elif snapshot.week_index != v2_item.week_index:
-            moved.append(
-                DiffEntry(
-                    key=key,
-                    skill=skill,
-                    title=title,
-                    reason="Re-sequenced after path changes.",
+                    reason=reason,
                     from_week=snapshot.week_index,
                     to_week=v2_item.week_index,
                 )
             )
         else:
             unchanged.append(
-                DiffEntry(key=key, skill=skill, title=title, reason="Still justified; unchanged.")
+                DiffEntry(key=key, skill=skill, title=title, reason=reason)
             )
 
     hours = round(

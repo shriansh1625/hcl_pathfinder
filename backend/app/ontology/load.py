@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from functools import lru_cache
 from pathlib import Path
 
 import yaml
@@ -112,7 +113,25 @@ def _load_yaml(path: Path) -> dict | list:
 
 
 def load_ontology(data_dir: Path | None = None) -> OntologyBundle:
-    root = data_dir or DATA_DIR
+    if data_dir is not None:
+        bundle = _load_ontology_from_dir(data_dir)
+        from app.ontology.validate import assert_valid
+
+        assert_valid(bundle)
+        return bundle
+    return _load_ontology_validated()
+
+
+@lru_cache(maxsize=1)
+def _load_ontology_validated() -> OntologyBundle:
+    from app.ontology.validate import assert_valid
+
+    bundle = _load_ontology_from_dir(DATA_DIR)
+    assert_valid(bundle)
+    return bundle
+
+
+def _load_ontology_from_dir(root: Path) -> OntologyBundle:
     skills_raw = _load_yaml(root / "ontology" / "skills.yaml")
     rel_raw = _load_yaml(root / "ontology" / "relationships.yaml")
     roles_raw = _load_yaml(root / "ontology" / "roles.yaml")

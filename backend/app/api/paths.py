@@ -16,6 +16,7 @@ from app.schemas.intelligence import (
     PathCreate,
     PathItemRead,
     PathRead,
+    PathTimelineEntry,
     RecommendationRead,
 )
 from app.services.path.generator import generate_path
@@ -129,6 +130,36 @@ def get_path(learner_id: UUID, path_id: UUID, session: Session = Depends(get_ses
         raise HTTPException(status_code=404, detail="Path not found")
     role = session.get(Role, path.role_id)
     return _path_read(session, path, role.slug if role else "")
+
+
+@router.get(
+    "/learners/{learner_id}/roles/{role_slug}/path-timeline",
+    response_model=list[PathTimelineEntry],
+)
+def path_timeline(
+    learner_id: UUID,
+    role_slug: str,
+    session: Session = Depends(get_session),
+) -> list[PathTimelineEntry]:
+    _learner(session, learner_id)
+    role = session.scalar(select(Role).where(Role.slug == role_slug))
+    if role is None:
+        raise HTTPException(status_code=404, detail=f"Unknown role: {role_slug}")
+    rows = session.scalars(
+        select(LearningPath)
+        .where(LearningPath.user_id == learner_id, LearningPath.role_id == role.id)
+        .order_by(LearningPath.version.asc())
+    ).all()
+    return [
+        PathTimelineEntry(
+            path_id=row.id,
+            version=row.version,
+            status=row.status,
+            parent_path_id=row.parent_path_id,
+            created_at=row.generated_at,
+        )
+        for row in rows
+    ]
 
 
 @router.get(

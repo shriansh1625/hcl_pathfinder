@@ -133,6 +133,12 @@ Immutable submitted attempts: `assessment_id + user_id + attempt_number` (unique
 
 `target_role_id` (nullable FK → roles) scopes an assessment to a role; NULL means usable for any role. `target_skills` (JSON list) declares the canonical skills the assessment covers. Both are validated at seed time: every `target_skills` entry must resolve to a canonical skill slug, every question skill must be declared in `target_skills`, and `target_role` must resolve to a role. Invalid slugs fail validation; nothing is silently created.
 
+`definition_hash` (SHA-256 of the canonical assessment structure) is stored at seed time. **Runtime scoring uses the database as authority.** If on-disk YAML drifts from the seeded hash, assessment submission returns `409 DRIFT_DETECTED` until `seed_ontology` is re-run. Historical attempts replay from stored `result` JSON and are unaffected.
+
+### learning_paths (Slice 3.2)
+
+Partial unique index `uq_learning_paths_user_role_active` on `(user_id, role_id) WHERE status = 'ACTIVE'` — the database rejects more than one ACTIVE path per learner per role.
+
 ## Constraints worth knowing
 
 - HARD prerequisite self-edges are rejected.

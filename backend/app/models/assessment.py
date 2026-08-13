@@ -32,6 +32,7 @@ class Assessment(TimestampMixin, Base):
         UUID(as_uuid=True), ForeignKey("roles.id", ondelete="SET NULL"), nullable=True
     )
     target_skills: Mapped[list | None] = mapped_column(JSONB, nullable=True)
+    definition_hash: Mapped[str | None] = mapped_column(String(64), nullable=True)
 
     questions: Mapped[list[AssessmentQuestion]] = relationship(
         back_populates="assessment"

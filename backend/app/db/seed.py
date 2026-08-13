@@ -22,6 +22,7 @@ from app.models import (
 )
 from app.ontology.load import OntologyBundle, load_ontology
 from app.ontology.validate import assert_valid
+from app.services.assessment.fingerprint import assessment_fingerprint
 
 
 def _upsert_skill(session: Session, slug: str, **fields) -> Skill:
@@ -161,6 +162,7 @@ def seed_ontology(session: Session, bundle: OntologyBundle | None = None) -> Ont
                 ontology_uuid("role", spec.target_role) if spec.target_role else None
             ),
             target_skills=list(spec.target_skills),
+            definition_hash=assessment_fingerprint(spec),
         )
         if assessment is None:
             session.add(Assessment(id=a_id, **fields))

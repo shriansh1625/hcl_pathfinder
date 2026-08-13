@@ -105,12 +105,16 @@ def submit_attempt(
     if user is None:
         raise KeyError("Learner not found")
     bundle = load_ontology()
-    spec = next((a for a in bundle.assessments if a.slug == assessment_slug), None)
-    if spec is None:
+    yaml_spec = next((a for a in bundle.assessments if a.slug == assessment_slug), None)
+    if yaml_spec is None:
         raise KeyError(f"Unknown assessment: {assessment_slug}")
     assessment_uuid = ontology_uuid("assessment", assessment_slug)
     if session.get(Assessment, assessment_uuid) is None:
         raise KeyError(f"Assessment not seeded: {assessment_slug}")
+
+    spec = load_assessment_spec(
+        session, assessment_id=assessment_uuid, yaml_spec=yaml_spec
+    )
 
     if attempt_id is not None:
         existing = session.get(AssessmentAttempt, attempt_id)

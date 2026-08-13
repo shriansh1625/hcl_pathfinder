@@ -210,3 +210,11 @@ class SuggestedAssessmentRead(BaseModel):
     covers: list[str]
     reason: str
 
+
+class PathTimelineEntry(BaseModel):
+    path_id: UUID
+    version: int
+    status: str
+    parent_path_id: UUID | None
+    created_at: datetime
+

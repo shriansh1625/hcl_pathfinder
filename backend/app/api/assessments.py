@@ -25,6 +25,7 @@ from app.schemas.intelligence import (
     SkillResultRead,
     SuggestedAssessmentRead,
 )
+from app.services.assessment.loader import AssessmentDriftError
 from app.services.assessment import runtime
 from app.services.assessment.selection import select_assessment
 from app.services.profiling import repository as profiling
@@ -69,6 +70,11 @@ def submit_assessment_attempt(
         raise HTTPException(status_code=404, detail=str(exc)) from exc
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
+    except AssessmentDriftError as exc:
+        raise HTTPException(
+            status_code=409,
+            detail={"code": exc.code, "message": str(exc), "assessment": exc.slug},
+        ) from exc
 
     if outcome.adaptation == "REPLAYED":
         # Stored result is authoritative; re-read it for the response.
