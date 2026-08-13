@@ -26,3 +26,8 @@ def test_strong_when_near_target():
 def test_developing_when_moderate_gap():
     status = resolve_skill_status(has_evidence=True, proficiency=0.55, target_level=0.80)
     assert status is SkillStatus.DEVELOPING
+
+
+def test_exact_gap_min_delta_is_gap_not_developing():
+    status = resolve_skill_status(has_evidence=True, proficiency=0.45, target_level=0.85)
+    assert status is SkillStatus.GAP
