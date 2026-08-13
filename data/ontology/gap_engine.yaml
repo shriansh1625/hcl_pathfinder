@@ -1,0 +1,20 @@
+# Gap-engine configuration. Prototype assumptions, not measured truth.
+# CORE role targets in the ontology cluster around 0.70–0.90, so:
+#   0.15 remaining gap ≈ still in-band of the target
+#   0.40 remaining gap ≈ a full competency band missing
+
+fusion:
+  recency_half_life_days: 180
+  confidence_saturation: 1.6
+  conflict_spread: 0.20
+
+classification:
+  satisfied_max_gap: 0.15
+  gap_min_delta: 0.40
+  no_target_strong_min: 0.75
+
+priority:
+  hard_descendant_weight: 0.20
+  soft_descendant_weight: 0.05
+  unknown_importance_weight: 0.45
+  min_confidence_adjustment: 0.55

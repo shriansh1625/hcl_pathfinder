@@ -95,7 +95,7 @@ class UserSkill(Base):
             name="proficiency_range_or_null",
         ),
         CheckConstraint(
-            "confidence >= 0 AND confidence <= 1",
+            "confidence IS NULL OR (confidence >= 0 AND confidence <= 1)",
             name="user_skill_confidence_range",
         ),
     )
@@ -107,7 +107,7 @@ class UserSkill(Base):
         UUID(as_uuid=True), ForeignKey("skills.id", ondelete="CASCADE"), primary_key=True
     )
     proficiency: Mapped[float | None] = mapped_column(Float, nullable=True)
-    confidence: Mapped[float] = mapped_column(Float, nullable=False, default=0.0)
+    confidence: Mapped[float | None] = mapped_column(Float, nullable=True)
     status: Mapped[str] = mapped_column(String(32), nullable=False, default="UNKNOWN")
     evidence_summary: Mapped[dict | None] = mapped_column(JSONB, nullable=True)
     last_updated: Mapped[datetime] = mapped_column(

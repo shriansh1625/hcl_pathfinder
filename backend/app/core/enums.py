@@ -42,6 +42,22 @@ class SkillStatus(StrEnum):
     GAP = "GAP"
 
 
+class GapStatus(StrEnum):
+    UNKNOWN = "UNKNOWN"
+    SATISFIED = "SATISFIED"
+    DEVELOPING = "DEVELOPING"
+    GAP = "GAP"
+
+
+class GapSeverity(StrEnum):
+    NONE = "none"
+    UNKNOWN = "unknown"
+    LOW = "low"
+    MODERATE = "moderate"
+    HIGH = "high"
+    CRITICAL = "critical"
+
+
 class PathStatus(StrEnum):
     DRAFT = "DRAFT"
     ACTIVE = "ACTIVE"

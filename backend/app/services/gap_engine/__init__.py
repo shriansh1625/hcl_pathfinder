@@ -1,1 +1,1 @@
-"""Not implemented in Slice 0."""
+"""Career gap engine. Does not retrieve or sequence resources."""
