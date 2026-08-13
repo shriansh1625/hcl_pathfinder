@@ -165,3 +165,38 @@ def test_python_blocking_impact_is_visible_on_aiml():
     assert item["is_blocking"] is True
     assert "ml_fundamentals" in item["hard_downstream"]
     assert item["prerequisite_criticality"] > 1.0
+
+
+def test_persona_a_unknown_mlops_is_verify_not_a_numeric_gap():
+    by = _by_skill(_gaps(_persona_a(), AIML))
+    mlops = by["model_deployment"]
+    assert mlops["proficiency"] is None
+    assert mlops["gap"] is None
+    assert mlops["attainment"] == "UNKNOWN"
+    assert mlops["target_met"] is None
+    assert mlops["gap_priority"] == 0
+    assert mlops["verification_priority"] > 0
+    assert mlops["blocked"] is True
+    assert "docker" in mlops["blockers"]
+    assert mlops["action"] == "REMEDIATE_BLOCKER"
+    docker = by["docker"]
+    assert docker["gap_status"] == "UNKNOWN"
+    assert docker["proficiency"] is None
+    assert docker["action"] == "VERIFY"
+
+
+def test_persona_a_statistics_does_not_hard_block_ml():
+    """Ontology: statistics → ml_fundamentals is SOFT, not HARD.
+
+    ML fundamentals can outrank Statistics on gap_priority because it HARD-gates
+    several downstream role skills. That is graph-correct, not a ranking bug.
+    """
+    by = _by_skill(_gaps(_persona_a(), AIML))
+    assert by["statistics"]["gap_status"] == "GAP"
+    assert by["statistics"]["action"] == "REMEDIATE"
+    assert by["ml_fundamentals"]["blocked"] is False
+    assert "statistics" in by["ml_fundamentals"]["preparation_skills"]
+    assert by["ml_fundamentals"]["preparation_needed"] is True
+    assert by["python"]["target_met"] is True
+    assert by["python"]["action"] == "ADVANCE"
+    assert by["python"]["attainment"] == "TARGET_MET"

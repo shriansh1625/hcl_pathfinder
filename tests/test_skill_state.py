@@ -1,5 +1,5 @@
-from app.core.enums import SkillStatus
-from app.core.skill_state import resolve_skill_status
+from app.core.enums import AttainmentStatus, SkillStatus
+from app.core.skill_state import resolve_attainment, resolve_skill_status, resolve_target_met
 
 
 def test_no_evidence_is_unknown_not_zero():
@@ -28,6 +28,36 @@ def test_developing_when_moderate_gap():
     assert status is SkillStatus.DEVELOPING
 
 
+def test_below_target_is_not_strong_even_when_close():
+    status = resolve_skill_status(has_evidence=True, proficiency=0.65, target_level=0.75)
+    assert status is SkillStatus.DEVELOPING
+    assert status is not SkillStatus.STRONG
+
+
 def test_exact_gap_min_delta_is_gap_not_developing():
     status = resolve_skill_status(has_evidence=True, proficiency=0.45, target_level=0.85)
     assert status is SkillStatus.GAP
+
+
+def test_near_target_is_not_target_met():
+    assert resolve_target_met(proficiency=0.65, target_level=0.75) is False
+    assert (
+        resolve_attainment(has_evidence=True, proficiency=0.65, target_level=0.75)
+        is AttainmentStatus.NEAR_TARGET
+    )
+
+
+def test_at_or_above_target_is_target_met():
+    assert resolve_target_met(proficiency=0.80, target_level=0.75) is True
+    assert (
+        resolve_attainment(has_evidence=True, proficiency=0.80, target_level=0.75)
+        is AttainmentStatus.TARGET_MET
+    )
+
+
+def test_unknown_attainment_is_not_a_score():
+    assert resolve_target_met(proficiency=None, target_level=0.75) is None
+    assert (
+        resolve_attainment(has_evidence=False, proficiency=None, target_level=0.75)
+        is AttainmentStatus.UNKNOWN
+    )
