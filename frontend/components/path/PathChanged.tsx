@@ -4,7 +4,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 
-import { GroundedExplain } from "@/components/judge/AiSurface";
+import { GroundedExplain } from "@/components/ai/GroundedExplain";
 import { AdaptationTrace, buildAdaptationTrace } from "@/components/ui/AdaptationTrace";
 
 import { Button } from "@/components/ui/Button";

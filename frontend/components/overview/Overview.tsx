@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { GroundedExplain } from "@/components/judge/AiSurface";
+import { GroundedExplain } from "@/components/ai/GroundedExplain";
 import { CompetencyRow } from "@/components/ui/CompetencyRow";
 import { EvidencePanel } from "@/components/ui/EvidencePanel";
 import { EmptyState, LoadingState } from "@/components/ui/States";

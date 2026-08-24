@@ -26,7 +26,7 @@ import {
 
 } from "@/lib/blockers";
 
-import { GroundedExplain } from "@/components/judge/AiSurface";
+import { GroundedExplain } from "@/components/ai/GroundedExplain";
 import { useIntelligence } from "@/lib/session";
 
 import { prettySkill } from "@/lib/status";

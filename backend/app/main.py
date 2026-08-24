@@ -15,8 +15,8 @@ async def lifespan(_app: FastAPI):
 
 app = FastAPI(
     title="PathFinder API",
-    description="Adaptive Career Path Intelligence — Slice 4 product experience.",
-    version="0.4.0",
+    description="Adaptive Career Path Intelligence — Slice 5 grounded explanations.",
+    version="0.5.0",
     lifespan=lifespan,
 )
 app.add_middleware(

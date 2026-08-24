@@ -91,4 +91,17 @@ export const api = {
       method: "POST",
       body: JSON.stringify({ position }),
     }),
+  explain: (
+    learnerId: string,
+    payload: {
+      intent: import("./types").AIExplainIntent;
+      skill?: string;
+      resource?: string;
+      query?: string;
+    },
+  ) =>
+    request<import("./types").AIExplain>(`/v1/learners/${learnerId}/ai/explain`, {
+      method: "POST",
+      body: JSON.stringify(payload),
+    }),
 };

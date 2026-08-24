@@ -1,6 +1,6 @@
 "use client";
 
-import { AskPathFinder } from "@/components/judge/AiSurface";
+import { AskPathFinder } from "@/components/ai/AskPathFinder";
 import { JudgeGuide } from "@/components/judge/JudgeGuide";
 import Link from "next/link";
 import { useLayoutEffect, useRef, useState, type ReactNode } from "react";

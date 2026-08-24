@@ -2,7 +2,7 @@
 
 
 
-import { GroundedExplain } from "@/components/judge/AiSurface";
+import { GroundedExplain } from "@/components/ai/GroundedExplain";
 import { AdaptationTrace, buildAdaptationTrace } from "@/components/ui/AdaptationTrace";
 
 import { ScreenKicker } from "@/components/ui/Mark";

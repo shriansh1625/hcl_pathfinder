@@ -235,3 +235,30 @@ class AssessmentPublicRead(BaseModel):
     question_count: int
     questions: list[AssessmentQuestionPublic]
 
+
+class AIExplainRequest(BaseModel):
+    intent: str = Field(default="QUERY")
+    skill: str | None = None
+    resource: str | None = None
+    query: str | None = Field(default=None, max_length=500)
+
+
+class AIClaimRead(BaseModel):
+    text: str
+    fact_ids: list[str]
+
+
+class AIFactRead(BaseModel):
+    id: str
+    label: str
+    value: str
+
+
+class AIExplainRead(BaseModel):
+    answer: str
+    claims: list[AIClaimRead]
+    confidence: str
+    source: str
+    facts: list[AIFactRead]
+    intent: str
+
