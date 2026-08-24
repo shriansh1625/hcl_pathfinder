@@ -1,9 +1,9 @@
 "use client";
 
 import { Button } from "@/components/ui/Button";
-import { Panel } from "@/components/ui/Panel";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { EmptyState } from "@/components/ui/States";
+import { Mark, ScreenKicker } from "@/components/ui/Mark";
 import { useIntelligence } from "@/lib/session";
 import { prettySkill, visualState } from "@/lib/status";
 
@@ -22,30 +22,35 @@ export function ProveIt() {
   }
 
   return (
-    <div className="mx-auto max-w-xl space-y-6">
+    <div className="mx-auto max-w-xl space-y-10">
       <div>
-        <p className="text-[11px] uppercase tracking-[0.2em] text-accent">Prove it</p>
-        <h1 className="mt-2 text-3xl font-medium text-paper">Some of your skills are still unverified.</h1>
+        <ScreenKicker verb="PROVE">Assessment</ScreenKicker>
+        <h1 className="mt-3 font-display text-4xl font-medium text-paper">
+          Some of your skills are still unverified.
+        </h1>
       </div>
-      <Panel className="p-6">
+      <div className="border-y border-line py-6">
         <p className="text-xs uppercase tracking-wider text-mist">{suggested.title}</p>
-        <h2 className="mt-2 text-2xl text-paper">{prettySkill(cover || suggested.assessment)}</h2>
+        <h2 className="mt-2 font-display text-2xl text-paper">{prettySkill(cover || suggested.assessment)}</h2>
         <div className="mt-4">
           {gap ? <StatusBadge state={visualState(gap)} /> : <StatusBadge state="UNKNOWN" />}
         </div>
         <p className="mt-4 text-sm text-mist">{suggested.reason}</p>
         <p className="mt-2 text-sm text-paper">Prove what you know.</p>
         <Button
-          className="mt-6 w-full py-3"
+          className="cta-go mt-6 w-full justify-between py-3.5"
           disabled={mutating}
           onClick={() => void loadAssessment(suggested.assessment!)}
         >
-          Take assessment
+          <span>Prove this skill</span>
+          <span className="mark-arrow inline-flex" aria-hidden>
+            <Mark className="h-3 w-[18px]" />
+          </span>
         </Button>
         <p className="mt-3 text-center text-xs text-mist">
           {suggested.question_count} questions · loaded from the live assessment API
         </p>
-      </Panel>
+      </div>
     </div>
   );
 }

@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
-import { Panel } from "@/components/ui/Panel";
 import { ErrorState, LoadingState } from "@/components/ui/States";
+import { ScreenKicker } from "@/components/ui/Mark";
 import { useIntelligence } from "@/lib/session";
 
 export function AssessmentRun() {
@@ -14,10 +14,10 @@ export function AssessmentRun() {
   if (!assessment) return <LoadingState label="Loading assessment…" />;
   if (updatingModel) {
     return (
-      <div className="mx-auto max-w-lg py-24 text-center">
-        <p className="text-[11px] uppercase tracking-[0.2em] text-accent">Evidence loop</p>
-        <h1 className="mt-4 text-3xl text-paper">Updating your competency model…</h1>
-        <p className="mt-3 text-sm text-mist">
+      <div className="mx-auto max-w-lg py-24">
+        <ScreenKicker verb="ADAPT">Recompute</ScreenKicker>
+        <h1 className="mt-4 font-display text-4xl text-paper">Updating your competency model…</h1>
+        <p className="mt-4 text-sm leading-relaxed text-mist">
           Scoring, fusion, and adaptation are running on the backend. This screen does not fake progress.
         </p>
       </div>
@@ -27,6 +27,7 @@ export function AssessmentRun() {
   const question = assessment.questions[index];
   const selected = answers[index];
   const last = index === assessment.questions.length - 1;
+  const progress = (index / assessment.question_count) * 100;
 
   function choose(choice: number) {
     setAnswers((current) => {
@@ -36,33 +37,34 @@ export function AssessmentRun() {
     });
   }
 
+  function go(nextIndex: number) {
+    setIndex(nextIndex);
+  }
+
   function next() {
     if (last) {
       void submitAnswers(assessment!.questions.map((_, i) => answers[i]));
       return;
     }
-    setIndex((value) => value + 1);
+    go(index + 1);
   }
 
   return (
-    <div className="mx-auto max-w-2xl space-y-6">
+    <div className="mx-auto max-w-2xl space-y-8">
       <div className="flex items-end justify-between">
         <div>
-          <p className="text-[11px] uppercase tracking-[0.2em] text-accent">{assessment.title}</p>
-          <h1 className="mt-2 text-2xl text-paper">
+          <ScreenKicker verb="PROVE">{assessment.title}</ScreenKicker>
+          <h1 className="mt-2 font-display text-3xl text-paper">
             Question {index + 1} of {assessment.question_count}
           </h1>
         </div>
-        <p className="font-mono text-xs text-mist">{Math.round(((index + (selected !== undefined ? 1 : 0)) / assessment.question_count) * 100)}%</p>
+        <p className="font-mono text-xs tabular-nums text-mist">{Math.round(progress)}%</p>
       </div>
-      <div className="h-1 overflow-hidden rounded bg-ink-700">
-        <div
-          className="h-full bg-accent"
-          style={{ width: `${((index) / assessment.question_count) * 100}%` }}
-        />
+      <div className="progress-bar h-px overflow-hidden bg-white/10">
+        <span style={{ width: `${progress}%` }} />
       </div>
       {error ? <ErrorState message={error} /> : null}
-      <Panel className="p-6">
+      <div key={index} className="q-slide">
         <p className="text-lg leading-relaxed text-paper">{question.prompt}</p>
         <div className="mt-6 space-y-2" role="radiogroup" aria-label="Answers">
           {question.choices.map((choice, choiceIndex) => (
@@ -72,10 +74,10 @@ export function AssessmentRun() {
               role="radio"
               aria-checked={selected === choiceIndex}
               onClick={() => choose(choiceIndex)}
-              className={`block w-full rounded-lg border px-4 py-3 text-left text-sm ${
+              className={`path-row block w-full border px-4 py-3 text-left text-sm ${
                 selected === choiceIndex
-                  ? "border-accent bg-accent/10 text-paper"
-                  : "border-line bg-ink-900 text-mist hover:text-paper"
+                  ? "border-accent/70 text-paper"
+                  : "border-line text-mist hover:text-paper"
               }`}
             >
               {choice}
@@ -83,14 +85,14 @@ export function AssessmentRun() {
           ))}
         </div>
         <div className="mt-6 flex justify-between">
-          <Button variant="ghost" disabled={index === 0} onClick={() => setIndex((value) => value - 1)}>
+          <Button variant="ghost" disabled={index === 0} onClick={() => go(index - 1)}>
             Back
           </Button>
           <Button disabled={selected === undefined} onClick={next}>
             {last ? "Submit" : "Next"}
           </Button>
         </div>
-      </Panel>
+      </div>
     </div>
   );
 }

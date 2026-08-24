@@ -1,59 +1,77 @@
 "use client";
 
-import { StatusBadge } from "@/components/ui/StatusBadge";
-import { Panel, PanelHeader } from "@/components/ui/Panel";
+import { useState } from "react";
+import { GroundedExplain } from "@/components/judge/AiSurface";
+import { CompetencyRow } from "@/components/ui/CompetencyRow";
+import { EvidencePanel } from "@/components/ui/EvidencePanel";
 import { EmptyState, LoadingState } from "@/components/ui/States";
+import { ScreenKicker } from "@/components/ui/Mark";
 import { useIntelligence } from "@/lib/session";
-import { FOCUS_SKILLS, isUnknown, prettySkill, proficiencyLabel, visualState } from "@/lib/status";
-import { Button } from "@/components/ui/Button";
+import { FOCUS_SKILLS } from "@/lib/status";
 
 export function Overview() {
-  const { gaps, roleName, weeklyHours, loading, setView } = useIntelligence();
+  const { gaps, roleName, weeklyHours, learningStyle, loading, beforeGaps, skills, learnerId } = useIntelligence();
+  const [inspectSkill, setInspectSkill] = useState<string | null>(null);
   const focus = FOCUS_SKILLS.map((skill) => gaps.find((item) => item.skill === skill)).filter(Boolean);
+  const shifted = new Set(
+    beforeGaps
+      .filter((before) => {
+        const after = gaps.find((item) => item.skill === before.skill);
+        return after && (after.attainment !== before.attainment || after.evidence_state !== before.evidence_state);
+      })
+      .map((item) => item.skill),
+  );
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-10">
       <div>
-        <p className="text-[11px] uppercase tracking-[0.2em] text-accent">Career target</p>
-        <h1 className="mt-2 text-3xl font-medium text-paper">{roleName}</h1>
-        <p className="mt-1 font-mono text-sm text-mist">{weeklyHours} hrs / week</p>
+        <ScreenKicker verb="KNOW">Competency</ScreenKicker>
+        <h1 className="mt-3 font-display text-4xl font-medium text-paper">{roleName}</h1>
+        <p className="mt-2 font-mono text-xs uppercase tracking-[0.14em] text-mist">
+          {weeklyHours} hours / week · {learningStyle.replaceAll("_", " ")}
+        </p>
       </div>
 
-      <Panel>
-        <PanelHeader kicker="Evidence" title="Your competency state" />
-        <div className="divide-y divide-line">
-          {loading && !gaps.length ? <div className="p-5"><LoadingState /></div> : null}
+      <section>
+        <p className="text-[11px] uppercase tracking-[0.18em] text-mist">Your competency state</p>
+        <div className="mt-2 divide-y divide-line border-y border-line">
+          {loading && !gaps.length ? <div className="py-6"><LoadingState /></div> : null}
           {!loading && !focus.length ? (
-            <div className="p-5">
+            <div className="py-6">
               <EmptyState title="No competency profile yet" body="Create a path to diagnose the learner-to-career gap." />
             </div>
           ) : null}
-          {focus.map((item) => {
-            if (!item) return null;
-            const unknown = isUnknown(item);
-            return (
-              <div key={item.skill} className="grid grid-cols-[1fr_auto_auto] items-center gap-4 px-5 py-4">
-                <div>
-                  <p className="text-sm text-paper">{item.name || prettySkill(item.skill)}</p>
-                  <p className="mt-1 text-xs text-mist">
-                    {unknown
-                      ? "Evidence required. UNKNOWN is not a score of zero."
-                      : `Target ${item.target_level.toFixed(2)} · ${item.action}`}
-                  </p>
-                </div>
-                <p className="font-mono text-lg text-paper" data-testid={`proficiency-${item.skill}`}>
-                  {proficiencyLabel(item)}
-                </p>
-                <StatusBadge state={visualState(item)} />
+          {focus.map((item) =>
+            item ? (
+              <div key={item.skill}>
+                <CompetencyRow
+                  item={item}
+                  transitioning={shifted.has(item.skill)}
+                  onInspectEvidence={() => setInspectSkill((current) => (current === item.skill ? null : item.skill))}
+                  inspecting={inspectSkill === item.skill}
+                />
+                {inspectSkill === item.skill ? (
+                  <EvidencePanel
+                    skill={item.skill}
+                    fused={skills.find((row) => row.skill === item.skill) ?? null}
+                    learnerId={learnerId}
+                  />
+                ) : null}
+                {item.attainment === "GAP" || item.attainment === "NEAR_TARGET" || item.attainment === "UNKNOWN" ? (
+                  <div className="pb-4">
+                    <GroundedExplain
+                      intent="WHY_GAP"
+                      skill={item.skill}
+                      triggerLabel="Why this gap?"
+                      testId={`why-gap-${item.skill}`}
+                    />
+                  </div>
+                ) : null}
               </div>
-            );
-          })}
+            ) : null,
+          )}
         </div>
-      </Panel>
-
-      <div className="flex justify-end">
-        <Button onClick={() => setView("blockers")}>Continue</Button>
-      </div>
+      </section>
     </div>
   );
 }

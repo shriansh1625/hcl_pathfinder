@@ -14,6 +14,8 @@ import { DEMO_EVIDENCE } from "./status";
 import type {
   AssessmentAttempt,
   AssessmentPublic,
+  EvidenceRow,
+  FusedSkill,
   GapItem,
   GapSnapshot,
   PathDiff,
@@ -24,6 +26,7 @@ import type {
 } from "./types";
 
 const STORAGE_KEY = "pathfinder.session.v1";
+const JUDGE_KEY = "pathfinder.judge.v1";
 
 export type SessionSnapshot = {
   learnerId: string;
@@ -55,6 +58,8 @@ type IntelligenceContext = {
   attempt: AssessmentAttempt | null;
   diff: PathDiff | null;
   beforeGaps: GapSnapshot[];
+  skills: FusedSkill[];
+  judgeMode: boolean;
   loading: boolean;
   mutating: boolean;
   error: string | null;
@@ -62,6 +67,7 @@ type IntelligenceContext = {
   setView: (view: ViewId) => void;
   refresh: () => Promise<void>;
   launchDemo: (opts?: { role?: string; weeklyHours?: number; learningStyle?: string }) => Promise<void>;
+  launchJudgeDemo: (opts?: { role?: string; weeklyHours?: number; learningStyle?: string }) => Promise<void>;
   startCustom: (opts: {
     role: string;
     roleName: string;
@@ -72,6 +78,7 @@ type IntelligenceContext = {
   completeFirstExecutable: () => Promise<void>;
   loadAssessment: (slug: string) => Promise<void>;
   submitAnswers: (answers: number[]) => Promise<void>;
+  loadEvidence: (skill: string) => Promise<EvidenceRow[]>;
   reset: () => void;
 };
 
@@ -127,6 +134,8 @@ export function IntelligenceProvider({ children }: { children: ReactNode }) {
   const [attempt, setAttempt] = useState<AssessmentAttempt | null>(null);
   const [diff, setDiff] = useState<PathDiff | null>(null);
   const [beforeGaps, setBeforeGaps] = useState<GapSnapshot[]>([]);
+  const [skills, setSkills] = useState<FusedSkill[]>([]);
+  const [judgeMode, setJudgeMode] = useState(false);
   const [loading, setLoading] = useState(false);
   const [mutating, setMutating] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -164,17 +173,19 @@ export function IntelligenceProvider({ children }: { children: ReactNode }) {
     setLoading(true);
     setError(null);
     try {
-      const [gapProfile, pathList, time, suggest] = await Promise.all([
+      const [gapProfile, pathList, time, suggest, skillRows] = await Promise.all([
         api.gaps(learnerId, role),
         api.paths(learnerId),
         api.timeline(learnerId, role),
         api.suggested(learnerId, role),
+        api.skills(learnerId),
       ]);
       setGaps(gapProfile.items);
       setRoleName(gapProfile.name);
       setPaths(pathList);
       setTimeline(time);
       setSuggested(suggest);
+      setSkills(skillRows);
       const active = pathList.find((item) => item.status === "ACTIVE") ?? null;
       if (active && pathList.some((item) => item.version > 1)) {
         const diffBody = await api.pathDiff(learnerId, active.id);
@@ -198,6 +209,9 @@ export function IntelligenceProvider({ children }: { children: ReactNode }) {
       setLearningStyle(stored.learningStyle);
       setV1PathId(stored.v1PathId);
       setViewState(stored.view);
+    }
+    if (typeof window !== "undefined") {
+      setJudgeMode(sessionStorage.getItem(JUDGE_KEY) === "1");
     }
     setHydrated(true);
   }, []);
@@ -258,17 +272,19 @@ export function IntelligenceProvider({ children }: { children: ReactNode }) {
           v1PathId: path.id,
           view: "overview",
         });
-        const [gapProfile, pathList, time, suggest] = await Promise.all([
+        const [gapProfile, pathList, time, suggest, skillRows] = await Promise.all([
           api.gaps(learner.id, opts.role),
           api.paths(learner.id),
           api.timeline(learner.id, opts.role),
           api.suggested(learner.id, opts.role),
+          api.skills(learner.id),
         ]);
         setGaps(gapProfile.items);
         setRoleName(gapProfile.name);
         setPaths(pathList);
         setTimeline(time);
         setSuggested(suggest);
+        setSkills(skillRows);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Could not start PathFinder");
         throw err;
@@ -354,8 +370,35 @@ export function IntelligenceProvider({ children }: { children: ReactNode }) {
     [learnerId, assessment, refresh, setView],
   );
 
+  const launchJudgeDemo = useCallback(
+    async (opts?: { role?: string; weeklyHours?: number; learningStyle?: string }) => {
+      if (typeof window !== "undefined") {
+        sessionStorage.setItem(JUDGE_KEY, "1");
+      }
+      setJudgeMode(true);
+      await bootstrapLearner({
+        role: opts?.role ?? "ai-ml-engineer",
+        roleName: "AI/ML Engineer",
+        weeklyHours: opts?.weeklyHours ?? 8,
+        learningStyle: opts?.learningStyle ?? "MIXED",
+        withDemoEvidence: true,
+        demo: true,
+      });
+    },
+    [bootstrapLearner],
+  );
+
+  const loadEvidence = useCallback(async (skill: string) => {
+    if (!learnerId) return [];
+    return api.evidence(learnerId, skill);
+  }, [learnerId]);
+
   const reset = useCallback(() => {
     writeStored(null);
+    if (typeof window !== "undefined") {
+      sessionStorage.removeItem(JUDGE_KEY);
+    }
+    setJudgeMode(false);
     setLearnerId(null);
     setDisplayName("");
     setGaps([]);
@@ -366,6 +409,7 @@ export function IntelligenceProvider({ children }: { children: ReactNode }) {
     setAttempt(null);
     setDiff(null);
     setBeforeGaps([]);
+    setSkills([]);
     setV1PathId(null);
     setViewState("overview");
   }, []);
@@ -401,6 +445,8 @@ export function IntelligenceProvider({ children }: { children: ReactNode }) {
     attempt,
     diff,
     beforeGaps,
+    skills,
+    judgeMode,
     loading,
     mutating,
     error,
@@ -408,10 +454,12 @@ export function IntelligenceProvider({ children }: { children: ReactNode }) {
     setView,
     refresh,
     launchDemo,
+    launchJudgeDemo,
     startCustom,
     completeFirstExecutable,
     loadAssessment,
     submitAnswers,
+    loadEvidence,
     reset,
   };
 

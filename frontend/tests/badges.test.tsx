@@ -28,6 +28,7 @@ describe("status and error rendering", () => {
 
   it("renders API error state with the backend message", () => {
     render(<ErrorState message="Learner not found" />);
+    expect(screen.getByRole("alert")).toHaveTextContent("Request failed");
     expect(screen.getByRole("alert")).toHaveTextContent("Learner not found");
   });
 });

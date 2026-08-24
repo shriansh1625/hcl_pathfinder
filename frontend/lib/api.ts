@@ -51,6 +51,12 @@ export const api = {
     }),
   gaps: (learnerId: string, role: string) =>
     request<import("./types").GapProfile>(`/v1/learners/${learnerId}/roles/${role}/gaps`),
+  skills: (learnerId: string) =>
+    request<import("./types").FusedSkill[]>(`/v1/learners/${learnerId}/skills`),
+  evidence: (learnerId: string, skill: string) =>
+    request<import("./types").EvidenceRow[]>(
+      `/v1/learners/${learnerId}/evidence?skill=${encodeURIComponent(skill)}`,
+    ),
   createPath: (
     learnerId: string,
     payload: { role: string; weekly_hours: number; learning_style: string },

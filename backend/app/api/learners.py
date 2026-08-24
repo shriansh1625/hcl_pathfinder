@@ -2,11 +2,12 @@ from __future__ import annotations
 
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.db.session import get_session
-from app.models import User
+from app.models import Skill, User
 from app.schemas.intelligence import (
     EvidenceCreate,
     EvidenceRead,
@@ -63,6 +64,35 @@ def add_evidence(
         confidence=row.confidence,
         created_at=row.created_at,
     )
+
+
+@router.get("/learners/{learner_id}/evidence", response_model=list[EvidenceRead])
+def list_evidence(
+    learner_id: UUID,
+    skill: str | None = Query(default=None, min_length=1, max_length=80),
+    session: Session = Depends(get_session),
+) -> list[EvidenceRead]:
+    _learner(session, learner_id)
+    rows = profiling.list_evidence_rows(session, learner_id, skill_slug=skill)
+    if not rows:
+        return []
+    skill_ids = {row.skill_id for row in rows}
+    slugs = {
+        item.id: item.slug
+        for item in session.scalars(select(Skill).where(Skill.id.in_(skill_ids))).all()
+    }
+    return [
+        EvidenceRead(
+            id=row.id,
+            skill=slugs.get(row.skill_id, ""),
+            source=row.source_type,
+            observed_level=row.observed_level,
+            reliability=row.reliability,
+            confidence=row.confidence,
+            created_at=row.created_at,
+        )
+        for row in rows
+    ]
 
 
 @router.get("/learners/{learner_id}/skills", response_model=list[FusedSkillRead])

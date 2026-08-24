@@ -1,33 +1,50 @@
 "use client";
 
+import { AskPathFinder } from "@/components/judge/AiSurface";
+import { JudgeGuide } from "@/components/judge/JudgeGuide";
 import Link from "next/link";
+import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import type { ReactNode } from "react";
 import { Button } from "@/components/ui/Button";
+import { Mark } from "@/components/ui/Mark";
 import { useIntelligence } from "@/lib/session";
 import type { ViewId } from "@/lib/types";
 
-const NAV: { id: ViewId; href: string; label: string }[] = [
-  { id: "overview", href: "/workspace", label: "Overview" },
-  { id: "path", href: "/workspace?view=path", label: "My Path" },
-  { id: "prove", href: "/workspace?view=prove", label: "Assessments" },
-  { id: "map", href: "/workspace?view=map", label: "Skill Map" },
-  { id: "history", href: "/workspace?view=history", label: "History" },
+const NAV: { id: ViewId; label: string }[] = [
+  { id: "overview", label: "Overview" },
+  { id: "path", label: "My Path" },
+  { id: "prove", label: "Assessments" },
+  { id: "map", label: "Skill Map" },
+  { id: "history", label: "History" },
 ];
 
 const FLOW: ViewId[] = ["overview", "blockers", "path", "prove", "result", "changed", "why", "history"];
+
+function isActive(id: ViewId, view: ViewId): boolean {
+  if (id === "overview") return view === "overview" || view === "blockers";
+  if (id === "path") return view === "path" || view === "changed" || view === "why";
+  if (id === "prove") return view === "prove" || view === "assess" || view === "result";
+  return id === view;
+}
 
 export function AppShell({ children }: { children: ReactNode }) {
   const { view, setView, reset, attempt, roleName } = useIntelligence();
   const pathname = usePathname();
   const router = useRouter();
+  const navRef = useRef<HTMLElement>(null);
+  const [indicator, setIndicator] = useState({ x: 0, w: 0 });
+
+  useLayoutEffect(() => {
+    const nav = navRef.current;
+    const active = nav?.querySelector<HTMLElement>("[data-active='true']");
+    if (!nav || !active) return;
+    const navBox = nav.getBoundingClientRect();
+    const box = active.getBoundingClientRect();
+    setIndicator({ x: box.left - navBox.left, w: box.width });
+  }, [view]);
 
   function continueFlow() {
-    if (view === "prove") {
-      setView("prove");
-      return;
-    }
-    if (view === "assess") return;
+    if (view === "prove" || view === "assess") return;
     if (view === "result") {
       setView("changed");
       return;
@@ -37,36 +54,37 @@ export function AppShell({ children }: { children: ReactNode }) {
     setView(next);
   }
 
-  const continueLabel =
-    view === "result" ? "See what changed" : view === "prove" ? "Take assessment" : "Continue";
+  const continueLabel = view === "result" ? "See what changed" : "Continue";
 
   return (
     <div className="min-h-screen">
-      <header className="sticky top-0 z-20 border-b border-line bg-ink-950/90 backdrop-blur">
+      <header className="sticky top-0 z-20 border-b border-line bg-ink-950">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-6 px-6 py-3">
-          <Link href="/" className="text-sm font-medium tracking-[0.14em] text-paper">
+          <Link href="/" className="inline-flex items-center gap-2 text-[11px] font-medium tracking-[0.22em] text-paper">
+            <Mark className="h-3 w-[18px]" title="PathFinder" />
             PATHFINDER
           </Link>
-          <nav className="hidden items-center gap-1 md:flex" aria-label="Primary">
+          <nav ref={navRef} className="nav-track hidden items-center gap-1 pb-1 md:flex" aria-label="Primary">
             {NAV.map((item) => {
-              const active =
-                (item.id === "overview" && (view === "overview" || view === "blockers")) ||
-                (item.id === "path" && (view === "path" || view === "changed" || view === "why")) ||
-                (item.id === "prove" && (view === "prove" || view === "assess" || view === "result")) ||
-                item.id === view;
+              const active = isActive(item.id, view);
               return (
                 <button
                   key={item.id}
                   type="button"
+                  data-active={active ? "true" : "false"}
                   onClick={() => setView(item.id === "overview" ? "overview" : item.id)}
-                  className={`rounded-md px-3 py-1.5 text-sm ${
-                    active ? "bg-ink-700 text-paper" : "text-mist hover:text-paper"
+                  className={`px-3 py-1.5 text-sm transition-colors duration-200 ${
+                    active ? "text-paper" : "text-mist hover:text-paper"
                   }`}
                 >
                   {item.label}
                 </button>
               );
             })}
+            <span
+              className="nav-indicator"
+              style={{ transform: `translateX(${indicator.x}px)`, width: indicator.w }}
+            />
           </nav>
           <div className="flex items-center gap-3">
             <p className="hidden text-xs text-mist lg:block">{roleName}</p>
@@ -76,13 +94,21 @@ export function AppShell({ children }: { children: ReactNode }) {
           </div>
         </div>
       </header>
-      <main className="mx-auto max-w-6xl px-6 py-8">{children}</main>
-      {pathname.startsWith("/workspace") && view !== "assess" && view !== "prove" ? (
-        <div className="sticky bottom-0 border-t border-line bg-ink-950/95">
+      <main className="mx-auto max-w-6xl px-6 py-10 pb-24">
+        <JudgeGuide />
+        {children}
+        {view === "overview" || view === "path" || view === "changed" || view === "why" ? (
+          <div className="mt-12">
+            <AskPathFinder />
+          </div>
+        ) : null}
+      </main>
+      {pathname.startsWith("/workspace") && view !== "assess" && view !== "prove" && view !== "result" && view !== "changed" ? (
+        <div className="sticky bottom-0 border-t border-line bg-ink-950">
           <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-3">
-            <p className="text-xs text-mist">
-              Diagnose → Prove → Adapt
-              {attempt ? ` · last adaptation ${attempt.adaptation}` : ""}
+            <p className="text-xs tracking-[0.14em] text-mist">
+              KNOW · DIAGNOSE · PROVE · ADAPT
+              {attempt ? ` · ${attempt.adaptation}` : ""}
             </p>
             <Button onClick={continueFlow}>{continueLabel}</Button>
           </div>

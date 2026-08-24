@@ -52,6 +52,13 @@ export type GapProfile = {
   items: GapItem[];
 };
 
+export type PrerequisiteRow = {
+  skill: string;
+  min_level: number;
+  state: string;
+  observed: number | null;
+};
+
 export type PathItem = {
   position: number;
   week: number | null;
@@ -66,7 +73,7 @@ export type PathItem = {
   url: string | null;
   score_breakdown: Record<string, unknown>;
   explanation: string;
-  prerequisites: Record<string, unknown>[];
+  prerequisites: PrerequisiteRow[];
   causality: Record<string, string>;
   kind: string;
   executable: boolean;
@@ -170,6 +177,56 @@ export type GapSnapshot = {
   target_level: number;
   action: string;
   blocked: boolean;
+};
+
+export type FusedSkill = {
+  skill: string;
+  proficiency: number | null;
+  confidence: number | null;
+  status: string;
+  evidence_count: number;
+  conflict: boolean;
+  conflict_spread: number | null;
+  dominant_source: string | null;
+  reason: string;
+};
+
+export type EvidenceRow = {
+  id: string;
+  skill: string;
+  source: string;
+  observed_level: number;
+  reliability: number;
+  confidence: number;
+  created_at: string;
+};
+
+export type AIExplainIntent =
+  | "WHY_GAP"
+  | "WHY_RESOURCE"
+  | "WHAT_CHANGED"
+  | "NEXT_ACTION"
+  | "COACH"
+  | "QUERY";
+
+export type AIFact = {
+  id: string;
+  label: string;
+  value: string;
+};
+
+export type AIClaim = {
+  text: string;
+  fact_ids: string[];
+};
+
+export type AIExplain = {
+  answer: string;
+  claims: AIClaim[];
+  confidence: string;
+  source: "llm" | "deterministic";
+  facts: AIFact[];
+  intent: string;
 };
 
 export type ViewId =

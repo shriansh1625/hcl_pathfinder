@@ -1,113 +1,451 @@
 "use client";
 
+
+
+import { useEffect, useMemo, useState } from "react";
+
+import { GroundedExplain } from "@/components/judge/AiSurface";
+import { AdaptationTrace, buildAdaptationTrace } from "@/components/ui/AdaptationTrace";
+
 import { Button } from "@/components/ui/Button";
-import { Panel } from "@/components/ui/Panel";
+
 import { EmptyState } from "@/components/ui/States";
+
+import { FlipList } from "@/components/ui/FlipList";
+
+import { Mark, ScreenKicker } from "@/components/ui/Mark";
+
 import { useIntelligence } from "@/lib/session";
+
+import { prefersReducedMotion } from "@/lib/motion";
+
 import { prettySkill } from "@/lib/status";
-import type { DiffEntry } from "@/lib/types";
+
+import type { DiffEntry, PathItem } from "@/lib/types";
+
+
 
 const LABELS = {
+
   added: "ADDED",
+
   removed: "REMOVED",
+
   moved: "MOVED",
+
   unchanged: "UNCHANGED",
+
   blocked: "BLOCKED",
+
 } as const;
 
+
+
+const CASCADE = [
+
+  { n: "01", label: "New evidence" },
+
+  { n: "02", label: "Skill state change" },
+
+  { n: "03", label: "New gap" },
+
+  { n: "04", label: "New remediation" },
+
+  { n: "05", label: "Downstream path moves" },
+
+] as const;
+
+
+
+function pathKey(item: PathItem): string {
+
+  if (item.gate || item.kind === "VERIFICATION_GATE") return `gate:${item.target_skill}`;
+
+  if (item.resource) return `resource:${item.resource}`;
+
+  return `pos:${item.position}:${item.title}`;
+
+}
+
+
+
+function kindFor(
+
+  key: string,
+
+  item: PathItem,
+
+  diff: { added: DiffEntry[]; removed: DiffEntry[]; moved: DiffEntry[]; blocked: DiffEntry[] } | null,
+
+  phase: "v1" | "v2",
+
+): string {
+
+  if (item.status === "COMPLETED") return "frozen";
+
+  if (phase === "v1") return "unchanged";
+
+  if (!diff) return "unchanged";
+
+  if (diff.added.some((row) => row.key === key || row.title === item.title)) return "added";
+
+  if (diff.removed.some((row) => row.key === key || row.title === item.title)) return "removed";
+
+  if (diff.moved.some((row) => row.key === key || row.title === item.title)) return "moved";
+
+  if (diff.blocked.some((row) => row.key === key || row.title === item.title)) return "blocked";
+
+  return "unchanged";
+
+}
+
+
+
 export function PathChanged() {
-  const { previousPath, activePath, diff, attempt, setView } = useIntelligence();
+
+  const { previousPath, activePath, diff, attempt, beforeGaps, gaps, setView } = useIntelligence();
+
+  const [phase, setPhase] = useState<"v1" | "v2">("v1");
+
+  const [cascadeStep, setCascadeStep] = useState(0);
+
+  const [skipped, setSkipped] = useState(false);
+
   const frozen = (activePath?.items || []).filter((item) => item.status === "COMPLETED");
 
+
+
+  const trace = useMemo(
+
+    () =>
+
+      buildAdaptationTrace({
+
+        attempt,
+
+        before: beforeGaps.find((item) => item.skill === attempt?.skill_results[0]?.skill),
+
+        after: gaps.find((item) => item.skill === attempt?.skill_results[0]?.skill),
+
+        diff,
+
+      }),
+
+    [attempt, beforeGaps, gaps, diff],
+
+  );
+
+
+
+  useEffect(() => {
+
+    setPhase("v1");
+
+    setCascadeStep(0);
+
+    setSkipped(false);
+
+    const reduced = prefersReducedMotion();
+
+    const v2Delay = reduced ? 0 : 520;
+
+    const cascadeInterval = reduced ? 0 : 220;
+
+    const cascadeTimer = window.setInterval(() => {
+
+      setCascadeStep((step) => Math.min(step + 1, CASCADE.length - 1));
+
+    }, cascadeInterval);
+
+    const v2Timer = window.setTimeout(() => setPhase("v2"), v2Delay);
+
+    return () => {
+
+      window.clearInterval(cascadeTimer);
+
+      window.clearTimeout(v2Timer);
+
+    };
+
+  }, [activePath?.id]);
+
+
+
+  const displayItems = useMemo(() => {
+
+    const v1 = previousPath?.items ?? [];
+
+    const v2 = activePath?.items ?? [];
+
+    if (phase === "v1") return v1;
+
+    const v2Keys = new Set(v2.map(pathKey));
+
+    const removed = v1.filter((item) => !v2Keys.has(pathKey(item)));
+
+    return [...v2, ...removed];
+
+  }, [phase, previousPath, activePath]);
+
+
+
   if (!diff && !attempt) {
+
     return <EmptyState title="No adaptation yet" body="Submit an assessment to generate Path V2 from backend evidence." />;
+
   }
 
+
+
   const groups: { key: keyof typeof LABELS; items: DiffEntry[] }[] = [
+
     { key: "added", items: diff?.added ?? [] },
+
     { key: "removed", items: diff?.removed ?? [] },
+
     { key: "moved", items: diff?.moved ?? [] },
+
     { key: "blocked", items: diff?.blocked ?? [] },
+
     { key: "unchanged", items: (diff?.unchanged ?? []).slice(0, 4) },
+
   ];
 
+
+
+  const liveIndex = skipped ? CASCADE.length - 1 : cascadeStep;
+
+  const replay = `${phase}:${activePath?.id ?? "none"}`;
+
+
+
   return (
-    <div className="space-y-6">
+
+    <div className="space-y-10">
+
       <div>
-        <p className="text-[11px] uppercase tracking-[0.2em] text-accent">Adaptation</p>
-        <h1 className="mt-2 text-3xl font-medium text-paper">Your path changed.</h1>
-        <p className="mt-2 text-sm text-mist">New evidence changed your competency profile.</p>
+
+        <ScreenKicker verb="ADAPT">Path changed</ScreenKicker>
+
+        <h1 className="mt-3 font-display text-4xl font-medium text-paper">PATH CHANGED</h1>
+
+        <p className="mt-3 text-sm text-mist">Same learning objects. New plan — because evidence changed.</p>
+
+        {!skipped && cascadeStep < CASCADE.length - 1 ? (
+
+          <button type="button" className="adapt-skip mt-3 text-xs text-mist underline-offset-2 hover:underline" onClick={() => { setSkipped(true); setPhase("v2"); setCascadeStep(CASCADE.length - 1); }}>
+
+            Skip sequence
+
+          </button>
+
+        ) : null}
+
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-2">
-        <Panel className="p-5">
-          <p className="text-xs uppercase tracking-wider text-mist">V{previousPath?.version ?? 1}</p>
-          <ul className="mt-3 space-y-2 text-sm text-paper">
-            {(previousPath?.items || [])
-              .filter((item) => item.executable)
-              .slice(0, 8)
-              .map((item) => (
-                <li key={item.position}>
-                  {prettySkill(item.target_skill)} — {item.title}
-                </li>
-              ))}
-          </ul>
-        </Panel>
-        <Panel className="p-5">
-          <p className="text-xs uppercase tracking-wider text-mist">V{activePath?.version ?? 2}</p>
-          <ul className="mt-3 space-y-2 text-sm text-paper">
-            {(diff?.added ?? []).slice(0, 6).map((item) => (
-              <li key={item.key}>+ {item.title}</li>
-            ))}
-            {(diff?.blocked ?? []).slice(0, 4).map((item) => (
-              <li key={item.key} className="text-mist">
-                {item.title} delayed
-              </li>
-            ))}
-          </ul>
-        </Panel>
-      </div>
 
-      <Panel>
-        <div className="divide-y divide-line">
-          {groups.map((group) =>
-            group.items.length ? (
-              <div key={group.key} className="px-5 py-4">
-                <p className="font-mono text-[11px] text-accent">{LABELS[group.key]}</p>
-                <ul className="mt-2 space-y-2">
-                  {group.items.map((item) => (
-                    <li key={item.key} data-testid={`diff-${group.key}`}>
-                      <p className="text-sm text-paper">{item.title}</p>
-                      <p className="text-xs text-mist">{item.reason}</p>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ) : null,
-          )}
+
+      <ol className="cascade" data-testid="adapt-cascade">
+
+        {CASCADE.map((step, index) => (
+
+          <li key={step.n} className={`cascade-step ${index <= liveIndex ? "is-live" : ""}`}>
+
+            <span className="cascade-index">{step.n}</span>
+
+            <span>{step.label}</span>
+
+            {index < CASCADE.length - 1 ? (
+
+              <span className="cascade-join" aria-hidden>
+
+                <Mark className="h-2.5 w-4" />
+
+              </span>
+
+            ) : null}
+
+          </li>
+
+        ))}
+
+      </ol>
+
+
+
+      <AdaptationTrace steps={trace} />
+
+
+
+      <section>
+
+        <div className="mb-4 flex items-baseline justify-between gap-4">
+
+          <p className="text-[11px] uppercase tracking-[0.16em] text-mist">
+
+            V{previousPath?.version ?? 1}
+
+            <span className="mx-2 text-paper/50">→</span>
+
+            V{activePath?.version ?? 2}
+
+            <span className="ml-3 text-mist/70">{phase === "v1" ? "prior path" : "adapted path"}</span>
+
+          </p>
+
         </div>
-      </Panel>
 
-      <Panel className="border-accent/30 p-5">
-        <p className="text-xs uppercase tracking-wider text-accent">Frozen work</p>
-        <h2 className="mt-2 text-lg text-paper">Your completed work was protected.</h2>
-        {frozen.length ? (
-          <ul className="mt-4 space-y-2" data-testid="frozen-work">
-            {frozen.map((item) => (
-              <li key={item.position} className="text-sm text-paper">
-                ✓ Week {item.week ?? "—"} — {item.title} · COMPLETED
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="mt-3 text-sm text-mist">No completed items on the active path.</p>
+        <FlipList replay={replay}>
+
+          {displayItems.map((item) => {
+
+            const key = pathKey(item);
+
+            const kind = kindFor(key, item, diff, phase);
+
+            return (
+
+              <div
+
+                key={key}
+
+                data-flip-key={key}
+
+                className={`path-row border border-line px-4 py-3 diff-${kind}`}
+
+              >
+
+                <div className="flex items-start justify-between gap-4">
+
+                  <div className="flex items-start gap-3">
+
+                    <Mark className="mt-1 h-3 w-[18px] shrink-0 text-paper/40" />
+
+                    <div>
+
+                      <p className={`text-sm text-paper ${kind === "removed" ? "diff-removed-title" : ""}`}>{item.title || prettySkill(item.target_skill)}</p>
+
+                      <p className="mt-1 text-xs text-mist">
+
+                        {prettySkill(item.target_skill)}
+
+                        {item.week != null ? ` · Week ${item.week}` : ""}
+
+                      </p>
+
+                    </div>
+
+                  </div>
+
+                  <span className="font-mono text-[11px] tracking-wider text-mist">
+
+                    {kind === "frozen" ? "FROZEN WORK" : LABELS[kind as keyof typeof LABELS] ?? kind.toUpperCase()}
+
+                  </span>
+
+                </div>
+
+              </div>
+
+            );
+
+          })}
+
+        </FlipList>
+
+      </section>
+
+
+
+      <section className="divide-y divide-line border-y border-line">
+
+        {groups.map((group) =>
+
+          group.items.length ? (
+
+            <div key={group.key} className="py-5">
+
+              <p className="font-mono text-[11px] tracking-[0.14em] text-mist">{LABELS[group.key]}</p>
+
+              <ul className="mt-3 space-y-2">
+
+                {group.items.map((item) => (
+
+                  <li key={item.key} data-testid={`diff-${group.key}`} className={`diff-${group.key}`}>
+
+                    <p className="text-sm text-paper">{item.title}</p>
+
+                    <p className="text-xs text-mist">{item.reason}</p>
+
+                  </li>
+
+                ))}
+
+              </ul>
+
+            </div>
+
+          ) : null,
+
         )}
-        <p className="mt-4 text-sm text-mist">PathFinder never rewrites completed work.</p>
-      </Panel>
 
-      <div className="flex justify-end">
-        <Button onClick={() => setView("why")}>Why?</Button>
+      </section>
+
+
+
+      <section className="diff-frozen border-y border-line py-5">
+
+        <p className="text-[11px] uppercase tracking-[0.16em] text-mist">Frozen work</p>
+
+        <h2 className="mt-2 font-display text-2xl text-paper">Completed work preserved</h2>
+
+        {frozen.length ? (
+
+          <ul className="mt-4 space-y-2" data-testid="frozen-work">
+
+            {frozen.map((item) => (
+
+              <li key={item.position} className="text-sm text-paper">
+
+                Week {item.week ?? "—"} — {item.title} · COMPLETED
+
+              </li>
+
+            ))}
+
+          </ul>
+
+        ) : (
+
+          <p className="mt-3 text-sm text-mist">No completed items on the active path.</p>
+
+        )}
+
+      </section>
+
+
+
+      <div className="space-y-5">
+
+        <GroundedExplain
+          intent="WHAT_CHANGED"
+          skill={attempt?.skill_results[0]?.skill}
+          triggerLabel="What changed?"
+          testId="what-changed-path"
+        />
+        <GroundedExplain
+          intent="NEXT_ACTION"
+          triggerLabel="What should I do next?"
+          testId="next-action-path"
+        />
+        <div className="flex justify-end">
+          <Button onClick={() => setView("why")}>Why this changed</Button>
+        </div>
+
       </div>
+
     </div>
+
   );
+
 }

@@ -4,7 +4,7 @@ import { Onboarding } from "@/components/onboarding/Onboarding";
 
 export default function HomePage() {
   return (
-    <div className="pf-grid min-h-screen">
+    <div className="min-h-screen">
       <Onboarding />
     </div>
   );

@@ -92,6 +92,23 @@ def _refresh_fused_skill(session: Session, *, user_id: uuid.UUID, skill: Skill) 
     return fused
 
 
+def list_evidence_rows(
+    session: Session,
+    user_id: uuid.UUID,
+    *,
+    skill_slug: str | None = None,
+) -> list[SkillEvidence]:
+    query = select(SkillEvidence).where(SkillEvidence.user_id == user_id)
+    if skill_slug is not None:
+        skill = session.scalar(select(Skill).where(Skill.slug == skill_slug))
+        if skill is None:
+            return []
+        query = query.where(SkillEvidence.skill_id == skill.id)
+    return list(
+        session.scalars(query.order_by(SkillEvidence.created_at.asc())).all()
+    )
+
+
 def load_evidence_records(session: Session, user_id: uuid.UUID) -> list[EvidenceRecord]:
     rows = session.scalars(
         select(SkillEvidence)

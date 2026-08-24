@@ -41,6 +41,29 @@ def test_list_roles_includes_aiml():
 
 
 @requires_db
+def test_list_evidence_for_skill_returns_rows():
+    learner = client.post("/v1/learners", json={"display_name": "slice43-evidence"}).json()
+    learner_id = learner["id"]
+    client.post(
+        f"/v1/learners/{learner_id}/evidence",
+        json={
+            "skill": "python",
+            "source": "SELF_REPORT",
+            "observed_level": 0.9,
+            "confidence": 0.8,
+        },
+    )
+    response = client.get(f"/v1/learners/{learner_id}/evidence", params={"skill": "python"})
+    assert response.status_code == 200, response.text
+    rows = response.json()
+    assert len(rows) == 1
+    assert rows[0]["skill"] == "python"
+    assert rows[0]["source"] == "SELF_REPORT"
+    assert rows[0]["observed_level"] == 0.9
+    assert "reliability" in rows[0]
+
+
+@requires_db
 def test_assessment_public_copy_omits_answers():
     response = client.get("/v1/assessments/model-evaluation-gate")
     assert response.status_code == 200, response.text

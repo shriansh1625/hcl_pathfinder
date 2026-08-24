@@ -37,16 +37,18 @@ export default function WorkspacePage() {
   return (
     <AppShell>
       {error ? <div className="mb-6"><ErrorState message={error} onRetry={() => void refresh()} /></div> : null}
-      {view === "overview" ? <Overview /> : null}
-      {view === "blockers" ? <Blockers /> : null}
-      {view === "path" ? <PathView /> : null}
-      {view === "prove" ? <ProveIt /> : null}
-      {view === "assess" ? <AssessmentRun /> : null}
-      {view === "result" ? <ResultView /> : null}
-      {view === "changed" ? <PathChanged /> : null}
-      {view === "why" ? <WhyChanged /> : null}
-      {view === "history" ? <TimelineView /> : null}
-      {view === "map" ? <SkillMap /> : null}
+      <div key={view} className="view-enter">
+        {view === "overview" ? <Overview /> : null}
+        {view === "blockers" ? <Blockers /> : null}
+        {view === "path" ? <PathView /> : null}
+        {view === "prove" ? <ProveIt /> : null}
+        {view === "assess" ? <AssessmentRun /> : null}
+        {view === "result" ? <ResultView /> : null}
+        {view === "changed" ? <PathChanged /> : null}
+        {view === "why" ? <WhyChanged /> : null}
+        {view === "history" ? <TimelineView /> : null}
+        {view === "map" ? <SkillMap /> : null}
+      </div>
     </AppShell>
   );
 }
