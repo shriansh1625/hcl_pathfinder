@@ -1,0 +1,295 @@
+{
+  "benchmark": "PathFinder Intelligence Benchmark",
+  "version": "6.0",
+  "timestamp": "2026-08-24T18:58:05.872768+00:00",
+  "commit": "7db9f19714d8478d2f6a53a894b339cf701a69ec",
+  "scenarios": [
+    {
+      "id": "S01",
+      "name": "EMPTY EVIDENCE",
+      "result": "PASS",
+      "evidence": [
+        "unknown_skills=26",
+        "verification_gates=8 executable_courses=0"
+      ],
+      "notes": "",
+      "duration_ms": 6213.34
+    },
+    {
+      "id": "S02",
+      "name": "TARGET-MET SKILL",
+      "result": "PASS",
+      "evidence": [
+        "python_attainment=TARGET_MET",
+        "python_remediation_candidates=0"
+      ],
+      "notes": "",
+      "duration_ms": 2628.05
+    },
+    {
+      "id": "S03",
+      "name": "DIAGNOSED GAP",
+      "result": "PASS",
+      "evidence": [
+        "statistics_attainment=GAP",
+        "statistics_action=REMEDIATE",
+        "top_stats_recs=['khan-statistics-probability', 'statistics-gate-resource']"
+      ],
+      "notes": "",
+      "duration_ms": 2012.19
+    },
+    {
+      "id": "S04",
+      "name": "UNKNOWN BLOCKER",
+      "result": "PASS",
+      "evidence": [
+        "waiting_items=1",
+        "eligibility=BLOCKED_BY_UNKNOWN",
+        "executable=False"
+      ],
+      "notes": "",
+      "duration_ms": 1901.23
+    },
+    {
+      "id": "S05",
+      "name": "KNOWN GAP BLOCKER",
+      "result": "PASS",
+      "evidence": [
+        "blocked_items=6",
+        "resource=d2l-dive-into-deep-learning",
+        "executable=False"
+      ],
+      "notes": "",
+      "duration_ms": 2187.0
+    },
+    {
+      "id": "S06",
+      "name": "ROLE CHANGE",
+      "result": "PASS",
+      "evidence": [
+        "aiml_gaps=['statistics']",
+        "cyber_gaps=['owasp_top10']",
+        "aiml_resources=1 cyber_resources=1",
+        "overlap=0"
+      ],
+      "notes": "",
+      "duration_ms": 3266.95
+    },
+    {
+      "id": "S07",
+      "name": "LEARNER CHANGE",
+      "result": "PASS",
+      "evidence": [
+        "A_stats_action=REMEDIATE B_stats_action=ADVANCE",
+        "A_path_resources=['khan-statistics-probability', 'kaggle-intro-ml', 'google-ml-crash-course']",
+        "B_path_resources=['kaggle-python', 'python-official-tutorial', 'python-gate-resource', 'kaggle-intro-ml']"
+      ],
+      "notes": "",
+      "duration_ms": 2076.5
+    },
+    {
+      "id": "S08",
+      "name": "WEEKLY BUDGET",
+      "result": "PASS",
+      "evidence": [
+        "5h_weekly_estimated=38.0",
+        "15h_weekly_estimated=38.0",
+        "5h_items=3",
+        "15h_items=3"
+      ],
+      "notes": "",
+      "duration_ms": 550.62
+    },
+    {
+      "id": "S09",
+      "name": "LEARNING STYLE",
+      "result": "PASS",
+      "evidence": [
+        "top_by_style={'READING': ['google-ml-crash-course', 'khan-statistics-probability', 'kaggle-intro-ml', 'statistics-gate-resource', 'sklearn-model-evaluation'], 'VIDEO': ['google-ml-crash-course', 'khan-statistics-probability', 'kaggle-intro-ml', 'statistics-gate-resource', '3blue1brown-linear-algebra'], 'HANDS_ON': ['google-ml-crash-course', 'kaggle-intro-ml', 'khan-statistics-probability', 'kaggle-feature-engineering', 'statistics-gate-resource']}"
+      ],
+      "notes": "",
+      "duration_ms": 412.8
+    },
+    {
+      "id": "S10",
+      "name": "SEMANTIC OFF VS ON",
+      "result": "PASS",
+      "evidence": [
+        "position_changes_top15=2",
+        "max_semantic_swing=0.3350"
+      ],
+      "notes": "",
+      "duration_ms": 1328.2
+    },
+    {
+      "id": "S11",
+      "name": "CONFLICTING EVIDENCE",
+      "result": "PASS",
+      "evidence": [
+        "evidence_rows=2",
+        "sources=['ASSESSMENT', 'SELF_REPORT']",
+        "proficiency=0.2631449598560943",
+        "conflict=True",
+        "dominant_source=ASSESSMENT",
+        "attainment=GAP",
+        "target_met=False",
+        "action=REMEDIATE"
+      ],
+      "notes": "",
+      "duration_ms": 863.55
+    },
+    {
+      "id": "S12",
+      "name": "POSITIVE SURPRISE",
+      "result": "PASS",
+      "evidence": [
+        "before_attainment=GAP",
+        "stats_remediation_v1=1",
+        "adaptation=CREATED",
+        "after_attainment=TARGET_MET",
+        "target_met=True",
+        "action=ADVANCE",
+        "removed_stats_entries=1"
+      ],
+      "notes": "",
+      "duration_ms": 5178.05
+    },
+    {
+      "id": "S13",
+      "name": "NEGATIVE SURPRISE",
+      "result": "PASS",
+      "evidence": [
+        "adaptation=CREATED",
+        "before=TARGET_MET after=GAP"
+      ],
+      "notes": "",
+      "duration_ms": 1243.0
+    },
+    {
+      "id": "S14",
+      "name": "DOCKER UNKNOWN\u2192KNOWN",
+      "result": "PASS",
+      "evidence": [
+        "adaptation=CREATED",
+        "docker_gate_removed=True"
+      ],
+      "notes": "",
+      "duration_ms": 4106.34
+    },
+    {
+      "id": "S15",
+      "name": "NO-OP ADAPTATION",
+      "result": "PASS",
+      "evidence": [
+        "adaptation=NO_ADAPTATION_REQUIRED",
+        "path_count=1"
+      ],
+      "notes": "",
+      "duration_ms": 3673.55
+    },
+    {
+      "id": "S16",
+      "name": "DUPLICATE ATTEMPT",
+      "result": "PASS",
+      "evidence": [
+        "first_adaptation=CREATED",
+        "second_adaptation=REPLAYED",
+        "paths_after_first=2 paths_after_second=2"
+      ],
+      "notes": "",
+      "duration_ms": 4924.94
+    },
+    {
+      "id": "S17",
+      "name": "COMPLETED WORK",
+      "result": "PASS",
+      "evidence": [
+        "v1_immutable=True",
+        "completed_in_v2=1",
+        "adaptation=CREATED"
+      ],
+      "notes": "",
+      "duration_ms": 3114.77
+    },
+    {
+      "id": "S18",
+      "name": "MULTI-VERSION CHAIN",
+      "result": "PASS",
+      "evidence": [
+        "versions=3",
+        "active=[3]"
+      ],
+      "notes": "",
+      "duration_ms": 2581.21
+    },
+    {
+      "id": "S19",
+      "name": "ASSESSMENT DRIFT",
+      "result": "PASS",
+      "evidence": [
+        "code=DRIFT_DETECTED"
+      ],
+      "notes": "",
+      "duration_ms": 30.71
+    },
+    {
+      "id": "S20",
+      "name": "CAUSAL EXPLANATIONS",
+      "result": "PASS",
+      "evidence": [
+        "checked=3 items"
+      ],
+      "notes": "",
+      "duration_ms": 513.55
+    }
+  ],
+  "metrics": {
+    "scenario_pass_rate": 1.0,
+    "passed": 20,
+    "total": 20,
+    "percentage": 100.0,
+    "causal_validity_rate": 1.0,
+    "unknown_integrity_rate": 1.0,
+    "blocker_integrity_rate": 1.0,
+    "role_personalization_rate": 1.0,
+    "learner_personalization_rate": 1.0,
+    "budget_compliance_rate": 1.0,
+    "evidence_fusion_integrity_rate": 1.0,
+    "adaptation_integrity_rate": 1.0,
+    "historical_immutability_rate": 1.0,
+    "idempotency_rate": 1.0,
+    "semantic_safety_rate": 1.0,
+    "drift_detection_rate": 1.0,
+    "explanation_grounding_rate": 1.0,
+    "overall_benchmark_score": 1.0
+  },
+  "failures": [],
+  "inconclusive": [],
+  "performance": {
+    "startup_ms": 49053.39,
+    "scenario_timings_ms": {
+      "S01": 6213.34,
+      "S02": 2628.05,
+      "S03": 2012.19,
+      "S04": 1901.23,
+      "S05": 2187.0,
+      "S06": 3266.95,
+      "S07": 2076.5,
+      "S08": 550.62,
+      "S09": 412.8,
+      "S10": 1328.2,
+      "S11": 863.55,
+      "S12": 5178.05,
+      "S13": 1243.0,
+      "S14": 4106.34,
+      "S15": 3673.55,
+      "S16": 4924.94,
+      "S17": 3114.77,
+      "S18": 2581.21,
+      "S19": 30.71,
+      "S20": 513.55
+    },
+    "harness_timings_ms": {},
+    "total_ms": 48806.55
+  }
+}

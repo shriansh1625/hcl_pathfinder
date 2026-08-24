@@ -29,9 +29,10 @@ export function CompetencyRow({
 
   return (
     <div
-      className={`competency-row grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 py-4 md:grid-cols-[minmax(0,1.4fr)_minmax(7rem,auto)_auto] ${transitioning ? "state-shift" : ""} ${item.conflict ? "has-conflict" : ""}`}
+      className={`competency-row grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 py-4 md:grid-cols-[minmax(0,1.2fr)_5rem_5rem_auto] ${transitioning ? "state-shift" : ""} ${item.conflict ? "has-conflict" : ""}`}
     >
       <div>
+        <p className="competency-col-label hidden md:block">Skill</p>
         <p className="flex items-center gap-2 text-sm text-paper">
           <Waypoint
             kind={state === "TARGET_MET" ? "filled" : state === "UNKNOWN" || state === "VERIFY" ? "open" : state === "BLOCKED" ? "blocked" : "path"}
@@ -52,10 +53,21 @@ export function CompetencyRow({
             {inspecting ? "Hide evidence" : "Inspect evidence →"}
           </button>
         ) : null}
-        <Meter state={state} ratio={ratio} />
+        <Meter state={state} ratio={ratio} targetLevel={item.target_level} />
+      </div>
+      <div className="hidden flex-col md:flex">
+        <p className="competency-col-label">Current</p>
+        <p className="font-mono text-sm tabular-nums text-paper" data-testid={`proficiency-${item.skill}`}>
+          {unknown ? "—" : item.proficiency !== null ? item.proficiency.toFixed(2) : "—"}
+        </p>
+      </div>
+      <div className="hidden flex-col md:flex">
+        <p className="competency-col-label">Target</p>
+        <p className="font-mono text-sm tabular-nums text-mist">{item.target_level.toFixed(2)}</p>
       </div>
       <div className="flex flex-col items-end gap-1">
-        <p className="font-mono text-[17px] tabular-nums text-paper" data-testid={`proficiency-${item.skill}`}>
+        <p className="competency-col-label md:hidden">State</p>
+        <p className="font-mono text-[17px] tabular-nums text-paper md:hidden" data-testid={`proficiency-mobile-${item.skill}`}>
           {proficiencyDisplay}
         </p>
         {item.conflict ? (
@@ -69,7 +81,7 @@ export function CompetencyRow({
   );
 }
 
-function Meter({ state, ratio }: { state: VisualState; ratio: number | null }) {
+function Meter({ state, ratio }: { state: VisualState; ratio: number | null; targetLevel?: number }) {
   if (ratio === null) {
     return (
       <div className="meter meter-unknown mt-3" aria-hidden>
@@ -80,6 +92,7 @@ function Meter({ state, ratio }: { state: VisualState; ratio: number | null }) {
   return (
     <div className={`meter mt-3 meter-${state.toLowerCase()}`} aria-hidden>
       <span className="meter-fill" style={{ width: `${Math.round(ratio * 100)}%` }} />
+      <span className="meter-target" style={{ left: "100%" }} title="Target" />
     </div>
   );
 }

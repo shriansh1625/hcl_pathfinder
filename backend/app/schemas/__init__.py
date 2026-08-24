@@ -112,5 +112,7 @@ class OntologyStats(BaseModel):
     soft_prerequisites: int
     related: int
     resources: int
+    resources_total: int
     assessments: int
+    assessments_total: int
     questions: int

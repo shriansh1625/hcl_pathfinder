@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AppShell } from "@/components/shell/AppShell";
 import { Overview } from "@/components/overview/Overview";
@@ -19,6 +19,17 @@ import { useIntelligence } from "@/lib/session";
 export default function WorkspacePage() {
   const { learnerId, hydrated, view, error, refresh } = useIntelligence();
   const router = useRouter();
+  const [arriving, setArriving] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (sessionStorage.getItem("pf-workspace-arrival")) {
+      sessionStorage.removeItem("pf-workspace-arrival");
+      setArriving(true);
+      const timer = window.setTimeout(() => setArriving(false), 880);
+      return () => window.clearTimeout(timer);
+    }
+  }, []);
 
   useEffect(() => {
     if (hydrated && !learnerId) {
@@ -29,13 +40,13 @@ export default function WorkspacePage() {
   if (!hydrated || !learnerId) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <LoadingState label="Restoring session…" />
+        <LoadingState label="Restoring session" detail="Loading your learner workspace from session storage." />
       </div>
     );
   }
 
   return (
-    <AppShell>
+    <AppShell className={arriving ? "workspace-arrival" : undefined}>
       {error ? <div className="mb-6"><ErrorState message={error} onRetry={() => void refresh()} /></div> : null}
       <div key={view} className="view-enter">
         {view === "overview" ? <Overview /> : null}

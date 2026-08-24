@@ -36,10 +36,29 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 export const api = {
   health: () => request<{ status: string }>("/health"),
   roles: () => request<import("./types").Role[]>("/v1/roles"),
-  createLearner: (display_name: string) =>
+  roleDetail: (slug: string) => request<import("./types").RoleDetail>(`/v1/roles/${slug}/detail`),
+  roleCompetencies: (slug: string) =>
+    request<import("./types").RoleCompetencyProfile>(`/v1/roles/${slug}/competencies`),
+  demoEvidence: (slug: string) =>
+    request<import("./types").DemoEvidence[]>(`/v1/roles/${slug}/demo-evidence`),
+  interpretGoal: (goal: string) =>
+    request<import("./types").GoalIntake>("/v1/intake/goal", {
+      method: "POST",
+      body: JSON.stringify({ goal }),
+    }),
+  createLearner: (payload: {
+    display_name: string;
+    experience_level?: string;
+    weekly_hours?: number;
+    learning_style?: string;
+    timeline_weeks?: number;
+    interests?: string[];
+    goal_text?: string;
+    target_role?: string;
+  }) =>
     request<import("./types").Learner>("/v1/learners", {
       method: "POST",
-      body: JSON.stringify({ display_name }),
+      body: JSON.stringify(payload),
     }),
   addEvidence: (
     learnerId: string,
@@ -51,6 +70,8 @@ export const api = {
     }),
   gaps: (learnerId: string, role: string) =>
     request<import("./types").GapProfile>(`/v1/learners/${learnerId}/roles/${role}/gaps`),
+  dashboard: (learnerId: string, role: string) =>
+    request<import("./types").Dashboard>(`/v1/learners/${learnerId}/roles/${role}/dashboard`),
   skills: (learnerId: string) =>
     request<import("./types").FusedSkill[]>(`/v1/learners/${learnerId}/skills`),
   evidence: (learnerId: string, skill: string) =>

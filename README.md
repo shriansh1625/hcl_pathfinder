@@ -70,11 +70,34 @@ npm install
 npm run dev
 ```
 
+**Production demo** (recommended for judges):
+
+```bash
+docker compose up -d db
+cd backend && alembic upgrade head && cd ..
+python scripts/validate_ontology.py && python scripts/seed.py
+cd backend && uvicorn app.main:app --port 8000
+# separate terminal:
+cd frontend && npm run build && PORT=3002 npm run start
+```
+
+Set `NEXT_PUBLIC_API_URL` in `.env.local` if the API is not on `http://localhost:8000`. Postgres always maps to **localhost:5433** via Docker Compose.
+
 API: http://localhost:8000/health  
-Frontend: http://localhost:3000  
+Frontend (dev): http://localhost:3000
+Frontend (production demo): http://localhost:3002
 Postgres: localhost:5433 (user/password/db: `pathfinder`)
 
 Copy `.env.example` to `.env.local` only if you need to override defaults. Do not commit `.env.local` or create a repo-root `.env` file.
+
+### Submission screenshots
+
+```bash
+cd .tmp-pw && npm install
+PF_BASE_URL=http://127.0.0.1:3002 node ../scripts/capture_submission_screenshots.mjs
+```
+
+Output: `artifacts/submission-screenshots/` (18 desktop + 6 mobile captures). See `FINAL_READINESS.md` for the full judge demo path.
 
 ## Environment variables
 
@@ -82,7 +105,8 @@ Copy `.env.example` to `.env.local` only if you need to override defaults. Do no
 |---|---|---|
 | `DATABASE_URL` | `postgresql+psycopg2://pathfinder:pathfinder@localhost:5433/pathfinder` | SQLAlchemy URL |
 | `API_HOST` / `API_PORT` | `0.0.0.0` / `8000` | API bind |
-| `NEXT_PUBLIC_API_URL` | `http://localhost:8000` | Frontend API base (unused in Slice 0 UI) |
+| `NEXT_PUBLIC_API_URL` | `http://localhost:8000` | Frontend API base URL (build-time for production) |
+| `PF_WEB_PORT` | `3002` | Production `next start` port for demo |
 
 ## Commands
 

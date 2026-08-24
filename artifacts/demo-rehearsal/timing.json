@@ -1,0 +1,38 @@
+{
+  "marks": [
+    {
+      "label": "start",
+      "elapsed": 0.525
+    },
+    {
+      "label": "career resolved",
+      "elapsed": 1.744
+    },
+    {
+      "label": "dashboard / gaps / blockers",
+      "elapsed": 8.475
+    },
+    {
+      "label": "path v1 + why",
+      "elapsed": 53.656
+    },
+    {
+      "label": "prove it / assessment result",
+      "elapsed": 60.268
+    },
+    {
+      "label": "new evidence diagnosis",
+      "elapsed": 60.278
+    },
+    {
+      "label": "v1 to v2 / frozen work",
+      "elapsed": 61.586
+    },
+    {
+      "label": "why + grounded ai",
+      "elapsed": 92.003
+    }
+  ],
+  "totalSeconds": 92.004,
+  "targetSeconds": 90
+}

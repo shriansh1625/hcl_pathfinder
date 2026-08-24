@@ -25,7 +25,7 @@ def test_skill_and_role_uniqueness():
     assert len(slugs) == len(set(slugs))
     assert len(names) == len(set(names))
     assert len(roles) == len(set(roles))
-    assert len(roles) == 5
+    assert len(roles) == 8
 
 
 def test_hard_prerequisite_graph_is_acyclic():

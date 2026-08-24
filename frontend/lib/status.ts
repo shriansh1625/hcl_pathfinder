@@ -70,18 +70,10 @@ export function prettySkill(slug: string): string {
   return slug.replaceAll("_", " ").replace(/\b\w/g, (ch) => ch.toUpperCase());
 }
 
-export const FOCUS_SKILLS = [
-  "python",
-  "statistics",
-  "ml_fundamentals",
-  "model_evaluation",
-  "model_deployment",
-] as const;
-
-export const DEMO_EVIDENCE = [
-  { skill: "python", observed_level: 0.9 },
-  { skill: "statistics", observed_level: 0.35 },
-  { skill: "ml_fundamentals", observed_level: 0.55 },
-  { skill: "supervised_learning", observed_level: 0.85 },
-  { skill: "model_deployment", observed_level: 0.3 },
-] as const;
+/** Top priority gaps for competency focus — derived from live gap diagnosis, never hardcoded per role. */
+export function focusGaps(gaps: GapItem[], limit = 5): GapItem[] {
+  return [...gaps]
+    .filter((item) => item.required_status === "CORE")
+    .sort((a, b) => b.action_priority - a.action_priority)
+    .slice(0, limit);
+}

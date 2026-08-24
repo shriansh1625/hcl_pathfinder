@@ -1,7 +1,21 @@
-export function LoadingState({ label = "Loading intelligence…" }: { label?: string }) {
+import type { ReactNode } from "react";
+import { Button } from "@/components/ui/Button";
+import { Mark } from "@/components/ui/Mark";
+
+export function LoadingState({
+  label = "Loading intelligence…",
+  detail,
+}: {
+  label?: string;
+  detail?: string;
+}) {
   return (
-    <div role="status" className="py-8 text-sm text-mist">
-      {label}
+    <div role="status" className="loading-context" aria-live="polite">
+      <Mark className="loading-context-mark h-3 w-[18px] text-accent/80" />
+      <div>
+        <p className="loading-context-label">{label}</p>
+        {detail ? <p className="loading-context-detail">{detail}</p> : null}
+      </div>
     </div>
   );
 }
@@ -10,34 +24,43 @@ export function ErrorState({
   message,
   onRetry,
   context = "The backend did not confirm this action. Nothing was updated locally.",
+  title = "Request failed",
 }: {
   message: string;
   onRetry?: () => void;
   context?: string;
+  title?: string;
 }) {
   return (
-    <div role="alert" className="border border-rose-400/25 px-5 py-6">
-      <p className="text-sm font-medium text-rose-100">Request failed</p>
-      <p className="mt-2 text-sm text-rose-100/80">{context}</p>
-      <p className="mt-2 font-mono text-xs text-rose-100/70">{message}</p>
+    <div role="alert" className="error-state">
+      <p className="error-state-kicker">What could not load</p>
+      <p className="mt-2 text-sm font-medium text-paper">{title}</p>
+      <p className="mt-2 text-sm leading-relaxed text-mist">{context}</p>
+      <p className="mt-3 font-mono text-xs text-mist/90">{message}</p>
       {onRetry ? (
-        <button
-          type="button"
-          onClick={onRetry}
-          className="btn-press mt-4 border border-rose-200/30 px-3 py-1.5 text-sm text-rose-50"
-        >
+        <Button variant="secondary" className="mt-4 px-3 py-1.5 text-xs" onClick={onRetry}>
           Retry
-        </button>
+        </Button>
       ) : null}
     </div>
   );
 }
 
-export function EmptyState({ title, body }: { title: string; body: string }) {
+export function EmptyState({
+  title,
+  body,
+  action,
+}: {
+  title: string;
+  body: string;
+  action?: ReactNode;
+}) {
   return (
-    <div className="py-8">
-      <p className="text-sm font-medium text-paper">{title}</p>
-      <p className="mt-2 text-sm text-mist">{body}</p>
+    <div className="empty-state">
+      <p className="empty-state-kicker">Nothing here yet</p>
+      <p className="mt-2 text-sm font-medium text-paper">{title}</p>
+      <p className="mt-2 max-w-md text-sm leading-relaxed text-mist">{body}</p>
+      {action ? <div className="mt-4">{action}</div> : null}
     </div>
   );
 }

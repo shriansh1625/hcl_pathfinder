@@ -7,8 +7,9 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.db.session import get_session
-from app.models import Skill, User
+from app.models import Profile, Role, Skill, User
 from app.schemas.intelligence import (
+    DashboardRead,
     EvidenceCreate,
     EvidenceRead,
     FusedSkillRead,
@@ -17,6 +18,7 @@ from app.schemas.intelligence import (
     LearnerCreate,
     LearnerRead,
 )
+from app.services.dashboard.summary import build_dashboard
 from app.services.profiling import repository as profiling
 
 router = APIRouter(prefix="/v1")
@@ -31,8 +33,34 @@ def _learner(session: Session, learner_id: UUID) -> User:
 
 @router.post("/learners", response_model=LearnerRead)
 def create_learner(payload: LearnerCreate, session: Session = Depends(get_session)) -> LearnerRead:
-    user = profiling.create_learner(session, payload.display_name)
-    return LearnerRead(id=user.id, display_name=user.display_name, is_demo=user.is_demo)
+    user = profiling.create_learner(
+        session,
+        payload.display_name,
+        experience_level=payload.experience_level,
+        weekly_hours=payload.weekly_hours,
+        learning_style=payload.learning_style,
+        timeline_weeks=payload.timeline_weeks,
+        interests=payload.interests,
+        target_role_slug=payload.target_role,
+        goal_text=payload.goal_text,
+    )
+    profile = session.scalar(select(Profile).where(Profile.user_id == user.id))
+    role_slug = None
+    if profile and profile.target_role_id:
+        role = session.get(Role, profile.target_role_id)
+        role_slug = role.slug if role else None
+    return LearnerRead(
+        id=user.id,
+        display_name=user.display_name,
+        is_demo=user.is_demo,
+        experience_level=profile.experience_level if profile else None,
+        weekly_hours=float(profile.weekly_hours) if profile and profile.weekly_hours else None,
+        learning_style=profile.learning_style if profile else None,
+        timeline_weeks=profile.timeline_weeks if profile else None,
+        interests=list(profile.interests or []) if profile and profile.interests else None,
+        goal_text=profile.goal_text if profile else payload.goal_text,
+        target_role=role_slug,
+    )
 
 
 @router.post("/learners/{learner_id}/evidence", response_model=EvidenceRead)
@@ -167,3 +195,16 @@ def learner_gaps(
             for item in profile.items
         ],
     )
+
+
+@router.get("/learners/{learner_id}/roles/{role_slug}/dashboard", response_model=DashboardRead)
+def learner_dashboard(
+    learner_id: UUID,
+    role_slug: str,
+    session: Session = Depends(get_session),
+) -> DashboardRead:
+    _learner(session, learner_id)
+    try:
+        return build_dashboard(session, user_id=learner_id, role_slug=role_slug)
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc

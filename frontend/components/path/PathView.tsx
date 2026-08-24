@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/Button";
 
 import { EmptyState } from "@/components/ui/States";
 
-import { Mark, ScreenKicker } from "@/components/ui/Mark";
+import { Mark, ScreenKicker, Waypoint } from "@/components/ui/Mark";
 
 import {
 
@@ -30,6 +30,7 @@ import { GroundedExplain } from "@/components/ai/GroundedExplain";
 import { ProgressActions } from "@/components/path/ProgressActions";
 import { useIntelligence } from "@/lib/session";
 
+import { breakdownRows } from "@/lib/score-breakdown";
 import { prettySkill } from "@/lib/status";
 
 import type { PathItem } from "@/lib/types";
@@ -126,15 +127,33 @@ export function PathView() {
 
             </p>
 
-            <div className="space-y-2">
+            <div className="path-route space-y-2">
 
               {items.map((item) => {
 
                 const waiting = waitKindLabel(item);
+                const isCompleted = item.status === "COMPLETED";
+                const isExecutable = item.executable && item.kind === "EXECUTABLE" && !waiting;
 
                 return (
 
-                  <div key={item.position} className="space-y-0">
+                  <div
+                    key={item.position}
+                    className={`path-item-wrap space-y-0 ${isCompleted ? "is-frozen" : ""} ${waiting ? "is-waiting" : ""}`}
+                  >
+
+                  <Waypoint
+                    kind={
+                      isCompleted
+                        ? "filled"
+                        : waiting
+                          ? "blocked"
+                          : isExecutable
+                            ? "open"
+                            : "path"
+                    }
+                    className="path-waypoint h-2.5 w-2.5"
+                  />
 
                   <button
 
@@ -142,7 +161,9 @@ export function PathView() {
 
                     onClick={() => setOpen(item)}
 
-                    className="path-row flex w-full flex-col items-stretch gap-3 border border-line bg-transparent px-4 py-3 text-left"
+                    className={`path-row flex w-full flex-col items-stretch gap-3 border border-line bg-transparent px-4 py-3 text-left ${
+                      isExecutable ? "is-executable" : ""
+                    } ${waiting ? "is-waiting" : ""} ${isCompleted ? "is-completed" : ""}`}
 
                   >
 
@@ -150,7 +171,7 @@ export function PathView() {
 
                       <div className="flex items-start gap-3">
 
-                        <Mark className="mt-1 h-3 w-[18px] shrink-0 text-paper/40" />
+                        <Mark className="mt-1 h-3 w-[18px] shrink-0 text-paper/25" aria-hidden />
 
                         <div>
 
@@ -215,6 +236,7 @@ export function WhyDrawer({ item, onClose }: { item: PathItem; onClose: () => vo
   const cause = item.causality || {};
 
   const waiting = waitKindLabel(item);
+  const scores = breakdownRows(item.score_breakdown || {});
 
 
 
@@ -224,7 +246,7 @@ export function WhyDrawer({ item, onClose }: { item: PathItem; onClose: () => vo
 
       <button type="button" className="h-full flex-1" aria-label="Close" onClick={onClose} />
 
-      <section className="drawer-panel h-full w-full max-w-md overflow-y-auto border-l border-line bg-ink-900">
+      <section className="drawer-panel surface-focus h-full w-full max-w-md overflow-y-auto border-l border-line bg-ink-900">
 
         <div className="flex items-center justify-between border-b border-line px-5 py-4">
 
@@ -246,13 +268,25 @@ export function WhyDrawer({ item, onClose }: { item: PathItem; onClose: () => vo
 
           <Field label="Skill gap" value={cause.why_this_skill || item.explanation} />
 
+          <Field label="Resource" value={cause.why_this_resource || item.resource || item.title} />
+
+          {scores.length ? (
+            <div className="why-forensic-grid" data-testid="why-score-breakdown">
+              <p className="type-section">Why this resource</p>
+              <dl className="why-score-rows mt-3">
+                {scores.map((row) => (
+                  <div key={row.key} className="why-score-row" data-testid={`why-breakdown-${row.key}`}>
+                    <dt>{row.label}</dt>
+                    <dd className="font-mono tabular-nums">{row.value}</dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
+          ) : null}
+
           <Field label="Intervention" value={cause.why_this_intervention || item.intervention} />
 
-          <Field label="Positioning" value={cause.why_this_position || `Week ${item.week ?? "—"}`} />
-
-          <Field label="Resource" value={cause.why_this_resource || item.resource} />
-
-          <Field label="Why selected" value={cause.why_selected || item.explanation} />
+          {cause.why_not_earlier ? <Field label="Why now" value={cause.why_not_earlier} /> : null}
 
           {learnerId && activePath ? (
             <ProgressActions item={item} pathId={activePath.id} />

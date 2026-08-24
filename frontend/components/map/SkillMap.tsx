@@ -5,12 +5,12 @@ import { StatusBadge } from "@/components/ui/StatusBadge";
 import { EmptyState } from "@/components/ui/States";
 import { Mark, ScreenKicker } from "@/components/ui/Mark";
 import { useIntelligence } from "@/lib/session";
-import { FOCUS_SKILLS, prettySkill, visualState } from "@/lib/status";
+import { focusGaps, prettySkill, visualState } from "@/lib/status";
 
 export function SkillMap() {
   const { gaps } = useIntelligence();
-  const [selected, setSelected] = useState<string | null>(FOCUS_SKILLS[0]);
-  const focus = FOCUS_SKILLS.map((skill) => gaps.find((item) => item.skill === skill)).filter(Boolean);
+  const focus = focusGaps(gaps);
+  const [selected, setSelected] = useState<string | null>(focus[0]?.skill ?? null);
   const selectedItem = gaps.find((item) => item.skill === selected) ?? focus[0];
 
   const unique = useMemo(() => {

@@ -7,6 +7,16 @@ vi.mock("@/lib/session", () => ({
   useIntelligence: () => ({}),
 }));
 
+const breakdown = {
+  skill_gap_fit: 0.82,
+  role_importance: 0.91,
+  prerequisite_fit: 1,
+  difficulty_fit: 0.75,
+  duration_fit: 0.66,
+  learning_style_fit: 0.8,
+  semantic_similarity: 0.12,
+};
+
 const item: PathItem = {
   position: 0,
   week: 1,
@@ -19,7 +29,7 @@ const item: PathItem = {
   eligibility: "ELIGIBLE",
   duration_hours: 18,
   url: "https://example.com",
-  score_breakdown: {},
+  score_breakdown: breakdown,
   explanation: "Statistics is a diagnosed gap.",
   prerequisites: [{ skill: "python" }],
   causality: {
@@ -43,5 +53,17 @@ describe("path item causal explanation", () => {
     expect(screen.getByText("Intervention is FOUNDATION.")).toBeInTheDocument();
     expect(screen.queryByText(/AI recommended this/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/Because it scored highly/i)).not.toBeInTheDocument();
+  });
+
+  it("renders every backend score_breakdown field", () => {
+    render(<WhyDrawer item={item} onClose={() => undefined} />);
+    expect(screen.getByTestId("why-score-breakdown")).toBeInTheDocument();
+    for (const key of Object.keys(breakdown)) {
+      expect(screen.getByTestId(`why-breakdown-${key}`)).toBeInTheDocument();
+    }
+    expect(screen.getByText("82%")).toBeInTheDocument();
+    expect(screen.getByText("Role relevance")).toBeInTheDocument();
+    expect(screen.getByText("Semantic relevance")).toBeInTheDocument();
+    expect(screen.getByText("Why now")).toBeInTheDocument();
   });
 });

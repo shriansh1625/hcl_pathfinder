@@ -40,6 +40,7 @@ class Profile(TimestampMixin, Base):
     learning_style: Mapped[str | None] = mapped_column(String(40), nullable=True)
     timeline_weeks: Mapped[int | None] = mapped_column(nullable=True)
     interests: Mapped[list | None] = mapped_column(JSONB, nullable=True)
+    goal_text: Mapped[str | None] = mapped_column(Text, nullable=True)
 
     user: Mapped[User] = relationship(back_populates="profile")
     target_role: Mapped["Role | None"] = relationship()

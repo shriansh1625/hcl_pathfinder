@@ -1,0 +1,49 @@
+roles:
+  ai-ml-engineer:
+    - { skill: python, observed_level: 0.9 }
+    - { skill: statistics, observed_level: 0.35 }
+    - { skill: ml_fundamentals, observed_level: 0.55 }
+    - { skill: supervised_learning, observed_level: 0.85 }
+    - { skill: model_deployment, observed_level: 0.3 }
+  cybersecurity-analyst:
+    - { skill: python, observed_level: 0.55 }
+    - { skill: networking_basics, observed_level: 0.4 }
+    - { skill: linux, observed_level: 0.6 }
+    - { skill: owasp_top10, observed_level: 0.25 }
+    - { skill: siem_logging, observed_level: 0.15 }
+  backend-developer:
+    - { skill: python, observed_level: 0.75 }
+    - { skill: sql, observed_level: 0.6 }
+    - { skill: rest_apis, observed_level: 0.45 }
+    - { skill: databases, observed_level: 0.5 }
+    - { skill: software_testing, observed_level: 0.3 }
+  frontend-developer:
+    - { skill: html_css, observed_level: 0.7 }
+    - { skill: javascript, observed_level: 0.65 }
+    - { skill: react, observed_level: 0.4 }
+    - { skill: typescript, observed_level: 0.25 }
+    - { skill: git, observed_level: 0.55 }
+  data-engineer:
+    - { skill: sql, observed_level: 0.8 }
+    - { skill: python, observed_level: 0.6 }
+    - { skill: data_wrangling, observed_level: 0.45 }
+    - { skill: databases, observed_level: 0.55 }
+    - { skill: docker, observed_level: 0.2 }
+  full-stack-developer:
+    - { skill: javascript, observed_level: 0.7 }
+    - { skill: react, observed_level: 0.55 }
+    - { skill: nodejs, observed_level: 0.4 }
+    - { skill: sql, observed_level: 0.5 }
+    - { skill: git, observed_level: 0.6 }
+  data-analyst:
+    - { skill: sql, observed_level: 0.75 }
+    - { skill: excel_bi, observed_level: 0.8 }
+    - { skill: statistics, observed_level: 0.45 }
+    - { skill: data_visualization, observed_level: 0.5 }
+    - { skill: python, observed_level: 0.35 }
+  cloud-devops-engineer:
+    - { skill: linux, observed_level: 0.65 }
+    - { skill: docker, observed_level: 0.5 }
+    - { skill: git, observed_level: 0.7 }
+    - { skill: ci_cd, observed_level: 0.25 }
+    - { skill: cloud_fundamentals, observed_level: 0.4 }

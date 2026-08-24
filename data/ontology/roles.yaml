@@ -3,7 +3,6 @@ roles:
     name: AI/ML Engineer
     description: >
       Designs, trains, evaluates, and deploys machine learning systems.
-      Primary demonstration role for PathFinder.
     skills:
       - { slug: python, target_level: 0.85, importance: 0.95, required_status: CORE }
       - { slug: git, target_level: 0.60, importance: 0.70, required_status: CORE }
@@ -112,3 +111,64 @@ roles:
       - { slug: rest_apis, target_level: 0.50, importance: 0.55, required_status: ELECTIVE }
       - { slug: databases, target_level: 0.45, importance: 0.45, required_status: OPTIONAL }
       - { slug: identity_access, target_level: 0.55, importance: 0.60, required_status: ELECTIVE }
+
+  - slug: backend-developer
+    name: Backend Developer
+    description: >
+      Builds and operates the APIs, data models, and services behind an
+      application. Distinct from Full-Stack: no browser-side UI work.
+    skills:
+      - { slug: python, target_level: 0.85, importance: 0.95, required_status: CORE }
+      - { slug: rest_apis, target_level: 0.85, importance: 0.95, required_status: CORE }
+      - { slug: sql, target_level: 0.80, importance: 0.90, required_status: CORE }
+      - { slug: databases, target_level: 0.80, importance: 0.90, required_status: CORE }
+      - { slug: fastapi, target_level: 0.75, importance: 0.85, required_status: CORE }
+      - { slug: authentication, target_level: 0.80, importance: 0.85, required_status: CORE }
+      - { slug: software_testing, target_level: 0.75, importance: 0.85, required_status: CORE }
+      - { slug: data_structures, target_level: 0.70, importance: 0.75, required_status: CORE }
+      - { slug: git, target_level: 0.70, importance: 0.80, required_status: CORE }
+      - { slug: docker, target_level: 0.70, importance: 0.80, required_status: CORE }
+      - { slug: linux, target_level: 0.65, importance: 0.70, required_status: ELECTIVE }
+      - { slug: ci_cd, target_level: 0.60, importance: 0.65, required_status: ELECTIVE }
+      - { slug: observability, target_level: 0.60, importance: 0.60, required_status: ELECTIVE }
+      - { slug: cloud_fundamentals, target_level: 0.55, importance: 0.60, required_status: ELECTIVE }
+      - { slug: networking_basics, target_level: 0.50, importance: 0.50, required_status: OPTIONAL }
+
+  - slug: frontend-developer
+    name: Frontend Developer
+    description: >
+      Builds the interfaces people actually use, and the client-side state,
+      accessibility, and API integration behind them.
+    skills:
+      - { slug: html_css, target_level: 0.85, importance: 0.95, required_status: CORE }
+      - { slug: javascript, target_level: 0.85, importance: 0.95, required_status: CORE }
+      - { slug: react, target_level: 0.85, importance: 0.95, required_status: CORE }
+      - { slug: typescript, target_level: 0.80, importance: 0.85, required_status: CORE }
+      - { slug: rest_apis, target_level: 0.70, importance: 0.80, required_status: CORE }
+      - { slug: git, target_level: 0.70, importance: 0.80, required_status: CORE }
+      - { slug: software_testing, target_level: 0.70, importance: 0.75, required_status: CORE }
+      - { slug: authentication, target_level: 0.60, importance: 0.65, required_status: ELECTIVE }
+      - { slug: nodejs, target_level: 0.60, importance: 0.60, required_status: ELECTIVE }
+      - { slug: data_structures, target_level: 0.55, importance: 0.60, required_status: ELECTIVE }
+      - { slug: data_visualization, target_level: 0.50, importance: 0.50, required_status: OPTIONAL }
+
+  - slug: data-engineer
+    name: Data Engineer
+    description: >
+      Builds the pipelines, models, and storage that analytics and ML teams
+      depend on. Distinct from Data Analyst: builds the platform, not the report.
+    skills:
+      - { slug: sql, target_level: 0.85, importance: 0.95, required_status: CORE }
+      - { slug: data_wrangling, target_level: 0.85, importance: 0.95, required_status: CORE }
+      - { slug: python, target_level: 0.80, importance: 0.90, required_status: CORE }
+      - { slug: databases, target_level: 0.80, importance: 0.90, required_status: CORE }
+      - { slug: cloud_fundamentals, target_level: 0.75, importance: 0.85, required_status: CORE }
+      - { slug: aws_core, target_level: 0.70, importance: 0.80, required_status: CORE }
+      - { slug: docker, target_level: 0.70, importance: 0.80, required_status: CORE }
+      - { slug: linux, target_level: 0.70, importance: 0.75, required_status: CORE }
+      - { slug: git, target_level: 0.70, importance: 0.80, required_status: CORE }
+      - { slug: ci_cd, target_level: 0.65, importance: 0.70, required_status: ELECTIVE }
+      - { slug: infrastructure_as_code, target_level: 0.60, importance: 0.65, required_status: ELECTIVE }
+      - { slug: observability, target_level: 0.60, importance: 0.65, required_status: ELECTIVE }
+      - { slug: exploratory_data_analysis, target_level: 0.60, importance: 0.60, required_status: ELECTIVE }
+      - { slug: software_testing, target_level: 0.60, importance: 0.60, required_status: ELECTIVE }

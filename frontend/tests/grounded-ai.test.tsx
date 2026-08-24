@@ -64,7 +64,12 @@ const session = {
     skill_results: [{ skill: "model_evaluation", observed_level: 0 }],
     adaptation: "CREATED",
   },
-  diff: { added: [], removed: [], moved: [], unchanged: [], blocked: [], changed_skills: ["model_evaluation"] },
+    diff: { added: [], removed: [], moved: [], unchanged: [], blocked: [], changed_skills: ["model_evaluation"] },
+    activePath: { version: 2, items: [{ position: 0, title: "Statistics Foundation", status: "COMPLETED", week: 1 }] },
+    timeline: [
+      { path_id: "p1", version: 1, status: "SUPERSEDED", parent_path_id: null, created_at: "2026-08-13T10:00:00Z" },
+      { path_id: "p2", version: 2, status: "ACTIVE", parent_path_id: "p1", created_at: "2026-08-13T10:05:00Z" },
+    ],
   beforeGapsForWhy: [
     { skill: "model_evaluation", evidence_state: "UNKNOWN", attainment: "UNKNOWN", proficiency: null, target_level: 0.8, action: "VERIFY", blocked: false, name: "Model Evaluation" },
   ],

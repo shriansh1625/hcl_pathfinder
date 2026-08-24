@@ -29,8 +29,9 @@ describe("timeline rendering", () => {
     render(<TimelineView />);
     expect(screen.getByTestId("path-timeline")).toHaveTextContent("V1");
     expect(screen.getByTestId("path-timeline")).toHaveTextContent("V2");
-    expect(screen.getByText("V1 → V2")).toBeInTheDocument();
-    expect(screen.getByText("Superseded")).toBeInTheDocument();
-    expect(screen.getByText("Active")).toBeInTheDocument();
+    expect(screen.getByText("V1 SUPERSEDED")).toBeInTheDocument();
+    expect(screen.getByText("V2 ACTIVE")).toBeInTheDocument();
+    expect(screen.getByText(/Initial path generated/i)).toBeInTheDocument();
+    expect(screen.getByText(/Current active path after the latest adaptation/i)).toBeInTheDocument();
   });
 });

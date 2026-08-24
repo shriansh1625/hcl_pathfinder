@@ -11,15 +11,16 @@ export function AssessmentRun() {
   const [index, setIndex] = useState(0);
   const [answers, setAnswers] = useState<number[]>([]);
 
-  if (!assessment) return <LoadingState label="Loading assessment…" />;
+  if (!assessment) {
+    return <LoadingState label="Loading assessment" detail="Fetching questions from the live assessment API." />;
+  }
   if (updatingModel) {
     return (
-      <div className="mx-auto max-w-lg py-24">
-        <ScreenKicker verb="ADAPT">Recompute</ScreenKicker>
-        <h1 className="mt-4 font-display text-4xl text-paper">Updating your competency model…</h1>
-        <p className="mt-4 text-sm leading-relaxed text-mist">
-          Scoring, fusion, and adaptation are running on the backend. This screen does not fake progress.
-        </p>
+      <div className="mx-auto max-w-lg py-16">
+        <LoadingState
+          label="Updating your competency model…"
+          detail="Scoring, fusion, and adaptation are running on the backend. This screen does not fake progress."
+        />
       </div>
     );
   }
@@ -27,7 +28,7 @@ export function AssessmentRun() {
   const question = assessment.questions[index];
   const selected = answers[index];
   const last = index === assessment.questions.length - 1;
-  const progress = (index / assessment.question_count) * 100;
+  const progress = ((index + 1) / assessment.question_count) * 100;
 
   function choose(choice: number) {
     setAnswers((current) => {
@@ -51,14 +52,22 @@ export function AssessmentRun() {
 
   return (
     <div className="mx-auto max-w-2xl space-y-8">
-      <div className="flex items-end justify-between">
+      <div className="flex items-end justify-between gap-4">
         <div>
           <ScreenKicker verb="PROVE">{assessment.title}</ScreenKicker>
-          <h1 className="mt-2 font-display text-3xl text-paper">
+          <h1 className="type-headline mt-2 text-3xl text-paper">
             Question {index + 1} of {assessment.question_count}
           </h1>
         </div>
-        <p className="font-mono text-xs tabular-nums text-mist">{Math.round(progress)}%</p>
+        <p className="type-data text-xs text-mist">{Math.round(progress)}%</p>
+      </div>
+      <div className="assess-index" aria-hidden>
+        {assessment.questions.map((_, i) => (
+          <span
+            key={i}
+            className={i < index ? "is-done" : i === index ? "is-current" : ""}
+          />
+        ))}
       </div>
       <div className="progress-bar h-px overflow-hidden bg-white/10">
         <span style={{ width: `${progress}%` }} />
@@ -74,10 +83,8 @@ export function AssessmentRun() {
               role="radio"
               aria-checked={selected === choiceIndex}
               onClick={() => choose(choiceIndex)}
-              className={`path-row block w-full border px-4 py-3 text-left text-sm ${
-                selected === choiceIndex
-                  ? "border-accent/70 text-paper"
-                  : "border-line text-mist hover:text-paper"
+              className={`path-row assess-answer block w-full border px-4 py-3 text-left text-sm ${
+                selected === choiceIndex ? "is-selected" : "border-line text-mist hover:text-paper"
               }`}
             >
               {choice}

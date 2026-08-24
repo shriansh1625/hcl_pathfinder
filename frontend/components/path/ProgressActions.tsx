@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { ErrorState } from "@/components/ui/States";
+import { Mark } from "@/components/ui/Mark";
 import { waitKindLabel } from "@/lib/blockers";
 import { useIntelligence } from "@/lib/session";
 import { prettySkill } from "@/lib/status";
@@ -84,7 +85,7 @@ export function ProgressActions({ item, pathId }: ProgressActionsProps) {
 
   if (mode === "COMPLETED" || mode === "STRUGGLED") {
     return (
-      <div className="progress-surface max-w-full" data-testid="progress-confidence">
+      <div className="progress-surface is-active max-w-full" data-testid="progress-confidence">
         <p className="progress-kicker">Evidence, not a shortcut</p>
         <p className="mt-1 text-xs text-mist">
           Your report enters the competency model as PROGRESS evidence — weighted below assessments.
@@ -92,7 +93,7 @@ export function ProgressActions({ item, pathId }: ProgressActionsProps) {
         <label htmlFor={`progress-level-${item.position}`} className="progress-confidence-label">
           How confident are you now?
         </label>
-        <div className="progress-slider-row">
+        <div className="progress-slider-row progress-slider-track-glow">
           <span className="font-mono text-[10px] tabular-nums text-mist">0.00</span>
           <input
             id={`progress-level-${item.position}`}
@@ -114,12 +115,19 @@ export function ProgressActions({ item, pathId }: ProgressActionsProps) {
           {confidence.toFixed(2)}
         </p>
         <div className="mt-3 flex flex-wrap gap-2">
-          <Button disabled={updatingModel} onClick={() => void submit(mode, confidence)}>
-            {updatingModel ? "Submitting…" : "Submit progress"}
-          </Button>
-          <Button variant="ghost" disabled={updatingModel} onClick={() => setMode(null)}>
-            Cancel
-          </Button>
+          {updatingModel ? (
+            <p className="progress-updating" role="status">
+              <Mark className="progress-updating-mark h-2.5 w-4 text-accent/80" />
+              Updating competency model…
+            </p>
+          ) : (
+            <>
+              <Button onClick={() => void submit(mode, confidence)}>Submit progress</Button>
+              <Button variant="ghost" onClick={() => setMode(null)}>
+                Cancel
+              </Button>
+            </>
+          )}
         </div>
       </div>
     );

@@ -11,16 +11,48 @@ from sqlalchemy.orm import Session
 
 from app.core.enums import EvidenceSource, RequiredStatus
 from app.core.reliability import reliability_for
-from app.models import Role, RoleSkill, Skill, SkillEvidence, SkillRelationship, User, UserSkill
+from app.models import Profile, Role, RoleSkill, Skill, SkillEvidence, SkillRelationship, User, UserSkill
 from app.services.gap_engine.profile import GapProfile, build_gap_profile
 from app.services.profiling.evidence_fusion import EvidenceRecord, FusedSkill, fuse_skill_evidence
 from app.services.skill_graph.competency import RoleCompetency, RoleCompetencySet
 from app.services.skill_graph.dependency import SkillEdge
 
 
-def create_learner(session: Session, display_name: str, *, is_demo: bool = False) -> User:
+def create_learner(
+    session: Session,
+    display_name: str,
+    *,
+    is_demo: bool = False,
+    experience_level: str | None = None,
+    weekly_hours: float | None = None,
+    learning_style: str | None = None,
+    timeline_weeks: int | None = None,
+    interests: list[str] | None = None,
+    target_role_slug: str | None = None,
+    goal_text: str | None = None,
+) -> User:
     user = User(id=uuid.uuid4(), display_name=display_name, is_demo=is_demo)
     session.add(user)
+    session.flush()
+
+    target_role_id = None
+    if target_role_slug:
+        role = session.scalar(select(Role).where(Role.slug == target_role_slug))
+        if role is not None:
+            target_role_id = role.id
+
+    profile = Profile(
+        id=uuid.uuid4(),
+        user_id=user.id,
+        target_role_id=target_role_id,
+        experience_level=experience_level,
+        weekly_hours=int(weekly_hours) if weekly_hours is not None else None,
+        learning_style=learning_style,
+        timeline_weeks=timeline_weeks,
+        interests=interests,
+        goal_text=goal_text,
+    )
+    session.add(profile)
     session.commit()
     session.refresh(user)
     return user

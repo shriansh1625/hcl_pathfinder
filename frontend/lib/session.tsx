@@ -9,11 +9,11 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { api } from "./api";
-import { DEMO_EVIDENCE } from "./status";
+import { api, ApiError } from "./api";
 import type {
   AssessmentAttempt,
   AssessmentPublic,
+  Dashboard,
   EvidenceRow,
   FusedSkill,
   GapItem,
@@ -51,6 +51,7 @@ type IntelligenceContext = {
   learningStyle: string;
   view: ViewId;
   gaps: GapItem[];
+  dashboard: Dashboard | null;
   paths: PathRead[];
   activePath: PathRead | null;
   previousPath: PathRead | null;
@@ -68,15 +69,9 @@ type IntelligenceContext = {
   updatingModel: boolean;
   setView: (view: ViewId) => void;
   refresh: () => Promise<void>;
-  launchDemo: (opts?: { role?: string; weeklyHours?: number; learningStyle?: string }) => Promise<void>;
-  launchJudgeDemo: (opts?: { role?: string; weeklyHours?: number; learningStyle?: string }) => Promise<void>;
-  startCustom: (opts: {
-    role: string;
-    roleName: string;
-    weeklyHours: number;
-    learningStyle: string;
-    withDemoEvidence: boolean;
-  }) => Promise<void>;
+  launchDemo: (opts?: LaunchOpts) => Promise<void>;
+  launchJudgeDemo: (opts?: LaunchOpts) => Promise<void>;
+  startCustom: (opts: LaunchOpts) => Promise<void>;
   completeFirstExecutable: () => Promise<void>;
   loadAssessment: (slug: string) => Promise<void>;
   submitAnswers: (answers: number[]) => Promise<void>;
@@ -94,6 +89,18 @@ type IntelligenceContext = {
 };
 
 const Ctx = createContext<IntelligenceContext | null>(null);
+
+type LaunchOpts = {
+  role: string;
+  roleName: string;
+  weeklyHours: number;
+  learningStyle: string;
+  withDemoEvidence: boolean;
+  experienceLevel?: string;
+  interests?: string[];
+  goalText?: string;
+  intakeSkills?: Array<{ skill: string; observed_level: number }>;
+};
 
 function readStored(): SessionSnapshot | null {
   if (typeof window === "undefined") return null;
@@ -138,6 +145,7 @@ export function IntelligenceProvider({ children }: { children: ReactNode }) {
   const [view, setViewState] = useState<ViewId>("overview");
   const [v1PathId, setV1PathId] = useState<string | null>(null);
   const [gaps, setGaps] = useState<GapItem[]>([]);
+  const [dashboard, setDashboard] = useState<Dashboard | null>(null);
   const [paths, setPaths] = useState<PathRead[]>([]);
   const [timeline, setTimeline] = useState<TimelineEntry[]>([]);
   const [suggested, setSuggested] = useState<SuggestedAssessment | null>(null);
@@ -189,12 +197,13 @@ export function IntelligenceProvider({ children }: { children: ReactNode }) {
     setLoading(true);
     setError(null);
     try {
-      const [gapProfile, pathList, time, suggest, skillRows] = await Promise.all([
+      const [gapProfile, pathList, time, suggest, skillRows, dash] = await Promise.all([
         api.gaps(learnerId, role),
         api.paths(learnerId),
         api.timeline(learnerId, role),
         api.suggested(learnerId, role),
         api.skills(learnerId),
+        api.dashboard(learnerId, role),
       ]);
       setGaps(gapProfile.items);
       setRoleName(gapProfile.name);
@@ -202,6 +211,7 @@ export function IntelligenceProvider({ children }: { children: ReactNode }) {
       setTimeline(time);
       setSuggested(suggest);
       setSkills(skillRows);
+      setDashboard(dash);
       const active = pathList.find((item) => item.status === "ACTIVE") ?? null;
       if (active && pathList.some((item) => item.version > 1)) {
         const diffBody = await api.pathDiff(learnerId, active.id);
@@ -238,26 +248,48 @@ export function IntelligenceProvider({ children }: { children: ReactNode }) {
   }, [hydrated, learnerId, refresh]);
 
   const bootstrapLearner = useCallback(
-    async (opts: {
-      role: string;
-      roleName: string;
-      weeklyHours: number;
-      learningStyle: string;
-      withDemoEvidence: boolean;
-      demo: boolean;
-    }) => {
+    async (opts: LaunchOpts & { demo: boolean }) => {
       setMutating(true);
       setError(null);
       try {
         const tag = opts.demo ? "pathfinder-live-demo" : "pathfinder-learner";
-        const learner = await api.createLearner(`${tag}-${crypto.randomUUID().slice(0, 6)}`);
+        const learner = await api.createLearner({
+          display_name: `${tag}-${crypto.randomUUID().slice(0, 6)}`,
+          experience_level: opts.experienceLevel,
+          weekly_hours: opts.weeklyHours,
+          learning_style: opts.learningStyle,
+          interests: opts.interests,
+          goal_text: opts.goalText,
+          target_role: opts.role,
+        });
         if (opts.withDemoEvidence) {
-          for (const row of DEMO_EVIDENCE) {
+          let demoRows;
+          try {
+            demoRows = await api.demoEvidence(opts.role);
+          } catch (err) {
+            if (err instanceof ApiError && err.status === 404) {
+              throw new Error(
+                `Demo evidence API not found (/v1/roles/${opts.role}/demo-evidence). Restart the backend with the latest code.`,
+              );
+            }
+            throw err;
+          }
+          for (const row of demoRows) {
             await api.addEvidence(learner.id, {
               skill: row.skill,
-              source: "ASSESSMENT",
+              source: row.source,
               observed_level: row.observed_level,
-              confidence: 0.85,
+              confidence: row.confidence,
+            });
+          }
+        }
+        if (opts.intakeSkills?.length) {
+          for (const row of opts.intakeSkills) {
+            await api.addEvidence(learner.id, {
+              skill: row.skill,
+              source: "SELF_REPORT",
+              observed_level: row.observed_level,
+              confidence: 0.7,
             });
           }
         }
@@ -288,12 +320,13 @@ export function IntelligenceProvider({ children }: { children: ReactNode }) {
           v1PathId: path.id,
           view: "overview",
         });
-        const [gapProfile, pathList, time, suggest, skillRows] = await Promise.all([
+        const [gapProfile, pathList, time, suggest, skillRows, dash] = await Promise.all([
           api.gaps(learner.id, opts.role),
           api.paths(learner.id),
           api.timeline(learner.id, opts.role),
           api.suggested(learner.id, opts.role),
           api.skills(learner.id),
+          api.dashboard(learner.id, opts.role),
         ]);
         setGaps(gapProfile.items);
         setRoleName(gapProfile.name);
@@ -301,6 +334,7 @@ export function IntelligenceProvider({ children }: { children: ReactNode }) {
         setTimeline(time);
         setSuggested(suggest);
         setSkills(skillRows);
+        setDashboard(dash);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Could not start PathFinder");
         throw err;
@@ -312,13 +346,18 @@ export function IntelligenceProvider({ children }: { children: ReactNode }) {
   );
 
   const launchDemo = useCallback(
-    async (opts?: { role?: string; weeklyHours?: number; learningStyle?: string }) => {
+    async (opts?: Partial<LaunchOpts> & { role?: string; weeklyHours?: number; learningStyle?: string }) => {
+      const roleSlug = opts?.role ?? "ai-ml-engineer";
       await bootstrapLearner({
-        role: opts?.role ?? "ai-ml-engineer",
-        roleName: "AI/ML Engineer",
+        role: roleSlug,
+        roleName: opts?.roleName ?? roleSlug,
         weeklyHours: opts?.weeklyHours ?? 8,
         learningStyle: opts?.learningStyle ?? "MIXED",
-        withDemoEvidence: true,
+        withDemoEvidence: opts?.withDemoEvidence ?? true,
+        experienceLevel: opts?.experienceLevel,
+        interests: opts?.interests,
+        goalText: opts?.goalText,
+        intakeSkills: opts?.intakeSkills,
         demo: true,
       });
     },
@@ -326,13 +365,7 @@ export function IntelligenceProvider({ children }: { children: ReactNode }) {
   );
 
   const startCustom = useCallback(
-    async (opts: {
-      role: string;
-      roleName: string;
-      weeklyHours: number;
-      learningStyle: string;
-      withDemoEvidence: boolean;
-    }) => {
+    async (opts: LaunchOpts) => {
       await bootstrapLearner({ ...opts, demo: false });
     },
     [bootstrapLearner],
@@ -387,17 +420,22 @@ export function IntelligenceProvider({ children }: { children: ReactNode }) {
   );
 
   const launchJudgeDemo = useCallback(
-    async (opts?: { role?: string; weeklyHours?: number; learningStyle?: string }) => {
+    async (opts?: Partial<LaunchOpts> & { role?: string; weeklyHours?: number; learningStyle?: string }) => {
       if (typeof window !== "undefined") {
         sessionStorage.setItem(JUDGE_KEY, "1");
       }
       setJudgeMode(true);
+      const roleSlug = opts?.role ?? "ai-ml-engineer";
       await bootstrapLearner({
-        role: opts?.role ?? "ai-ml-engineer",
-        roleName: "AI/ML Engineer",
+        role: roleSlug,
+        roleName: opts?.roleName ?? roleSlug,
         weeklyHours: opts?.weeklyHours ?? 8,
         learningStyle: opts?.learningStyle ?? "MIXED",
-        withDemoEvidence: true,
+        withDemoEvidence: opts?.withDemoEvidence ?? true,
+        experienceLevel: opts?.experienceLevel,
+        interests: opts?.interests,
+        goalText: opts?.goalText,
+        intakeSkills: opts?.intakeSkills,
         demo: true,
       });
     },
@@ -463,6 +501,7 @@ export function IntelligenceProvider({ children }: { children: ReactNode }) {
     setLearnerId(null);
     setDisplayName("");
     setGaps([]);
+    setDashboard(null);
     setPaths([]);
     setTimeline([]);
     setSuggested(null);
@@ -499,6 +538,7 @@ export function IntelligenceProvider({ children }: { children: ReactNode }) {
     learningStyle,
     view,
     gaps,
+    dashboard,
     paths,
     activePath,
     previousPath,

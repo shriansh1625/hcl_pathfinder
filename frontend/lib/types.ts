@@ -9,6 +9,13 @@ export type Learner = {
   id: string;
   display_name: string;
   is_demo: boolean;
+  experience_level?: string | null;
+  weekly_hours?: number | null;
+  learning_style?: string | null;
+  timeline_weeks?: number | null;
+  interests?: string[] | null;
+  goal_text?: string | null;
+  target_role?: string | null;
 };
 
 export type GapItem = {
@@ -247,6 +254,7 @@ export type ProgressFeedback = {
 
 export type ViewId =
   | "overview"
+  | "explorer"
   | "blockers"
   | "path"
   | "prove"
@@ -256,3 +264,125 @@ export type ViewId =
   | "why"
   | "history"
   | "map";
+
+export type GoalIntake = {
+  goal_text: string;
+  role: { slug: string; name: string; mention: string; how: string } | null;
+  role_alternatives: { slug: string; name: string; mention: string; how: string }[];
+  skills: { skill: string; name: string; observed_level: number; mention: string; level_phrase: string; how: string }[];
+  ungraded: { skill: string; name: string; observed_level: number; mention: string; level_phrase: string; how: string }[];
+  weekly_hours: number | null;
+  timeframe_weeks: number | null;
+  learning_style: string | null;
+  unresolved: string[];
+  source: string;
+  provider: string;
+  model: string;
+};
+
+export type RoleDetail = {
+  slug: string;
+  name: string;
+  description: string;
+  competency_count: number;
+  core_skills: string[];
+  focus_areas: string[];
+};
+
+export type RoleCompetency = {
+  skill: string;
+  name: string;
+  target_level: number;
+  importance: number;
+  required_status: string;
+};
+
+export type RoleCompetencyProfile = {
+  role: string;
+  name: string;
+  competencies: RoleCompetency[];
+};
+
+export type DemoEvidence = {
+  skill: string;
+  observed_level: number;
+  source: string;
+  confidence: number;
+};
+
+export type Milestone = {
+  id: string;
+  label: string;
+  category: string;
+  status: string;
+  completed_items: number;
+  total_items: number;
+  skills: string[];
+};
+
+export type Dashboard = {
+  role: string;
+  role_name: string;
+  goal_text: string | null;
+  experience_level: string | null;
+  weekly_hours: number | null;
+  learning_style: string | null;
+  interests: string[] | null;
+  path_version: number | null;
+  path_status: string | null;
+  overall_progress: {
+    completed_items: number;
+    total_items: number;
+    completed_hours: number;
+    planned_hours: number;
+    evidence_coverage: number;
+    competency_total: number;
+  };
+  competency_snapshot: Array<{
+    skill: string;
+    name: string;
+    proficiency: number | null;
+    target_level: number;
+    evidence_state: string;
+    attainment: string;
+  }>;
+  top_gaps: GapItem[];
+  blockers: GapItem[];
+  current_milestone: Milestone | null;
+  this_week: Array<{
+    position: number;
+    title: string;
+    status: string;
+    target_skill: string;
+    duration_hours: number;
+  }>;
+  next_action: {
+    position: number;
+    title: string;
+    target_skill: string;
+    intervention: string;
+    status: string;
+  } | null;
+  recent_evidence: Array<{
+    skill: string;
+    source: string;
+    observed_level: number;
+    created_at: string;
+  }>;
+  recent_adaptation: {
+    event_type: string;
+    summary: string;
+    from_path_id: string;
+    to_path_id: string;
+    created_at: string;
+  } | null;
+  upcoming_assessment: SuggestedAssessment | null;
+  milestones: Milestone[];
+  why_this_matters: string | null;
+};
+
+export type LearnerProfile = {
+  experienceLevel: string;
+  interests: string[];
+  goalText: string;
+};

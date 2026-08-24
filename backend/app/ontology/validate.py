@@ -93,8 +93,8 @@ def validate_ontology(bundle: OntologyBundle) -> list[str]:
     role_slugs = [r.slug for r in bundle.roles]
     if len(role_slugs) != len(set(role_slugs)):
         errors.append("Duplicate role IDs found")
-    if len(role_slugs) != 5:
-        errors.append(f"Expected 5 roles, found {len(role_slugs)}")
+    if len(role_slugs) != 8:
+        errors.append(f"Expected 8 roles, found {len(role_slugs)}")
 
     referenced_by_role: set[str] = set()
     for role in bundle.roles:

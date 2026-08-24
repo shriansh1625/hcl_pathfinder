@@ -6,12 +6,87 @@ from pydantic import BaseModel, ConfigDict, Field
 
 class LearnerCreate(BaseModel):
     display_name: str = Field(min_length=1, max_length=120)
+    experience_level: str | None = Field(default=None, max_length=40)
+    weekly_hours: float | None = Field(default=None, gt=0, le=80)
+    learning_style: str | None = Field(default=None, max_length=40)
+    timeline_weeks: int | None = Field(default=None, gt=0, le=520)
+    interests: list[str] | None = None
+    goal_text: str | None = Field(default=None, max_length=2000)
+    target_role: str | None = Field(default=None, max_length=80)
 
 
 class LearnerRead(BaseModel):
     id: UUID
     display_name: str
     is_demo: bool
+    experience_level: str | None = None
+    weekly_hours: float | None = None
+    learning_style: str | None = None
+    timeline_weeks: int | None = None
+    interests: list[str] | None = None
+    goal_text: str | None = None
+    target_role: str | None = None
+
+
+class GoalIntakeCreate(BaseModel):
+    goal: str = Field(min_length=3, max_length=2000)
+
+
+class ResolvedEntityRead(BaseModel):
+    slug: str
+    name: str
+    mention: str
+    how: str
+
+
+class SkillClaimRead(BaseModel):
+    skill: str
+    name: str
+    observed_level: float
+    mention: str
+    level_phrase: str
+    how: str
+
+
+class GoalIntakeRead(BaseModel):
+    goal_text: str
+    role: ResolvedEntityRead | None
+    role_alternatives: list[ResolvedEntityRead]
+    skills: list[SkillClaimRead]
+    ungraded: list[SkillClaimRead]
+    weekly_hours: float | None
+    timeframe_weeks: int | None
+    learning_style: str | None
+    unresolved: list[str]
+    source: str
+    provider: str
+    model: str
+
+
+class DemoEvidenceRead(BaseModel):
+    skill: str
+    observed_level: float
+    source: str = "ASSESSMENT"
+    confidence: float = 0.85
+
+
+class RoleDetailRead(BaseModel):
+    slug: str
+    name: str
+    description: str
+    competency_count: int
+    core_skills: list[str]
+    focus_areas: list[str]
+
+
+class MilestoneRead(BaseModel):
+    id: str
+    label: str
+    category: str
+    status: str
+    completed_items: int
+    total_items: int
+    skills: list[str]
 
 
 class EvidenceCreate(BaseModel):
@@ -288,4 +363,28 @@ class ProgressFeedbackRead(BaseModel):
     new_path_id: UUID | None
     diff: dict | None
     summary: str
+
+
+class DashboardRead(BaseModel):
+    role: str
+    role_name: str
+    goal_text: str | None
+    experience_level: str | None
+    weekly_hours: float | None
+    learning_style: str | None
+    interests: list[str] | None
+    path_version: int | None
+    path_status: str | None
+    overall_progress: dict
+    competency_snapshot: list[dict]
+    top_gaps: list[GapItemRead]
+    blockers: list[GapItemRead]
+    current_milestone: MilestoneRead | None
+    this_week: list[dict]
+    next_action: dict | None
+    recent_evidence: list[dict]
+    recent_adaptation: dict | None
+    upcoming_assessment: SuggestedAssessmentRead | None
+    milestones: list[MilestoneRead]
+    why_this_matters: str | None
 

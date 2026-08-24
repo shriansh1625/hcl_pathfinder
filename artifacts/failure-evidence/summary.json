@@ -1,0 +1,46 @@
+[
+  {
+    "name": "backend-unavailable",
+    "ok": true,
+    "console": [
+      "Failed to load resource: net::ERR_FAILED"
+    ],
+    "network": []
+  },
+  {
+    "name": "progress-failure",
+    "ok": true,
+    "console": [
+      "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+    ],
+    "network": [
+      "500 http://127.0.0.1:3002/v1/learners/d862ffb0-6daa-4a0f-be4b-d5ea42a1d8e4/progress"
+    ]
+  },
+  {
+    "name": "assessment-failure",
+    "ok": true,
+    "console": [
+      "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+    ],
+    "network": [
+      "500 http://127.0.0.1:3002/v1/learners/14ead875-6107-413f-b2b6-88eb0d218c42/assessments/docker-gate/attempts"
+    ]
+  },
+  {
+    "name": "ai-unavailable",
+    "ok": true,
+    "console": [
+      "Failed to load resource: the server responded with a status of 503 (Service Unavailable)"
+    ],
+    "network": [
+      "503 http://127.0.0.1:3002/v1/learners/ad4161fb-0801-43b2-b052-05614f53c11a/ai/explain"
+    ]
+  },
+  {
+    "name": "malformed-ai-response",
+    "ok": true,
+    "console": [],
+    "network": []
+  }
+]

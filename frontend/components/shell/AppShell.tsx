@@ -27,7 +27,7 @@ function isActive(id: ViewId, view: ViewId): boolean {
   return id === view;
 }
 
-export function AppShell({ children }: { children: ReactNode }) {
+export function AppShell({ children, className }: { children: ReactNode; className?: string }) {
   const { view, setView, reset, attempt, roleName } = useIntelligence();
   const pathname = usePathname();
   const router = useRouter();
@@ -57,10 +57,13 @@ export function AppShell({ children }: { children: ReactNode }) {
   const continueLabel = view === "result" ? "See what changed" : "Continue";
 
   return (
-    <div className="min-h-screen">
-      <header className="sticky top-0 z-20 border-b border-line bg-ink-950">
+    <div className={`min-h-screen ${className ?? ""}`.trim()}>
+      <header className="app-header sticky top-0 z-20">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-6 px-6 py-3">
-          <Link href="/" className="inline-flex items-center gap-2 text-[11px] font-medium tracking-[0.22em] text-paper">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 text-[11px] font-medium tracking-[0.22em] text-paper transition-opacity hover:opacity-80"
+          >
             <Mark className="h-3 w-[18px]" title="PathFinder" />
             PATHFINDER
           </Link>
@@ -73,9 +76,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                   type="button"
                   data-active={active ? "true" : "false"}
                   onClick={() => setView(item.id === "overview" ? "overview" : item.id)}
-                  className={`px-3 py-1.5 text-sm transition-colors duration-200 ${
-                    active ? "text-paper" : "text-mist hover:text-paper"
-                  }`}
+                  className={`nav-link px-3 py-1.5 text-sm ${active ? "text-paper" : "text-mist hover:text-paper"}`}
                 >
                   {item.label}
                 </button>
@@ -87,8 +88,14 @@ export function AppShell({ children }: { children: ReactNode }) {
             />
           </nav>
           <div className="flex items-center gap-3">
-            <p className="hidden text-xs text-mist lg:block">{roleName}</p>
-            <Button variant="ghost" onClick={() => { reset(); router.push("/"); }}>
+            <p className="type-meta hidden lg:block normal-case tracking-normal text-mist">{roleName}</p>
+            <Button
+              variant="ghost"
+              onClick={() => {
+                reset();
+                router.push("/");
+              }}
+            >
               Reset
             </Button>
           </div>
@@ -103,14 +110,20 @@ export function AppShell({ children }: { children: ReactNode }) {
           </div>
         ) : null}
       </main>
-      {pathname.startsWith("/workspace") && view !== "assess" && view !== "prove" && view !== "result" && view !== "changed" ? (
-        <div className="sticky bottom-0 border-t border-line bg-ink-950">
+      {pathname.startsWith("/workspace") &&
+      view !== "assess" &&
+      view !== "prove" &&
+      view !== "result" &&
+      view !== "changed" ? (
+        <div className="sticky bottom-0 border-t border-line bg-ink-950/95 backdrop-blur-sm">
           <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-3">
-            <p className="text-xs tracking-[0.14em] text-mist">
+            <p className="type-meta normal-case tracking-[0.14em] text-mist">
               KNOW · DIAGNOSE · PROVE · ADAPT
               {attempt ? ` · ${attempt.adaptation}` : ""}
             </p>
-            <Button onClick={continueFlow}>{continueLabel}</Button>
+            <Button onClick={continueFlow} showMark>
+              {continueLabel}
+            </Button>
           </div>
         </div>
       ) : null}

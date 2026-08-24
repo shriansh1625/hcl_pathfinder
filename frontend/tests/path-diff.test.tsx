@@ -61,6 +61,13 @@ describe("V1/V2 adaptation display", () => {
     expect(screen.getByText("Evidence moved model evaluation from UNKNOWN to GAP.")).toBeInTheDocument();
   });
 
+  it("renders the causal cascade sequence", () => {
+    render(<PathChanged />);
+    expect(screen.getByTestId("adapt-cascade")).toBeInTheDocument();
+    expect(screen.getByTestId("cascade-path-v1")).toBeInTheDocument();
+    expect(screen.getByTestId("cascade-path-v2")).toBeInTheDocument();
+  });
+
   it("highlights completed work preservation from the active path", () => {
     render(<PathChanged />);
     expect(screen.getByTestId("frozen-work")).toHaveTextContent("Statistics Foundation");

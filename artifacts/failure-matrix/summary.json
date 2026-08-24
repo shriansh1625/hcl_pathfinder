@@ -1,0 +1,77 @@
+{
+  "results": [
+    {
+      "name": "backend unavailable (intake)",
+      "pass": true,
+      "detail": "context preserved",
+      "console": [
+        "Failed to load resource: net::ERR_FAILED"
+      ],
+      "network": []
+    },
+    {
+      "name": "intake failure preserves context",
+      "pass": true,
+      "detail": "",
+      "console": [
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ],
+      "network": [
+        "404 http://127.0.0.1:3002/v1/intake/goal"
+      ]
+    },
+    {
+      "name": "demo-evidence failure",
+      "pass": true,
+      "detail": "truthful error, no workspace",
+      "console": [
+        "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+      ],
+      "network": [
+        "500 http://127.0.0.1:3002/v1/roles/ai-ml-engineer/demo-evidence"
+      ]
+    },
+    {
+      "name": "progress failure",
+      "pass": true,
+      "detail": "What could not loadRequest failedProgress was not recorded. Your competency mode",
+      "console": [
+        "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+      ],
+      "network": [
+        "500 http://127.0.0.1:3002/v1/learners/273cdf7a-cd40-46b3-ad2c-38c3811d5382/progress"
+      ]
+    },
+    {
+      "name": "assessment failure",
+      "pass": true,
+      "detail": "error surfaced, no result view",
+      "console": [
+        "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+      ],
+      "network": [
+        "500 http://127.0.0.1:3002/v1/learners/4805fb8e-b242-4985-83ac-797329d02d54/assessments/docker-gate/attempts"
+      ]
+    },
+    {
+      "name": "AI unavailable fallback",
+      "pass": true,
+      "detail": "deterministic fallback shown",
+      "console": [
+        "Failed to load resource: the server responded with a status of 503 (Service Unavailable)"
+      ],
+      "network": [
+        "503 http://127.0.0.1:3002/v1/learners/2a56473e-9219-4553-af7f-329a361528d1/ai/explain"
+      ]
+    },
+    {
+      "name": "malformed AI response",
+      "pass": true,
+      "detail": "no fabricated answer",
+      "console": [],
+      "network": []
+    }
+  ],
+  "passed": 7,
+  "total": 7
+}

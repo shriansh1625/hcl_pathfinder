@@ -35,3 +35,8 @@ Thumbs.db
 *.log
 .cache/
 frontend/qa/
+.tmp-pw/
+scripts/slice51_report.json
+artifacts/release-gate-qa/
+artifacts/ui-layout-qa/
+artifacts/ui-qa-2026/

@@ -62,10 +62,20 @@ export function ScreenKicker({
   children?: ReactNode;
 }) {
   return (
-    <p className="flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.2em] text-mist">
+    <p className="type-section flex items-center gap-2">
       <Mark className="h-3 w-[18px] shrink-0 text-paper/70" />
       <span>{verb}</span>
       {children ? <span className="font-normal tracking-[0.14em] text-mist/70">· {children}</span> : null}
     </p>
+  );
+}
+
+/** Vertical route connector between path items */
+export function RouteConnector({ className = "" }: { className?: string }) {
+  return (
+    <span
+      className={`inline-block w-px bg-gradient-to-b from-transparent via-paper/15 to-transparent ${className}`}
+      aria-hidden
+    />
   );
 }
