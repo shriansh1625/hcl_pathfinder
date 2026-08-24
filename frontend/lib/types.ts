@@ -229,6 +229,22 @@ export type AIExplain = {
   intent: string;
 };
 
+export type ProgressOutcome = "COMPLETED" | "STRUGGLED" | "SKIPPED";
+
+export type ProgressFeedback = {
+  path_id: string;
+  position: number;
+  outcome: ProgressOutcome;
+  item_status: string;
+  target_skill: string;
+  evidence_recorded: boolean;
+  observed_level: number | null;
+  adaptation: "CREATED" | "NO_ADAPTATION_REQUIRED" | "NO_ACTIVE_PATH";
+  new_path_id: string | null;
+  diff: PathDiff | null;
+  summary: string;
+};
+
 export type ViewId =
   | "overview"
   | "blockers"

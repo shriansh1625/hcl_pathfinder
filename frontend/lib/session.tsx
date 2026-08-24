@@ -20,6 +20,8 @@ import type {
   GapSnapshot,
   PathDiff,
   PathRead,
+  ProgressFeedback,
+  ProgressOutcome,
   SuggestedAssessment,
   TimelineEntry,
   ViewId,
@@ -79,6 +81,15 @@ type IntelligenceContext = {
   loadAssessment: (slug: string) => Promise<void>;
   submitAnswers: (answers: number[]) => Promise<void>;
   loadEvidence: (skill: string) => Promise<EvidenceRow[]>;
+  recordProgress: (
+    pathId: string,
+    position: number,
+    outcome: ProgressOutcome,
+    selfReportedLevel?: number | null,
+  ) => Promise<ProgressFeedback | null>;
+  progressFeedback: ProgressFeedback | null;
+  progressFeedbackTarget: { position: number; targetSkill: string } | null;
+  clearProgressFeedback: () => void;
   reset: () => void;
 };
 
@@ -140,6 +151,11 @@ export function IntelligenceProvider({ children }: { children: ReactNode }) {
   const [mutating, setMutating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [updatingModel, setUpdatingModel] = useState(false);
+  const [progressFeedback, setProgressFeedback] = useState<ProgressFeedback | null>(null);
+  const [progressFeedbackTarget, setProgressFeedbackTarget] = useState<{
+    position: number;
+    targetSkill: string;
+  } | null>(null);
 
   const persist = useCallback(
     (next: Partial<SessionSnapshot> & { learnerId: string }) => {
@@ -393,6 +409,51 @@ export function IntelligenceProvider({ children }: { children: ReactNode }) {
     return api.evidence(learnerId, skill);
   }, [learnerId]);
 
+  const recordProgress = useCallback(
+    async (
+      pathId: string,
+      position: number,
+      outcome: ProgressOutcome,
+      selfReportedLevel?: number | null,
+    ) => {
+      if (!learnerId) return null;
+      setUpdatingModel(true);
+      setError(null);
+      try {
+        setBeforeGaps(snapshotGaps(gaps));
+        const payload: {
+          path_id: string;
+          position: number;
+          outcome: ProgressOutcome;
+          self_reported_level?: number;
+        } = { path_id: pathId, position, outcome };
+        if (selfReportedLevel != null) {
+          payload.self_reported_level = selfReportedLevel;
+        }
+        const body = await api.progress(learnerId, payload);
+        if (body.adaptation === "CREATED" && body.new_path_id) {
+          const diffBody = await api.pathDiff(learnerId, body.new_path_id);
+          setDiff(diffBody);
+        }
+        setProgressFeedbackTarget({ position, targetSkill: body.target_skill });
+        setProgressFeedback(body);
+        await refresh();
+        return body;
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Progress feedback failed");
+        throw err;
+      } finally {
+        setUpdatingModel(false);
+      }
+    },
+    [learnerId, gaps, refresh],
+  );
+
+  const clearProgressFeedback = useCallback(() => {
+    setProgressFeedback(null);
+    setProgressFeedbackTarget(null);
+  }, []);
+
   const reset = useCallback(() => {
     writeStored(null);
     if (typeof window !== "undefined") {
@@ -412,6 +473,8 @@ export function IntelligenceProvider({ children }: { children: ReactNode }) {
     setSkills([]);
     setV1PathId(null);
     setViewState("overview");
+    setProgressFeedback(null);
+    setProgressFeedbackTarget(null);
   }, []);
 
   const activePath = useMemo(
@@ -460,6 +523,10 @@ export function IntelligenceProvider({ children }: { children: ReactNode }) {
     loadAssessment,
     submitAnswers,
     loadEvidence,
+    recordProgress,
+    progressFeedback,
+    progressFeedbackTarget,
+    clearProgressFeedback,
     reset,
   };
 

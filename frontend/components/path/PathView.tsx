@@ -27,6 +27,7 @@ import {
 } from "@/lib/blockers";
 
 import { GroundedExplain } from "@/components/ai/GroundedExplain";
+import { ProgressActions } from "@/components/path/ProgressActions";
 import { useIntelligence } from "@/lib/session";
 
 import { prettySkill } from "@/lib/status";
@@ -133,9 +134,9 @@ export function PathView() {
 
                 return (
 
-                  <button
+                  <div key={item.position} className="space-y-0">
 
-                    key={item.position}
+                  <button
 
                     type="button"
 
@@ -179,6 +180,10 @@ export function PathView() {
 
                   </button>
 
+                  <ProgressActions item={item} pathId={activePath.id} />
+
+                  </div>
+
                 );
 
               })}
@@ -205,7 +210,7 @@ export function PathView() {
 
 export function WhyDrawer({ item, onClose }: { item: PathItem; onClose: () => void }) {
 
-  const { gaps, learnerId } = useIntelligence();
+  const { gaps, learnerId, activePath } = useIntelligence();
 
   const cause = item.causality || {};
 
@@ -248,6 +253,10 @@ export function WhyDrawer({ item, onClose }: { item: PathItem; onClose: () => vo
           <Field label="Resource" value={cause.why_this_resource || item.resource} />
 
           <Field label="Why selected" value={cause.why_selected || item.explanation} />
+
+          {learnerId && activePath ? (
+            <ProgressActions item={item} pathId={activePath.id} />
+          ) : null}
 
           {learnerId ? (
             <GroundedExplain

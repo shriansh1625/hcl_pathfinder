@@ -104,4 +104,17 @@ export const api = {
       method: "POST",
       body: JSON.stringify(payload),
     }),
+  progress: (
+    learnerId: string,
+    payload: {
+      path_id: string;
+      position: number;
+      outcome: import("./types").ProgressOutcome;
+      self_reported_level?: number;
+    },
+  ) =>
+    request<import("./types").ProgressFeedback>(`/v1/learners/${learnerId}/progress`, {
+      method: "POST",
+      body: JSON.stringify(payload),
+    }),
 };

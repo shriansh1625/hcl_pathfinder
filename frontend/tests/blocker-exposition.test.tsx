@@ -109,6 +109,7 @@ const knownGapWait: PathItem = {
 vi.mock("@/lib/session", () => ({
   useIntelligence: () => ({
     activePath: {
+      id: "path-1",
       version: 1,
       status: "ACTIVE",
       total_estimated_hours: 38,
@@ -116,6 +117,13 @@ vi.mock("@/lib/session", () => ({
     },
     roleName: "AI/ML Engineer",
     gaps,
+    learnerId: "learner-1",
+    recordProgress: vi.fn(),
+    progressFeedback: null,
+    progressFeedbackTarget: null,
+    clearProgressFeedback: vi.fn(),
+    updatingModel: false,
+    setView: vi.fn(),
   }),
 }));
 
