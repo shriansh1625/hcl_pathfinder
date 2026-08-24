@@ -56,6 +56,28 @@ Path generate must not wait on an LLM. The LLM, when added, interprets and expla
 
 **No evidence ≠ zero.** Missing evidence is `UNKNOWN`.
 
+### Progress feedback (Slice 5.1 selective port)
+
+Learner progress on a path step is **evidence**, not direct proficiency truth.
+
+```
+learning activity / outcome on path item
+        → PROGRESS evidence (when learner reports a level)
+        → append_evidence()
+        → evidence fusion
+        → gap profile
+        → adapt_path() when material state changes
+        → Path V2 (optional)
+```
+
+- Source: `PROGRESS` with reliability from `data/ontology/reliability.yaml` (currently 0.60).
+- Skips record **no** evidence — declining work is not an ability observation.
+- The server never invents a level the learner did not supply.
+- Feedback is anchored to an active path item with catalog-backed `target_skill` / `resource_slug` metadata.
+- Adaptation uses the existing engine; completed work and V1 immutability are preserved.
+
+**Known constraint — idempotency:** Progress feedback is append-only. There is no idempotency key today, so a client retry on the same active path can record duplicate `PROGRESS` evidence rows. That is deliberate for auditability but may be tightened later (e.g. idempotency key or dedupe window). If the first feedback supersedes the path (V2), further calls to the old `path_id` are rejected with 422.
+
 See `docs/GAP_ENGINE.md`, `docs/RECOMMENDATION.md`, and `docs/AI_ARCHITECTURE.md`.
 
 ## Extension points (intentionally unused)

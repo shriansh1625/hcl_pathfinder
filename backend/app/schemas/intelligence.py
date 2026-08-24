@@ -262,3 +262,30 @@ class AIExplainRead(BaseModel):
     facts: list[AIFactRead]
     intent: str
 
+
+class ProgressFeedbackCreate(BaseModel):
+    """How a path step actually went.
+
+    `self_reported_level` is optional and supplied by the learner. Without it,
+    no evidence is recorded and the path item status still updates.
+    """
+
+    path_id: UUID
+    position: int = Field(ge=0)
+    outcome: str = Field(pattern="^(COMPLETED|STRUGGLED|SKIPPED)$")
+    self_reported_level: float | None = Field(default=None, ge=0, le=1)
+
+
+class ProgressFeedbackRead(BaseModel):
+    path_id: UUID
+    position: int
+    outcome: str
+    item_status: str
+    target_skill: str
+    evidence_recorded: bool
+    observed_level: float | None
+    adaptation: str
+    new_path_id: UUID | None
+    diff: dict | None
+    summary: str
+
