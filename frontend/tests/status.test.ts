@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { isUnknown, proficiencyLabel, visualState } from "@/lib/status";
+import { humanizeEngineCopy, isUnknown, proficiencyLabel, visualState } from "@/lib/status";
 
 const unknown = {
   blocked: false,
@@ -46,5 +46,12 @@ describe("competency presentation", () => {
     expect(visualState(met)).toBe("TARGET_MET");
     expect(visualState(blocked)).toBe("BLOCKED");
     expect(visualState(unknown)).toBe("VERIFY");
+  });
+
+  it("rewrites UNKNOWN engine copy without treating it as zero", () => {
+    expect(humanizeEngineCopy("Docker is UNKNOWN for the role. UNKNOWN is not a beginner score.")).toBe(
+      "Docker has no evidence for the role. Missing evidence is not a beginner score.",
+    );
+    expect(humanizeEngineCopy("UNKNOWN skills need verification.")).toBe("unverified skills need verification.");
   });
 });

@@ -155,7 +155,7 @@ export function Onboarding() {
           PathFinder
         </p>
         <h1
-          className={`type-display onboard-headline mt-5 max-w-xl text-5xl font-medium text-paper ${headlineReady ? "is-ready" : ""}`}
+          className={`type-hero onboard-headline mt-6 max-w-[22ch] text-paper ${headlineReady ? "is-ready" : ""}`}
         >
           Build the path to the career you actually want.
         </h1>
@@ -183,7 +183,7 @@ export function Onboarding() {
         <div className="onboard-reveal mt-10 hidden lg:block" style={{ animationDelay: "280ms" }}>
           <p className="type-section">Why PathFinder is different</p>
           <ul className="mt-3 space-y-2 text-sm text-mist">
-            <li>UNKNOWN means missing evidence — not failure or 0%.</li>
+            <li>No evidence (UNKNOWN) means missing proof — not failure or 0%.</li>
             <li>Gaps are dependency-aware, not keyword matches.</li>
             <li>Semantic ML is bounded; the LLM explains but cannot change the path.</li>
           </ul>
@@ -191,7 +191,11 @@ export function Onboarding() {
       </div>
 
       <div className="onboard-destination">
-        <Mark className="onboard-destination-mark absolute right-6 top-6 h-3 w-[18px] text-accent/60" aria-hidden />
+        <Mark
+          className="onboard-destination-mark absolute right-6 top-6 h-3 w-[18px] text-accent/60"
+          style={{ width: 18, height: 12 }}
+          aria-hidden
+        />
         <OnboardStepRail step={step} />
 
         {(loadError || error) ? (
@@ -345,7 +349,7 @@ export function Onboarding() {
               <div>
                 <p className="type-section">What PathFinder knows</p>
                 <p className="mt-2 text-sm text-mist">
-                  Role-specific demo evidence seeds your competency model. Without it, gaps remain UNKNOWN.
+                  Role-specific demo evidence seeds your competency model. Without it, gaps remain without evidence.
                 </p>
                 <label className="evidence-toggle mt-4">
                   <input
@@ -368,7 +372,7 @@ export function Onboarding() {
                     </ul>
                   </div>
                 ) : (
-                  <p className="mt-4 text-xs text-mist">No goal claims yet — evidence will start as UNKNOWN.</p>
+                  <p className="mt-4 text-xs text-mist">No goal claims yet — evidence will start as missing, not zero.</p>
                 )}
                 <div className="mt-4 flex gap-2">
                   <Button variant="ghost" onClick={() => setStep(4)}>

@@ -166,7 +166,7 @@ describe("contextual grounded explanations", () => {
 
   it("opens Why this resource from the path drawer", async () => {
     render(<WhyDrawer item={item} onClose={() => undefined} />);
-    fireEvent.click(screen.getByRole("button", { name: "Why this resource?" }));
+    fireEvent.click(screen.getByRole("button", { name: "Grounded in" }));
     await waitFor(() => expect(explain).toHaveBeenCalled());
     expect(explain).toHaveBeenCalledWith(
       "learner-1",
@@ -192,17 +192,17 @@ describe("contextual grounded explanations", () => {
 
   it("answers Ask PathFinder from verified state, not a chatbot transcript", async () => {
     render(<AskPathFinder />);
-    expect(screen.getByText(/Asking about your path/i)).toBeInTheDocument();
+    expect(screen.getByText(/Contextual analyst/i)).toBeInTheDocument();
     expect(screen.queryByText(/Chat with AI/i)).not.toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: "Why am I learning statistics?" }));
+    fireEvent.click(screen.getByRole("button", { name: "Why am I learning this skill?" }));
     await waitFor(() =>
       expect(explain).toHaveBeenCalledWith(
         "learner-1",
-        expect.objectContaining({ intent: "QUERY", query: "Why am I learning statistics?" }),
+        expect.objectContaining({ intent: "QUERY", query: "Why am I learning this skill?" }),
       ),
     );
     expect(await screen.findByText(/0.35 versus a 0.80 target/i)).toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: "Why?" }));
+    fireEvent.click(screen.getByRole("button", { name: "Grounded in" }));
     expect(screen.getByTestId("ask-grounded-in")).toHaveTextContent("Statistics proficiency");
   });
 

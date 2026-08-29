@@ -58,4 +58,14 @@ def _read(result: GoalIntake) -> GoalIntakeRead:
 @router.post("/intake/goal", response_model=GoalIntakeRead)
 def interpret_goal(payload: GoalIntakeCreate) -> GoalIntakeRead:
     """Resolve a free-text career goal against the ontology."""
-    return _read(parse_goal(payload.goal))
+    goal = payload.goal.strip()
+    try:
+        return _read(parse_goal(goal))
+    except Exception:
+        from app.ontology.load import load_ontology
+        from app.services.intake import resolver as intake_resolver
+
+        vocab = intake_resolver.build_vocabulary(load_ontology())
+        from app.services.intake.extract import _rule_based
+
+        return _read(_rule_based(goal, vocab))

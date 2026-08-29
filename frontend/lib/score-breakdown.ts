@@ -36,3 +36,29 @@ export function breakdownRows(
     value: formatBreakdownValue(key, breakdown[key]),
   }));
 }
+
+export function primaryBreakdownReason(
+  breakdown: Record<string, unknown>,
+): { key: string; label: string; value: string } | null {
+  const rows = breakdownRows(breakdown).filter((row) => row.key !== "final_score");
+  if (!rows.length) return null;
+  let best = rows[0];
+  let bestScore = typeof breakdown[best.key] === "number" ? (breakdown[best.key] as number) : -1;
+  for (const row of rows.slice(1)) {
+    const raw = breakdown[row.key];
+    if (typeof raw === "number" && raw > bestScore) {
+      best = row;
+      bestScore = raw;
+    }
+  }
+  return best;
+}
+
+export function semanticRelevanceTier(breakdown: Record<string, unknown>): string | null {
+  const raw = breakdown.semantic_similarity;
+  if (typeof raw !== "number" || Number.isNaN(raw)) return null;
+  if (raw >= 0.75) return "High";
+  if (raw >= 0.5) return "Moderate";
+  if (raw >= 0.25) return "Low";
+  return "Minimal";
+}

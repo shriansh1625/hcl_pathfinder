@@ -1,16 +1,21 @@
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 
 export function Mark({
   className = "h-3.5 w-5",
   title,
+  style,
 }: {
   className?: string;
   title?: string;
+  style?: CSSProperties;
 }) {
   return (
     <svg
       viewBox="0 0 24 16"
+      width="24"
+      height="16"
       className={className}
+      style={style}
       fill="none"
       aria-hidden={title ? undefined : true}
       role={title ? "img" : "presentation"}

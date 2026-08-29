@@ -36,6 +36,15 @@ Thumbs.db
 .cache/
 frontend/qa/
 .tmp-pw/
+artifacts/assessment-debug/
+artifacts/failure-evidence/
+artifacts/mobile-path-verify/
+artifacts/release-gate-qa/
+artifacts/ui-final/
+artifacts/ui-grok-final/
+artifacts/ui-layout-qa/
+artifacts/ui-qa-2026/
+artifacts/demo-rehearsal/
 scripts/slice51_report.json
 artifacts/release-gate-qa/
 artifacts/ui-layout-qa/

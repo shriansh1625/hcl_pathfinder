@@ -1,0 +1,43 @@
+{
+  "pass": true,
+  "roles": 3,
+  "uniquePathSignatures": 3,
+  "paths": {
+    "AI/ML Engineer": {
+      "titles": [
+        "Verify docker",
+        "Khan Academy Statistics and Probability",
+        "Kaggle Intro to Machine Learning",
+        "Google Machine Learning Crash Course",
+        "Docker Compose overview",
+        "Serve a scikit-learn model with FastAPI"
+      ],
+      "version": "V1 · ACTIVE · 38h"
+    },
+    "Cybersecurity Analyst": {
+      "titles": [
+        "What is a computer network?",
+        "Command line for beginners",
+        "What is SIEM?",
+        "OWASP Top Ten",
+        "SIEM query lab",
+        "Linux hardening lab",
+        "OWASP Juice Shop"
+      ],
+      "version": "V1 · ACTIVE · 28h"
+    },
+    "Backend Developer": {
+      "titles": [
+        "Kaggle Intro to Python",
+        "SQLBolt",
+        "Kaggle Intro to SQL",
+        "The Python Tutorial",
+        "Python gate assessment",
+        "pytest documentation",
+        "MDN HTTP",
+        "PostgreSQL Tutorial"
+      ],
+      "version": "V1 · ACTIVE · 50.5h"
+    }
+  }
+}

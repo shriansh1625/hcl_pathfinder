@@ -1,131 +1,248 @@
 # PathFinder
 
-Adaptive Career Path Intelligence for HCLTech AMPlified Season 1 Round 2.
+## Evidence → Diagnosis → Adaptation
 
-PathFinder diagnoses the **learner-to-career gap**, then (in later slices) sequences a path, tests the learner, and adapts from evidence.
+**PathFinder does not merely recommend courses.** It diagnoses a learner against a target career using fused evidence, builds a dependency-aware learning route, and **changes that route when new evidence changes the diagnosis.**
 
-This repository is a **clean-room Round 2 product**. It does not depend on any prior challenge work.
+PathFinder turns a natural-language career goal into a versioned path, verifies skills through assessments and progress feedback, and produces a visible **Path V1 → V2** moment when the diagnosis shifts. The LLM explains grounded facts; it **cannot** rewrite proficiency, gaps, ranking, eligibility, or sequencing.
 
-## Current scope — Slice 2.1 (recommendation forensics)
+> **HCLTech AMPlified Season 1 · Round 2**
 
-Slice 1.1 gap engine plus Slice 2 personalized paths plus Slice 2.1 causality forensics.
+![PathFinder dashboard — evidence, gaps, and next action](artifacts/submission-screenshots/05-dashboard.png)
 
-- Structured resource retrieval (structured filter + optional local embedding relevance)
-- Explainable resource scoring
-- HARD/UNKNOWN prerequisite eligibility
-- Dependency-aware sequencing and weekly packing
-- Versioned `learning_paths` / `path_items`
-- Causal selection (score is not sufficient)
-- Structured `PathCause` metadata and path-quality checks
+---
 
-**Not implemented yet:** assessment runtime, adaptation, resume parsing, LLM, product UI.
+## Why PathFinder is different
 
-## Product thesis
+| Typical recommender | PathFinder |
+|---------------------|------------|
+| Keyword course lists | Fixed career **ontology** (8 roles, 47 skills) |
+| “You are 40% ready” | **UNKNOWN** = no evidence yet — not 0% |
+| Static playlists | **Versioned paths** with frozen completed work |
+| Black-box AI picks | **Grounded AI** explains; scoring stays deterministic |
+| One-size-fits-all | Same role + different evidence → **different path** |
 
-Course recommenders answer “what should I take?”
+**The adaptive loop:** GOAL → CAREER → EVIDENCE → DIAGNOSIS → GAP → RECOMMENDATION → ACTION → NEW EVIDENCE → **ADAPTATION**
 
-PathFinder is being built to answer: what capabilities am I missing for a target career, what should I learn first, why now, how do I prove it, and how should the path change when evidence arrives?
+![Assessment result triggers path adaptation](artifacts/submission-screenshots/11-result.png)
+
+---
+
+## Why this is not a demo
+
+| Claim | Proof |
+|-------|-------|
+| 8 ontology-backed careers | `data/` YAML + seed counts |
+| Real NL goal intake | `/v1/intake/goal` |
+| Real evidence fusion | assessments + progress + self-report |
+| Role-relative diagnosis | gap engine + dashboard |
+| Real recommendation engine | WHY drawer shows backend factors |
+| Optional semantic ML signal | `fastembed`, 5% weight cap |
+| Real assessment + progress loops | adaptation-proof artifacts |
+| Immutable path versions | V1 / V2 / timeline |
+| Multi-career isolation | `artifacts/multi-career-proof/proof.json` |
+| Second-learner personalization | `artifacts/second-learner-proof/proof.json` |
+| 20/20 intelligence benchmark | `artifacts/intelligence_benchmark.json` |
+| 9/9 failure matrix | `artifacts/failure-matrix/summary.json` |
+
+---
+
+## Problem
+
+Career platforms recommend courses from keywords. They rarely answer:
+
+- What am I actually missing for a **target role**?
+- Why this resource **now** (not earlier)?
+- What is **proven** vs still **unknown**?
+- How should the path change when I pass or fail an assessment?
+
+## Solution
+
+PathFinder is an evidence-driven intelligence system:
+
+1. **KNOW** — fuse self-report, assessment, and progress into a competency model
+2. **DIAGNOSE** — dependency-aware gaps against a fixed ontology
+3. **PROVE** — canonical assessments update evidence
+4. **ADAPT** — Path V2 when diagnosis changes; V1 work stays frozen
+5. **PATH** — sequenced resources with blocker semantics and forensic “why”
+
+![Path V1 vs Path V2 after adaptation](artifacts/submission-screenshots/13-path-v2.png)
+
+---
+
+## Live adaptive loop (what we proved)
+
+| Proof | Result | Artifact |
+|-------|--------|----------|
+| Failure matrix | **9/9** browser cases | `artifacts/failure-matrix/summary.json` |
+| Intelligence benchmark | **20/20** | `artifacts/intelligence_benchmark.json` |
+| Multi-career isolation | 3/3 unique paths | `artifacts/multi-career-proof/proof.json` |
+| Second-learner personalization | same role, different evidence → different path | `artifacts/second-learner-proof/proof.json` |
+| Accessibility | 0 critical / 0 serious | `artifacts/accessibility/summary.json` |
+| Regression | 218 pytest · 53 vitest · build | `docs/FINAL_PROOF_CLOSURE.md` |
+
+**Strongest demo moment:** complete an assessment → see Result → open **What changed** → Path V2 with completed steps frozen and new sequence ahead.
+
+---
+
+## AI / ML architecture
+
+```
+Goal intake ──► Ontology resolution (deterministic)
+                      │
+Evidence fusion ◄─────┤── self-report · assessment · progress
+                      │
+                 Gap engine (deterministic)
+                      │
+         Retrieval + scoring (structured + optional semantic 5%)
+                      │
+                 Path sequencing + adaptation
+                      │
+              Grounded AI (optional explain layer)
+```
+
+| Component | Role | Calls LLM? |
+|-----------|------|------------|
+| Evidence fusion | Combine sources into skill levels | No |
+| Gap engine | Role targets vs fused evidence | No |
+| Semantic retrieval | `fastembed` local embeddings | No |
+| Path + adaptation | V1→V2 versioning, frozen completions | No |
+| Grounded AI | Natural-language explanations | Optional (`stub` default) |
+
+Path generation, assessment scoring, and adaptation **never** wait on the LLM.
+
+**Verified facts → Grounded AI → Explanation.** The LLM cannot change proficiency, gaps, ranking, eligibility, sequencing, scoring, or adaptation.
+
+Full judge Q&A: [`docs/JUDGE_FAQ.md`](docs/JUDGE_FAQ.md)
+
+---
+
+## Screenshots
+
+| Screen | Desktop |
+|--------|---------|
+| Onboarding | `artifacts/submission-screenshots/01-onboarding.png` |
+| Career explorer | `artifacts/submission-screenshots/03-career-explorer.png` |
+| Dashboard | `artifacts/submission-screenshots/05-dashboard.png` |
+| Path + blockers | `artifacts/submission-screenshots/07-path.png` |
+| Assessment → Result | `artifacts/submission-screenshots/10-assessment.png` → `11-result.png` |
+| Path V2 + why changed | `artifacts/submission-screenshots/13-path-v2.png` |
+
+Regenerate: `scripts/grok_final_capture.mjs` against `next start` (production).
+
+---
 
 ## Architecture
 
 ```
-frontend/     Next.js 15 — placeholder shell only
+frontend/     Next.js 15 — production UI
 backend/      FastAPI + SQLAlchemy + Alembic
-data/         YAML source of truth (ontology, catalog, assessments)
-docs/         Architecture and data model
-scripts/      validate + seed
-tests/        ontology, schema, and health checks
+data/         YAML ontology (source of truth)
+docs/         Architecture, proof closure, reproducibility
+scripts/      seed, benchmark, browser QA
+tests/         pytest + vitest
 ```
 
-YAML is the human-maintainable source of truth. Postgres is runtime state. Seed upserts by stable UUIDv5(slug) and is safe to re-run.
+See `docs/ARCHITECTURE.md` and `docs/DATA_MODEL.md`.
 
-## Local setup
+---
 
-Requirements: Python 3.11+, Node 20+, Docker.
+## Setup (fresh machine)
 
-```bash
-# 1. Database
-docker compose up -d db
-
-# 2. Backend
-python -m venv .venv
-# Windows: .venv\Scripts\activate
-# macOS/Linux: source .venv/bin/activate
-pip install -r backend/requirements.txt
-
-# 3. Migrate + seed
-cd backend
-alembic upgrade head
-cd ..
-python scripts/validate_ontology.py
-python scripts/seed.py
-
-# 4. API
-cd backend
-uvicorn app.main:app --reload --port 8000
-
-# 5. Frontend (separate terminal)
-cd frontend
-npm install
-npm run dev
-```
-
-**Production demo** (recommended for judges):
+**Requirements:** Python 3.11+, Node 20+, Docker.
 
 ```bash
+cp .env.example .env.local
+cp frontend/.env.example frontend/.env.local
+
 docker compose up -d db
-cd backend && alembic upgrade head && cd ..
+cd backend && pip install -r requirements.txt && alembic upgrade head && cd ..
 python scripts/validate_ontology.py && python scripts/seed.py
-cd backend && uvicorn app.main:app --port 8000
-# separate terminal:
-cd frontend && npm run build && PORT=3002 npm run start
 ```
 
-Set `NEXT_PUBLIC_API_URL` in `.env.local` if the API is not on `http://localhost:8000`. Postgres always maps to **localhost:5433** via Docker Compose.
+Expected: `Seed complete: 47 skills, 8 roles, 58 relationships, 62 resources, 4 assessments.`
 
-API: http://localhost:8000/health  
-Frontend (dev): http://localhost:3000
-Frontend (production demo): http://localhost:3002
-Postgres: localhost:5433 (user/password/db: `pathfinder`)
-
-Copy `.env.example` to `.env.local` only if you need to override defaults. Do not commit `.env.local` or create a repo-root `.env` file.
-
-### Submission screenshots
+### Backend
 
 ```bash
-cd .tmp-pw && npm install
-PF_BASE_URL=http://127.0.0.1:3002 node ../scripts/capture_submission_screenshots.mjs
+cd backend && uvicorn app.main:app --host 0.0.0.0 --port 8000
 ```
 
-Output: `artifacts/submission-screenshots/` (18 desktop + 6 mobile captures). See `FINAL_READINESS.md` for the full judge demo path.
+### Frontend — official production demo
+
+```bash
+cd frontend && npm install && npm run build && PORT=3002 npm run start
+```
+
+> Judges: use **`npm run build` + `next start`**, not `next dev`.
+
+Full reproducibility guide: `docs/REPRODUCIBILITY_DEPLOYMENT.md`
+
+---
 
 ## Environment variables
 
-| Variable | Default | Purpose |
-|---|---|---|
-| `DATABASE_URL` | `postgresql+psycopg2://pathfinder:pathfinder@localhost:5433/pathfinder` | SQLAlchemy URL |
-| `API_HOST` / `API_PORT` | `0.0.0.0` / `8000` | API bind |
-| `NEXT_PUBLIC_API_URL` | `http://localhost:8000` | Frontend API base URL (build-time for production) |
-| `PF_WEB_PORT` | `3002` | Production `next start` port for demo |
+| Variable | Purpose |
+|----------|---------|
+| `DATABASE_URL` | PostgreSQL (see `.env.example`; Docker maps host port in `docker-compose.yml`) |
+| `PATHFINDER_CORS_ORIGINS` | Comma-separated frontend origins |
+| `NEXT_PUBLIC_API_URL` | API base for Next.js rewrites (**required** for build) |
+| `PATHFINDER_AI_API_KEY` | Optional LLM key — never commit |
+| `PATHFINDER_SEMANTIC_ENABLED` | Local `fastembed` relevance (optional) |
 
-## Commands
+Copy `.env.example` → `.env.local` only. **Do not** commit `.env.local`.
+
+---
+
+## Production demo (90 seconds)
+
+1. Onboarding → **Judge demo (~90s)** with **AI/ML Engineer**
+2. **Dashboard** — gaps, evidence, next action
+3. **My Path** — open WHY drawer on a resource
+4. **Assessments** → submit → **Result**
+5. **What changed** → **Path V2** (frozen completed work visible)
+6. **History** timeline · **Skill Map** · **Ask PathFinder** · **Judge Mode**
+
+---
+
+## Judge FAQ
+
+Short answers above; full hostile-judge Q&A in [`docs/JUDGE_FAQ.md`](docs/JUDGE_FAQ.md). Submission report: [`docs/FINAL_SUBMISSION_REPORT.md`](docs/FINAL_SUBMISSION_REPORT.md).
+
+---
+
+## Known limitations
+
+- No permanent hosted demo — run locally per Setup (production `next start`)
+- Grounded LLM requires `PATHFINDER_AI_API_KEY`; CI and default use **stub** fallback
+- Mobile path uses a compact route compass; desktop is the full spatial composition
+- GitHub repo topics/description may need manual setup if `gh` CLI is unavailable
+
+---
+
+## Tests & benchmark
 
 ```bash
-docker compose up -d db
-cd backend && alembic upgrade head && cd ..
-python scripts/validate_ontology.py
-python scripts/seed.py
-python -m pytest
-# Slice 2
-# POST /v1/learners/{id}/paths
-# GET  /v1/learners/{id}/paths
-# GET  /v1/learners/{id}/paths/{path_id}
-# GET  /v1/learners/{id}/roles/{role}/recommendations
-cd backend && uvicorn app.main:app --port 8000
-cd frontend && npm run dev
+python -m pytest -q                    # 218 passed
+cd frontend && npm test                # 53 passed
 cd frontend && npm run build
+python scripts/intelligence_benchmark.py  # 20/20
+PATHFINDER_API_URL=http://127.0.0.1:8000 python scripts/api_smoke_test.py
 ```
 
-## Project structure
+---
 
-See `docs/ARCHITECTURE.md` and `docs/DATA_MODEL.md`.
+## Security
+
+- `.env.local` gitignored · no API keys in source or committed artifacts
+- AI credentials via `PATHFINDER_AI_API_KEY` only
+
+---
+
+## License
+
+MIT — see [`LICENSE`](LICENSE).
+
+## Project context
+
+Clean-room Round 2 product for HCLTech AMPlified. Ontology and intelligence semantics are frozen; UI and QA harnesses document reproducibility without changing deterministic engines.

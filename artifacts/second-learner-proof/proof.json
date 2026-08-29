@@ -1,0 +1,57 @@
+{
+  "pass": true,
+  "same_role": true,
+  "different_evidence": true,
+  "different_path": true,
+  "different_gaps": true,
+  "path_signature_a": "0:khan-statistics-probability:statistics|1:kaggle-intro-ml:ml_fundamentals|2:google-ml-crash-course:ml_fundamentals",
+  "path_signature_b": "0:kaggle-python:python|1:python-official-tutorial:python|2:python-gate-resource:python|3:kaggle-intro-ml:ml_fundamentals|4:google-ml-crash-course:ml_fundamentals",
+  "top_gaps_a": [
+    "ml_fundamentals",
+    "statistics",
+    "docker",
+    "probability",
+    "data_wrangling"
+  ],
+  "top_gaps_b": [
+    "python",
+    "ml_fundamentals",
+    "docker",
+    "probability",
+    "git"
+  ],
+  "learner_a": {
+    "learnerId": "56469d1c-0b16-4084-aa13-1ccb72888b7d",
+    "pathSignature": "0:khan-statistics-probability:statistics|1:kaggle-intro-ml:ml_fundamentals|2:google-ml-crash-course:ml_fundamentals",
+    "topGaps": [
+      "ml_fundamentals",
+      "statistics",
+      "docker",
+      "probability",
+      "data_wrangling"
+    ],
+    "resources": [
+      "khan-statistics-probability",
+      "kaggle-intro-ml",
+      "google-ml-crash-course"
+    ]
+  },
+  "learner_b": {
+    "learnerId": "23a13669-601c-474c-80d0-e7b2cc5bb34a",
+    "pathSignature": "0:kaggle-python:python|1:python-official-tutorial:python|2:python-gate-resource:python|3:kaggle-intro-ml:ml_fundamentals|4:google-ml-crash-course:ml_fundamentals",
+    "topGaps": [
+      "python",
+      "ml_fundamentals",
+      "docker",
+      "probability",
+      "git"
+    ],
+    "resources": [
+      "kaggle-python",
+      "python-official-tutorial",
+      "python-gate-resource",
+      "kaggle-intro-ml",
+      "google-ml-crash-course"
+    ]
+  }
+}

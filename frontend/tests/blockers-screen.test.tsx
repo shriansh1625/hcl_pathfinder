@@ -75,7 +75,7 @@ describe("blockers screen", () => {
     expect(screen.getByText("What is blocked?")).toBeInTheDocument();
     expect(screen.getByText("Serve sklearn model lab")).toBeInTheDocument();
     expect(screen.getByText("Requires Docker")).toBeInTheDocument();
-    expect(screen.getByText(/Docker\s+UNKNOWN/)).toBeInTheDocument();
+    expect(screen.getByText(/Docker\s+No evidence/)).toBeInTheDocument();
     expect(screen.getByText("VERIFY Docker")).toBeInTheDocument();
     expect(screen.getByText("WAITING FOR VERIFICATION")).toBeInTheDocument();
   });

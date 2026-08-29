@@ -3,10 +3,15 @@
 from __future__ import annotations
 
 import json
+import os
+import sys
 import uuid
 import urllib.request
 
-BASE = "http://127.0.0.1:8000"
+BASE = os.environ.get("PATHFINDER_API_URL") or os.environ.get("PF_API_URL")
+if not BASE:
+    print("Set PATHFINDER_API_URL", file=sys.stderr)
+    sys.exit(2)
 ROLES = ["ai-ml-engineer", "cybersecurity-analyst", "backend-developer"]
 
 

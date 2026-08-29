@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { WhyDrawer } from "@/components/path/PathView";
 import type { PathItem } from "@/lib/types";
@@ -49,7 +49,8 @@ describe("path item causal explanation", () => {
   it("renders stored causality, not an AI recommendation slogan", () => {
     render(<WhyDrawer item={item} onClose={() => undefined} />);
     expect(screen.getByText("Why this is here")).toBeInTheDocument();
-    expect(screen.getByText("Evidence places statistics below the role target.")).toBeInTheDocument();
+    expect(screen.getByTestId("why-primary-reason")).toBeInTheDocument();
+    expect(screen.getByText("Nothing precedes the first executable week.")).toBeInTheDocument();
     expect(screen.getByText("Intervention is FOUNDATION.")).toBeInTheDocument();
     expect(screen.queryByText(/AI recommended this/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/Because it scored highly/i)).not.toBeInTheDocument();
@@ -57,13 +58,17 @@ describe("path item causal explanation", () => {
 
   it("renders every backend score_breakdown field", () => {
     render(<WhyDrawer item={item} onClose={() => undefined} />);
+    expect(screen.getByTestId("why-primary-reason")).toBeInTheDocument();
+    expect(screen.getByText("100%")).toBeInTheDocument();
+    expect(screen.getByTestId("why-semantic-relevance")).toBeInTheDocument();
+    expect(screen.getByText("Minimal")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: /Show all scoring factors/i }));
     expect(screen.getByTestId("why-score-breakdown")).toBeInTheDocument();
     for (const key of Object.keys(breakdown)) {
       expect(screen.getByTestId(`why-breakdown-${key}`)).toBeInTheDocument();
     }
     expect(screen.getByText("82%")).toBeInTheDocument();
     expect(screen.getByText("Role relevance")).toBeInTheDocument();
-    expect(screen.getByText("Semantic relevance")).toBeInTheDocument();
     expect(screen.getByText("Why now")).toBeInTheDocument();
   });
 });

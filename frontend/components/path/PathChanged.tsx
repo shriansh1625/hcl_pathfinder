@@ -10,7 +10,7 @@ import { FlipList } from "@/components/ui/FlipList";
 import { Mark, ScreenKicker } from "@/components/ui/Mark";
 import { useIntelligence } from "@/lib/session";
 import { prefersReducedMotion } from "@/lib/motion";
-import { prettySkill } from "@/lib/status";
+import { prettySkill, displayDiagnosisTransition } from "@/lib/status";
 import type { DiffEntry, PathItem } from "@/lib/types";
 
 const LABELS = {
@@ -179,7 +179,7 @@ export function PathChanged() {
         <div className="path-hero-diagnosis adapt-phase-in" data-testid="new-diagnosis">
           <p className="type-section">New diagnosis</p>
           <p className="mt-2 font-mono text-sm text-paper">
-            {(before?.evidence_state === "UNKNOWN" ? "UNKNOWN" : before?.attainment) ?? "—"} → {after.attainment}
+            {displayDiagnosisTransition(before, after)}
           </p>
         </div>
       ) : null}
@@ -202,29 +202,39 @@ export function PathChanged() {
             <span className="ml-3 text-mist/70">{phase === "v1" ? "prior path" : "adapted path"}</span>
           </p>
         </div>
+        <p className="adapt-causality-line" aria-live="polite">
+          {liveIndex < 1
+            ? "Prior route holds."
+            : liveIndex < 3
+              ? "New evidence arrived. Affected skill is reacting."
+              : liveIndex < 5
+                ? "Diagnosis updated. Action is entering the route."
+                : "Dependent waypoints are shifting. Frozen work stays anchored."}
+        </p>
         <FlipList replay={replay}>
           {displayItems.map((item) => {
             const key = pathKey(item);
             const kind = kindFor(key, item, diff, phase);
             return (
-              <div key={key} data-flip-key={key} className={`path-row border border-line px-4 py-3 diff-${kind}`}>
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex items-start gap-3">
-                    <Mark className="mt-1 h-3 w-[18px] shrink-0 text-paper/40" />
-                    <div>
-                      <p className={`text-sm text-paper ${kind === "removed" ? "diff-removed-title" : ""}`}>
-                        {item.title || prettySkill(item.target_skill)}
-                      </p>
-                      <p className="mt-1 text-xs text-mist">
-                        {prettySkill(item.target_skill)}
-                        {item.week != null ? ` · Week ${item.week}` : ""}
-                      </p>
-                    </div>
-                  </div>
-                  <span className="font-mono text-[11px] tracking-wider text-mist">
-                    {kind === "frozen" ? "FROZEN WORK" : LABELS[kind as keyof typeof LABELS] ?? kind.toUpperCase()}
-                  </span>
+              <div
+                key={key}
+                data-flip-key={key}
+                data-flip-lock={kind === "frozen" ? "1" : undefined}
+                className={`path-row adapt-waypoint diff-${kind}`}
+              >
+                <span className={`adapt-waypoint-dot is-${kind}`} aria-hidden />
+                <div className="adapt-waypoint-body">
+                  <p className={`text-sm text-paper ${kind === "removed" ? "diff-removed-title" : ""}`}>
+                    {item.title || prettySkill(item.target_skill)}
+                  </p>
+                  <p className="mt-1 text-xs text-mist">
+                    {prettySkill(item.target_skill)}
+                    {item.week != null ? ` · Week ${item.week}` : ""}
+                  </p>
                 </div>
+                <span className="font-mono text-[11px] tracking-wider text-mist">
+                  {kind === "frozen" ? "FROZEN WORK" : LABELS[kind as keyof typeof LABELS] ?? kind.toUpperCase()}
+                </span>
               </div>
             );
           })}

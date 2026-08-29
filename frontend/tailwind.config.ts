@@ -6,18 +6,18 @@ const config: Config = {
     extend: {
       colors: {
         ink: {
-          950: "#08090b",
-          900: "#0c0d10",
-          800: "#101216",
-          700: "#161a20",
-          600: "#1e242c",
+          950: "#0c0e12",
+          900: "#14171e",
+          800: "#1a1f28",
+          700: "#222833",
+          600: "#2a3240",
         },
-        line: "rgba(244, 241, 234, 0.08)",
-        mist: "#8e97a6",
-        paper: "#f3efe6",
+        line: "rgba(232, 226, 212, 0.10)",
+        mist: "#8b93a0",
+        paper: "#e8e2d4",
         accent: {
-          DEFAULT: "#c5d4cb",
-          dim: "#9bb0a3",
+          DEFAULT: "#8fba9c",
+          dim: "#7d9a8a",
         },
       },
       fontFamily: {

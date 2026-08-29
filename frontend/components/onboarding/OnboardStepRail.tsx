@@ -21,13 +21,20 @@ export function OnboardStepRail({ step }: { step: number }) {
 
   return (
     <nav className="onboard-step-rail" aria-label="Onboarding progress">
-      <ol ref={trackRef} className="onboard-step-track">
+      <ol
+        ref={trackRef}
+        className="onboard-step-track m-0 list-none p-0"
+      >
         {STEPS.map((label, index) => {
           const state = index === step ? "active" : index < step ? "complete" : "upcoming";
           return (
-            <li key={label} className={`onboard-step-item is-${state}`} aria-current={index === step ? "step" : undefined}>
+            <li
+              key={label}
+              className={`onboard-step-item is-${state}`}
+              aria-current={index === step ? "step" : undefined}
+              aria-label={`Step ${index + 1}: ${label}`}
+            >
               <span className="onboard-step-waypoint" aria-hidden />
-              <span className="onboard-step-index">{index + 1}</span>
               <span className="onboard-step-label">{label}</span>
             </li>
           );

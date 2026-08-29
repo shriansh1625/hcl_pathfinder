@@ -95,6 +95,10 @@ export function CareerExplorer({
 
   return (
     <div className="career-explorer space-y-4">
+      <div className="career-explorer-head">
+        <p className="type-section">{roles.length} careers from the live ontology</p>
+        <p className="mt-1 text-sm text-mist">Each role produces a different gap profile and sequenced path.</p>
+      </div>
       <label className="sr-only" htmlFor="career-search">
         Search careers
       </label>
@@ -105,7 +109,7 @@ export function CareerExplorer({
         value={query}
         onChange={(event) => onQueryChange(event.target.value)}
       />
-      <div className="career-grid grid max-h-56 gap-2 overflow-y-auto pr-1 sm:grid-cols-2">
+      <div className="career-grid grid gap-2 sm:grid-cols-2">
         {filtered.map((role) => {
           const isSelected = selected === role.slug;
           const isPeek = peek === role.slug && !isSelected;
@@ -118,20 +122,19 @@ export function CareerExplorer({
               onMouseLeave={() => setPeek((current) => (current === role.slug ? null : current))}
               onFocus={() => setPeek(role.slug)}
               onBlur={() => setPeek((current) => (current === role.slug ? null : current))}
+              aria-pressed={isSelected}
               className={`career-card text-left ${isSelected ? "career-card-active" : ""} ${isPeek ? "is-peek" : ""}`}
             >
               <div className="career-card-route" aria-hidden>
-                <span className="career-route-node" />
-                <span className="career-route-line" />
-                <span className="career-route-dest" />
+                <span className={`career-route-node ${isSelected ? "is-live" : ""}`} />
+                <span className={`career-route-line ${isSelected ? "is-live" : ""}`} />
+                <span className={`career-route-dest ${isSelected ? "is-live" : ""}`} />
               </div>
-              <p className="font-medium text-paper">{role.name}</p>
-              <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-mist">{role.description}</p>
-              {isSelected && preview.competencyCount ? (
-                <p className="mt-2 font-mono text-[10px] uppercase tracking-wider text-mist">
-                  {preview.competencyCount} competencies
-                </p>
-              ) : null}
+              <p className="career-card-name">{role.name}</p>
+              <p className="career-card-identity mt-1 line-clamp-2">{role.description}</p>
+              <p className="career-card-teaser mt-2 font-mono text-[10px] uppercase tracking-wider text-mist">
+                {isSelected ? "Selected · preview below" : "Select to preview fit"}
+              </p>
             </button>
           );
         })}
@@ -177,6 +180,7 @@ export function CareerExplorer({
               </div>
             </>
           ) : null}
+          <p className="career-choose mt-4 text-sm text-paper">Choose this destination to sequence the path.</p>
         </div>
       ) : null}
 
@@ -242,9 +246,9 @@ function CompareColumn({
   learnerFit: boolean;
 }) {
   return (
-    <div className="career-compare-col rounded border border-line p-4">
-      <p className="font-medium text-paper">{title}</p>
-      <p className="mt-2 text-xs uppercase tracking-[0.16em] text-mist">Skills</p>
+    <div className="career-compare-col">
+      <p className="compare-title">{title}</p>
+      <p className="mt-5 type-section">Core skills</p>
       <div className="mt-2 flex flex-wrap gap-2">
         {preview.coreSkills.map((skill) => (
           <span key={skill} className="career-skill-chip">
@@ -252,9 +256,13 @@ function CompareColumn({
           </span>
         ))}
       </div>
+      <p className="mt-5 type-section">Current fit</p>
+      <p className="mt-2 font-mono text-xs tabular-nums text-mist">
+        {preview.competencyCount} competencies tracked
+      </p>
       {learnerFit ? (
         <>
-          <p className="mt-4 text-xs uppercase tracking-[0.16em] text-mist">Gaps</p>
+          <p className="mt-5 type-section">Top gaps</p>
           <div className="mt-2 flex flex-wrap gap-2">
             {preview.topGaps.length ? (
               preview.topGaps.map((gap) => (

@@ -7,6 +7,7 @@ import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { Mark } from "@/components/ui/Mark";
+import { continueLabel, nextFlowView } from "@/lib/flow";
 import { useIntelligence } from "@/lib/session";
 import type { ViewId } from "@/lib/types";
 
@@ -17,8 +18,6 @@ const NAV: { id: ViewId; label: string }[] = [
   { id: "map", label: "Skill Map" },
   { id: "history", label: "History" },
 ];
-
-const FLOW: ViewId[] = ["overview", "blockers", "path", "prove", "result", "changed", "why", "history"];
 
 function isActive(id: ViewId, view: ViewId): boolean {
   if (id === "overview") return view === "overview" || view === "blockers";
@@ -45,16 +44,12 @@ export function AppShell({ children, className }: { children: ReactNode; classNa
 
   function continueFlow() {
     if (view === "prove" || view === "assess") return;
-    if (view === "result") {
-      setView("changed");
-      return;
-    }
-    const idx = FLOW.indexOf(view);
-    const next = FLOW[Math.min(idx + 1, FLOW.length - 1)];
-    setView(next);
+    const next = nextFlowView(view);
+    if (next) setView(next);
   }
 
-  const continueLabel = view === "result" ? "See what changed" : "Continue";
+  const continueNext = nextFlowView(view);
+  const footerLabel = continueLabel(view);
 
   return (
     <div className={`min-h-screen ${className ?? ""}`.trim()}>
@@ -100,6 +95,22 @@ export function AppShell({ children, className }: { children: ReactNode; classNa
             </Button>
           </div>
         </div>
+        <nav className="nav-mobile md:hidden" aria-label="Workspace">
+          {NAV.map((item) => {
+            const active = isActive(item.id, view);
+            return (
+              <button
+                key={`m-${item.id}`}
+                type="button"
+                data-active={active ? "true" : "false"}
+                onClick={() => setView(item.id === "overview" ? "overview" : item.id)}
+                className={`nav-link ${active ? "text-paper" : "text-mist"}`}
+              >
+                {item.label}
+              </button>
+            );
+          })}
+        </nav>
       </header>
       <main className="mx-auto max-w-6xl px-6 py-10 pb-24">
         <JudgeGuide />
@@ -114,15 +125,17 @@ export function AppShell({ children, className }: { children: ReactNode; classNa
       view !== "assess" &&
       view !== "prove" &&
       view !== "result" &&
-      view !== "changed" ? (
-        <div className="sticky bottom-0 border-t border-line bg-ink-950/95 backdrop-blur-sm">
+      view !== "changed" &&
+      view !== "map" &&
+      continueNext ? (
+        <div className="sticky bottom-0 app-footer-bar border-t border-line bg-ink-950/95 backdrop-blur-sm">
           <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-3">
             <p className="type-meta normal-case tracking-[0.14em] text-mist">
               KNOW · DIAGNOSE · PROVE · ADAPT
               {attempt ? ` · ${attempt.adaptation}` : ""}
             </p>
             <Button onClick={continueFlow} showMark>
-              {continueLabel}
+              {footerLabel}
             </Button>
           </div>
         </div>

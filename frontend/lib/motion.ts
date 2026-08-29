@@ -17,15 +17,17 @@ export const EASE_EMPHASIS = "cubic-bezier(0.34, 1.15, 0.64, 1)";
 
 /** PathFinder motion grammar */
 export const DURATION = {
-  micro: 150,
+  instant: 80,
+  micro: 140,
   interaction: 220,
-  transition: 400,
+  transition: 360,
   signature: 720,
-  /** @deprecated use micro/interaction/transition/signature */
-  fast: 120,
-  normal: 200,
-  slow: 380,
-  cascade: 520,
+  hero: 880,
+  /** @deprecated use instant/micro/interaction/transition/signature */
+  fast: 140,
+  normal: 220,
+  slow: 360,
+  cascade: 600,
 } as const;
 
 export const MIN_RESOLVE_MS = 420;

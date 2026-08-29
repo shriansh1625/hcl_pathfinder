@@ -1,5 +1,5 @@
 import type { GapItem, PathItem, PrerequisiteRow } from "./types";
-import { prettySkill } from "./status";
+import { displayAttainment, prettySkill } from "./status";
 
 export function parsePrerequisites(item: PathItem): PrerequisiteRow[] {
   return (item.prerequisites ?? [])
@@ -33,7 +33,7 @@ export function waitKindLabel(item: PathItem): string | null {
 
 export function blockerStateLine(blocker: PrerequisiteRow, gap?: GapItem | null): string {
   if (blocker.state === "UNKNOWN" || blocker.observed === null) {
-    return "UNKNOWN";
+    return displayAttainment({ evidence_state: "UNKNOWN", attainment: "UNKNOWN" });
   }
   const target = gap?.target_level ?? blocker.min_level;
   return `${blocker.observed.toFixed(2)} / ${target.toFixed(2)} target`;

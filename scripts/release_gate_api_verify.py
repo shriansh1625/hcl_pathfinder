@@ -3,11 +3,15 @@
 from __future__ import annotations
 
 import json
+import os
 import sys
 import urllib.error
 import urllib.request
 
-BASE = "http://127.0.0.1:8000"
+BASE = os.environ.get("PATHFINDER_API_URL") or os.environ.get("PF_API_URL")
+if not BASE:
+    print("Set PATHFINDER_API_URL (example: http://127.0.0.1:8000)", file=sys.stderr)
+    sys.exit(2)
 
 
 def get(path: str) -> tuple[int, dict | list | str]:

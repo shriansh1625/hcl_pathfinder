@@ -5,7 +5,7 @@ import { StatusBadge } from "@/components/ui/StatusBadge";
 import { EmptyState } from "@/components/ui/States";
 import { Mark, ScreenKicker } from "@/components/ui/Mark";
 import { useIntelligence } from "@/lib/session";
-import { prettySkill, visualState } from "@/lib/status";
+import { prettySkill, visualState, humanizeEngineCopy } from "@/lib/status";
 
 export function ProveIt() {
   const { suggested, gaps, loadAssessment, mutating } = useIntelligence();
@@ -16,26 +16,25 @@ export function ProveIt() {
     return (
       <EmptyState
         title="No unverified skills require a gate right now"
-        body={suggested?.reason || "The backend did not suggest an assessment."}
+        body={humanizeEngineCopy(suggested?.reason || "The backend did not suggest an assessment.")}
       />
     );
   }
 
   return (
-    <div className="mx-auto max-w-xl space-y-10">
+    <div className="prove-instrument mx-auto max-w-xl space-y-10">
       <div>
         <ScreenKicker verb="PROVE">Assessment</ScreenKicker>
-        <h1 className="mt-3 font-display text-4xl font-medium text-paper">
-          Some of your skills are still unverified.
-        </h1>
+        <h1 className="prove-title mt-3 font-display text-paper">Skill under evaluation</h1>
+        <p className="mt-3 text-sm text-mist">Some of your skills are still unverified.</p>
       </div>
-      <div className="border-y border-line py-6">
+      <div className="prove-panel">
         <p className="text-xs uppercase tracking-wider text-mist">{suggested.title}</p>
-        <h2 className="mt-2 font-display text-2xl text-paper">{prettySkill(cover || suggested.assessment)}</h2>
+        <h2 className="prove-skill mt-2 font-display text-paper">{prettySkill(cover || suggested.assessment)}</h2>
         <div className="mt-4">
           {gap ? <StatusBadge state={visualState(gap)} /> : <StatusBadge state="UNKNOWN" />}
         </div>
-        <p className="mt-4 text-sm text-mist">{suggested.reason}</p>
+        <p className="mt-4 text-sm text-mist">{humanizeEngineCopy(suggested.reason)}</p>
         <p className="mt-2 text-sm text-paper">Prove what you know.</p>
         <Button
           className="cta-go mt-6 w-full justify-between py-3.5"

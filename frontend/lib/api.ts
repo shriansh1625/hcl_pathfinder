@@ -1,9 +1,26 @@
+type ValidationIssue = { msg?: string; type?: string; loc?: unknown[] };
+
+function formatApiError(status: number, detail: unknown): string {
+  if (typeof detail === "string" && detail.trim()) return detail;
+  if (Array.isArray(detail)) {
+    const first = detail[0] as ValidationIssue | undefined;
+    if (first?.type === "string_too_short") {
+      return "Please enter a longer goal (at least 3 characters).";
+    }
+    if (first?.type === "json_invalid") {
+      return "The request could not be read. Refresh and try again.";
+    }
+    if (first?.msg) return first.msg;
+  }
+  return `Request failed (${status})`;
+}
+
 export class ApiError extends Error {
   status: number;
   detail: unknown;
 
   constructor(status: number, detail: unknown) {
-    super(typeof detail === "string" ? detail : `Request failed (${status})`);
+    super(formatApiError(status, detail));
     this.status = status;
     this.detail = detail;
   }

@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import { useIntelligence } from "@/lib/session";
-import { prettySkill } from "@/lib/status";
+import { prettySkill, displayAttainment, humanizeEngineCopy } from "@/lib/status";
 import type { ViewId } from "@/lib/types";
 
 const STEPS: { id: string; label: string; views: ViewId[] }[] = [
@@ -14,6 +14,7 @@ const STEPS: { id: string; label: string; views: ViewId[] }[] = [
   { id: "changed", label: "Path V2", views: ["changed"] },
   { id: "why", label: "Why", views: ["why"] },
   { id: "history", label: "History", views: ["history"] },
+  { id: "map", label: "Skill map", views: ["map"] },
 ];
 
 function stepIndex(view: ViewId): number {
@@ -49,7 +50,7 @@ function contextFor(
       };
     case "prove":
       return {
-        learned: opts.suggested?.reason || "Assessment targets highest-priority UNKNOWN skills.",
+        learned: humanizeEngineCopy(opts.suggested?.reason || "Assessment targets skills that still have no evidence."),
         changed: "No adaptation until evidence is submitted.",
         next: "Take the live assessment — questions come from the backend.",
       };
@@ -65,9 +66,9 @@ function contextFor(
           ? `New evidence for ${pretty}: observed ${opts.attempt?.skill_results[0]?.observed_level.toFixed(2) ?? "—"}.`
           : "Assessment result stored.",
         changed: before
-          ? `${pretty} moved from ${before.evidence_state === "UNKNOWN" ? "UNKNOWN" : before.attainment} toward updated diagnosis.`
+          ? `${pretty} moved from ${displayAttainment(before)} toward updated diagnosis.`
           : "Competency profile updated.",
-        next: "Inspect PATH CHANGED — same objects, new plan.",
+        next: opts.attempt ? "Inspect PATH CHANGED — same objects, new plan." : "Submit the assessment to record evidence first.",
       };
     case "changed":
       return {
@@ -85,7 +86,13 @@ function contextFor(
       return {
         learned: "Path versions are immutable.",
         changed: "Only one path remains ACTIVE.",
-        next: "Explore Skill Map or reset to start another learner.",
+        next: "Explore Skill Map to see dependency relationships.",
+      };
+    case "map":
+      return {
+        learned: "Skill dependencies show what blocks what.",
+        changed: "Neighborhood view highlights HARD and SOFT links.",
+        next: "Reset to start another learner demo.",
       };
     default:
       return {
@@ -121,6 +128,10 @@ export function JudgeGuide() {
       </div>
       <dl className="judge-rail-context">
         <div>
+          <dt>Where you are</dt>
+          <dd>{STEPS[active]?.label ?? "Workspace"}</dd>
+        </div>
+        <div>
           <dt>What PathFinder learned</dt>
           <dd>{context.learned}</dd>
         </div>
@@ -131,7 +142,7 @@ export function JudgeGuide() {
         <div>
           <dt>Look next</dt>
           <dd>
-            {next ? (
+            {next && !(view === "assess" && !attempt) ? (
               <button type="button" className="judge-rail-next" onClick={() => setView(next.views[0])}>
                 {context.next}
               </button>

@@ -1,35 +1,41 @@
 {
+  "passed": 9,
+  "failed": 0,
+  "total": 9,
   "results": [
     {
-      "name": "backend unavailable (intake)",
+      "name": "backend unavailable",
       "pass": true,
       "detail": "context preserved",
       "console": [
         "Failed to load resource: net::ERR_FAILED"
       ],
-      "network": []
+      "network": [],
+      "expectedUi": "What could not load"
     },
     {
-      "name": "intake failure preserves context",
+      "name": "intake failure",
       "pass": true,
-      "detail": "",
+      "detail": "context preserved after 404",
       "console": [
         "Failed to load resource: the server responded with a status of 404 (Not Found)"
       ],
       "network": [
-        "404 http://127.0.0.1:3002/v1/intake/goal"
-      ]
+        "404 http://127.0.0.1:3004/v1/intake/goal"
+      ],
+      "expectedUi": "What could not load"
     },
     {
       "name": "demo-evidence failure",
       "pass": true,
-      "detail": "truthful error, no workspace",
+      "detail": "truthful error",
       "console": [
         "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
       ],
       "network": [
-        "500 http://127.0.0.1:3002/v1/roles/ai-ml-engineer/demo-evidence"
-      ]
+        "500 http://127.0.0.1:3004/v1/roles/ai-ml-engineer/demo-evidence"
+      ],
+      "expectedUi": "error banner, no workspace"
     },
     {
       "name": "progress failure",
@@ -39,8 +45,9 @@
         "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
       ],
       "network": [
-        "500 http://127.0.0.1:3002/v1/learners/273cdf7a-cd40-46b3-ad2c-38c3811d5382/progress"
-      ]
+        "500 http://127.0.0.1:3004/v1/learners/da0f60b4-88ce-46bc-8952-6eff1730bdc0/progress"
+      ],
+      "expectedUi": "progress-error visible, no progress-result-created"
     },
     {
       "name": "assessment failure",
@@ -50,28 +57,45 @@
         "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
       ],
       "network": [
-        "500 http://127.0.0.1:3002/v1/learners/4805fb8e-b242-4985-83ac-797329d02d54/assessments/docker-gate/attempts"
-      ]
+        "500 http://127.0.0.1:3004/v1/learners/a551e05f-d8c5-42f4-8c6b-45374fb7d1ad/assessments/docker-gate/attempts"
+      ],
+      "expectedUi": "error-state, no result-hero"
     },
     {
-      "name": "AI unavailable fallback",
+      "name": "AI unavailable",
       "pass": true,
       "detail": "deterministic fallback shown",
       "console": [
         "Failed to load resource: the server responded with a status of 503 (Service Unavailable)"
       ],
       "network": [
-        "503 http://127.0.0.1:3002/v1/learners/2a56473e-9219-4553-af7f-329a361528d1/ai/explain"
-      ]
+        "503 http://127.0.0.1:3004/v1/learners/e5dde40b-2570-40cc-b331-ca3947945e8d/ai/explain"
+      ],
+      "expectedUi": "Explanation is unavailable"
     },
     {
       "name": "malformed AI response",
       "pass": true,
       "detail": "no fabricated answer",
       "console": [],
-      "network": []
+      "network": [],
+      "expectedUi": "Explanation is unavailable, no grounded-answer"
+    },
+    {
+      "name": "blocked prerequisite",
+      "pass": true,
+      "detail": "WAITING FOR VERIFICATION · Docker",
+      "console": [],
+      "network": [],
+      "expectedUi": "blocker-exposition on waiting path item"
+    },
+    {
+      "name": "UNKNOWN skill",
+      "pass": true,
+      "detail": "UNKNOWN rendered without 0%",
+      "console": [],
+      "network": [],
+      "expectedUi": "NO EVIDENCE badge, no 0% for unknown"
     }
-  ],
-  "passed": 7,
-  "total": 7
+  ]
 }

@@ -28,6 +28,7 @@ export function FlipList({
           (candidate) => candidate.dataset.flipKey === key,
         );
         if (!before || !el) return;
+        if (el.dataset.flipLock === "1") return;
         const dx = before.left - rect.left;
         const dy = before.top - rect.top;
         if (Math.abs(dx) < 0.5 && Math.abs(dy) < 0.5) return;

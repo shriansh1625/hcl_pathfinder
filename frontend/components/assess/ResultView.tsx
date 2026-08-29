@@ -6,7 +6,7 @@ import { StatusBadge } from "@/components/ui/StatusBadge";
 import { Mark, ScreenKicker } from "@/components/ui/Mark";
 import { useIntelligence } from "@/lib/session";
 import { prefersReducedMotion } from "@/lib/motion";
-import { prettySkill, visualState } from "@/lib/status";
+import { prettySkill, visualState, displayAttainment } from "@/lib/status";
 
 export function ResultView() {
   const { attempt, gaps, beforeGaps, setView } = useIntelligence();
@@ -36,12 +36,15 @@ export function ResultView() {
   const showEvidence = phase >= 1 || skipped;
   const showAfter = phase >= 2 || skipped;
   const showCta = phase >= 3 || skipped;
+  const observed = primary ? primary.observed_level.toFixed(2) : "—";
+  const target = after ? after.target_level.toFixed(2) : before ? before.target_level.toFixed(2) : "—";
+  const beforeLabel = displayAttainment(before);
 
   return (
-    <div className="adapt-hero mx-auto max-w-xl space-y-8" data-testid="result-hero">
+    <div className="result-report adapt-hero mx-auto max-w-xl space-y-8" data-testid="result-hero">
       <div className="adapt-hero-pulse">
-        <ScreenKicker verb="PROVE">New evidence</ScreenKicker>
-        <h1 className="mt-3 font-display text-4xl font-medium text-paper">{prettySkill(primary?.skill || attempt.assessment)}</h1>
+        <ScreenKicker verb="PROVE">Evidence recorded</ScreenKicker>
+        <h1 className="result-skill mt-3 font-display text-paper">{prettySkill(primary?.skill || attempt.assessment)}</h1>
         <p className="mt-3 text-sm text-mist">Assessment evidence recorded on the backend.</p>
       </div>
 
@@ -51,8 +54,8 @@ export function ResultView() {
         </button>
       ) : null}
 
-      <div className="result-chain border-y border-line py-6" data-testid="result-chain">
-        <div className={`result-chain-col ${phase >= 0 ? "is-visible" : ""}`} data-testid="result-before">
+      <div className="result-chain" data-testid="result-chain">
+        <div className={`result-chain-col result-before ${phase >= 0 ? "is-visible" : ""}`} data-testid="result-before">
           <p className="type-section">Before</p>
           {before ? (
             <div className="mt-3 space-y-2">
@@ -64,9 +67,7 @@ export function ResultView() {
                   action: before.action,
                 })}
               />
-              <p className="font-mono text-sm text-paper">
-                {before.evidence_state === "UNKNOWN" ? "UNKNOWN" : before.attainment}
-              </p>
+              <p className="result-before-value font-mono text-paper">{beforeLabel}</p>
             </div>
           ) : (
             <p className="mt-3 text-sm text-mist">—</p>
@@ -80,9 +81,11 @@ export function ResultView() {
         ) : null}
 
         {showEvidence ? (
-          <div className="result-chain-col adapt-phase-in" data-testid="result-evidence">
+          <div className="result-chain-col result-evidence adapt-phase-in" data-testid="result-evidence">
             <p className="type-section">New evidence</p>
-            <p className="mt-3 font-mono text-sm text-paper">Observed {primary ? primary.observed_level.toFixed(2) : "—"}</p>
+            <p className="result-metric mt-3 font-mono tabular-nums text-paper">
+              {observed} <span className="result-metric-den">/ {target}</span>
+            </p>
             <p className="mt-1 text-xs text-mist">{attempt.adaptation} adaptation signal</p>
           </div>
         ) : null}
@@ -94,18 +97,19 @@ export function ResultView() {
         ) : null}
 
         {showAfter && after ? (
-          <div className="result-chain-col adapt-phase-in" data-testid="result-after">
+          <div className="result-chain-col result-after adapt-phase-in" data-testid="result-after">
             <p className="type-section">After</p>
-            <div className="mt-3 space-y-2">
+            <div className="mt-3 space-y-3">
+              <p className="result-after-state">{after.attainment.replaceAll("_", " ")}</p>
               <StatusBadge state={visualState(after)} />
-              <dl className="grid grid-cols-2 gap-3 font-mono text-sm tabular-nums">
-                <div>
-                  <dt className="text-mist">Target</dt>
-                  <dd className="mt-1 text-paper">{after.target_level.toFixed(2)}</dd>
-                </div>
+              <dl className="result-after-dl font-mono text-sm tabular-nums">
                 <div>
                   <dt className="text-mist">Action</dt>
                   <dd className="mt-1 text-paper">{after.action.replaceAll("_", " ")}</dd>
+                </div>
+                <div>
+                  <dt className="text-mist">Target</dt>
+                  <dd className="mt-1 text-paper">{after.target_level.toFixed(2)}</dd>
                 </div>
               </dl>
             </div>
@@ -114,12 +118,15 @@ export function ResultView() {
       </div>
 
       {showCta ? (
-        <Button className="cta-go adapt-phase-in w-full justify-between py-3.5" onClick={() => setView("changed")} data-testid="see-what-changed">
-          <span>See what changed</span>
-          <span className="mark-arrow inline-flex" aria-hidden>
-            <Mark className="h-3 w-[18px]" />
-          </span>
-        </Button>
+        <div className="result-consequence adapt-phase-in">
+          <p className="type-section">Path consequence</p>
+          <Button className="cta-go mt-4 w-full justify-between py-3.5" onClick={() => setView("changed")} data-testid="see-what-changed">
+            <span>See what changed</span>
+            <span className="mark-arrow inline-flex" aria-hidden>
+              <Mark className="h-3 w-[18px]" />
+            </span>
+          </Button>
+        </div>
       ) : null}
     </div>
   );

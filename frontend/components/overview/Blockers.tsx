@@ -5,7 +5,7 @@ import { EmptyState } from "@/components/ui/States";
 import { ScreenKicker } from "@/components/ui/Mark";
 import { waitKindLabel } from "@/lib/blockers";
 import { useIntelligence } from "@/lib/session";
-import { prettySkill, proficiencyLabel, visualState } from "@/lib/status";
+import { humanizeEngineCopy, prettySkill, proficiencyLabel, visualState } from "@/lib/status";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 
 export function Blockers() {
@@ -71,7 +71,7 @@ export function Blockers() {
                       ? `Fused ${item.proficiency.toFixed(2)} · target ${item.target_level.toFixed(2)}`
                       : `${proficiencyLabel(item)} → ${item.target_level.toFixed(2)}`}
                 </p>
-                <p className="mt-4 text-xs leading-relaxed text-mist">{item.explanation}</p>
+                <p className="mt-4 text-xs leading-relaxed text-mist">{humanizeEngineCopy(item.explanation)}</p>
               </div>
               <div>
                 <p className="text-[11px] uppercase tracking-wider text-mist">Required action</p>

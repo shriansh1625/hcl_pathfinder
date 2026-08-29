@@ -19,9 +19,9 @@ describe("status and error rendering", () => {
     expect(screen.getByText("BLOCKED")).toBeInTheDocument();
   });
 
-  it("renders UNKNOWN as evidence required, not 0%", () => {
+  it("renders UNKNOWN as no evidence, not 0%", () => {
     render(<StatusBadge state="UNKNOWN" />);
-    expect(screen.getByText("UNKNOWN")).toBeInTheDocument();
+    expect(screen.getByText("NO EVIDENCE")).toBeInTheDocument();
     expect(screen.queryByText("0%")).not.toBeInTheDocument();
     expect(screen.queryByText("0.00")).not.toBeInTheDocument();
   });

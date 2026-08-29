@@ -132,7 +132,7 @@ describe("blocked resource exposition", () => {
     render(<PathView />);
     expect(screen.getAllByText("WAITING FOR VERIFICATION").length).toBeGreaterThan(0);
     expect(screen.getAllByText("Docker").length).toBeGreaterThan(0);
-    expect(screen.getAllByText("UNKNOWN").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("No evidence").length).toBeGreaterThan(0);
     expect(screen.getByText("Evidence required before this resource can start.")).toBeInTheDocument();
   });
 
@@ -153,6 +153,6 @@ describe("blocked resource exposition", () => {
   it("maps chain fields without inventing values", () => {
     render(<BlockerChain item={unknownWait} gaps={gaps} />);
     expect(screen.getByText("Docker")).toBeInTheDocument();
-    expect(screen.getByText("UNKNOWN")).toBeInTheDocument();
+    expect(screen.getByText("No evidence")).toBeInTheDocument();
   });
 });

@@ -398,18 +398,27 @@ export function IntelligenceProvider({ children }: { children: ReactNode }) {
   const submitAnswers = useCallback(
     async (answers: number[]) => {
       if (!learnerId || !assessment) return;
+      if (answers.length !== assessment.questions.length || answers.some((choice) => choice == null)) {
+        setError("Answer every question before submitting.");
+        return;
+      }
       setUpdatingModel(true);
       setError(null);
       try {
         const result = await api.submitAttempt(learnerId, assessment.slug, answers);
         setAttempt(result);
-        if (result.diff) setDiff(result.diff);
-        else if (result.path_id) {
-          const body = await api.pathDiff(learnerId, result.path_id);
-          setDiff(body);
+        if (result.diff) {
+          setDiff(result.diff);
+        } else if (result.path_id) {
+          try {
+            const body = await api.pathDiff(learnerId, result.path_id);
+            setDiff(body);
+          } catch {
+            /* diff is optional for the result screen */
+          }
         }
-        await refresh();
         setView("result");
+        void refresh().catch(() => undefined);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Assessment submit failed");
       } finally {

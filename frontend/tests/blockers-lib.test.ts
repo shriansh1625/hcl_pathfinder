@@ -25,7 +25,7 @@ const item: PathItem = {
 
 describe("unknown proficiency display", () => {
   it("never formats UNKNOWN as 0%", () => {
-    expect(blockerStateLine({ skill: "docker", min_level: 0.6, state: "UNKNOWN", observed: null })).toBe("UNKNOWN");
+    expect(blockerStateLine({ skill: "docker", min_level: 0.6, state: "UNKNOWN", observed: null })).toBe("No evidence");
     expect(waitKindLabel(item)).toBe("WAITING FOR VERIFICATION");
   });
 });

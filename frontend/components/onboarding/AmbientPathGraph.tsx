@@ -22,16 +22,16 @@ export function AmbientPathGraph({ step, resolved, launching }: Props) {
 
   return (
     <div
-      className={`ambient-path ${interactive ? "is-interactive" : ""} ${launching ? "is-launching" : ""}`}
+      className={`ambient-path ${interactive ? "is-interactive" : ""} ${launching ? "is-launching" : ""} ${resolved ? "is-resolved" : ""}`}
       aria-hidden
-      style={{
+        style={{
         position: "absolute",
-        top: "-2rem",
-        left: "-1rem",
-        right: "-1rem",
-        height: "16rem",
+        top: "-1.5rem",
+        left: "-2rem",
+        right: "-2rem",
+        height: "22rem",
         pointerEvents: "none",
-        opacity: 0.35,
+        opacity: resolved ? 0.55 : 0.28,
         overflow: "hidden",
         ["--path-progress" as string]: progress,
       }}

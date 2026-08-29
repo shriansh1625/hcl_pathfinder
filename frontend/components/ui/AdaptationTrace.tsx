@@ -1,7 +1,7 @@
 "use client";
 
 import { Mark } from "@/components/ui/Mark";
-import { prettySkill } from "@/lib/status";
+import { prettySkill, displayDiagnosisTransition } from "@/lib/status";
 import type { AssessmentAttempt, DiffEntry, GapItem, GapSnapshot } from "@/lib/types";
 
 export type TraceStep = {
@@ -25,10 +25,9 @@ export function buildAdaptationTrace(opts: {
   const steps: TraceStep[] = [];
 
   if (skill && before && after) {
-    const beforeLabel = before.evidence_state === "UNKNOWN" ? "UNKNOWN" : before.attainment;
     steps.push({
       label: "NEW EVIDENCE",
-      body: `${prettySkill(skill)}\n${beforeLabel} → ${after.attainment}`,
+      body: `${prettySkill(skill)}\n${displayDiagnosisTransition(before, after)}`,
     });
   }
 

@@ -31,6 +31,37 @@ export function isUnknown(item: Pick<GapItem, "evidence_state" | "proficiency">)
   return item.evidence_state === "UNKNOWN" || item.proficiency === null || item.proficiency === undefined;
 }
 
+export function isMissingEvidence(
+  item: Pick<GapItem, "evidence_state" | "attainment"> | null | undefined,
+): boolean {
+  if (!item) return false;
+  return item.evidence_state === "UNKNOWN" || item.attainment === "UNKNOWN";
+}
+
+/** Human label for attainment — never shows the raw UNKNOWN enum to users. */
+export function displayAttainment(
+  item: Pick<GapItem, "evidence_state" | "attainment"> | null | undefined,
+): string {
+  if (!item) return "—";
+  if (isMissingEvidence(item)) return "No evidence";
+  return item.attainment.replaceAll("_", " ");
+}
+
+/** Uppercase diagnosis line for forensic / mono displays. */
+export function displayAttainmentCaps(
+  item: Pick<GapItem, "evidence_state" | "attainment"> | null | undefined,
+): string {
+  const label = displayAttainment(item);
+  return label === "—" ? label : label.toUpperCase();
+}
+
+export function displayDiagnosisTransition(
+  before: Pick<GapItem, "evidence_state" | "attainment"> | null | undefined,
+  after: Pick<GapItem, "evidence_state" | "attainment"> | null | undefined,
+): string {
+  return `${displayAttainmentCaps(before)} → ${displayAttainmentCaps(after)}`;
+}
+
 export function stateCopy(state: VisualState): string {
   switch (state) {
     case "TARGET_MET":
@@ -40,7 +71,7 @@ export function stateCopy(state: VisualState): string {
     case "GAP":
       return "GAP";
     case "UNKNOWN":
-      return "UNKNOWN";
+      return "NO EVIDENCE";
     case "VERIFY":
       return "VERIFY";
     case "BLOCKED":
@@ -68,6 +99,17 @@ export function stateHint(state: VisualState): string {
 export function prettySkill(slug: string): string {
   if (!slug) return "";
   return slug.replaceAll("_", " ").replace(/\b\w/g, (ch) => ch.toUpperCase());
+}
+
+/** Backend enum language → learner-facing copy. Does not change stored state. */
+export function humanizeEngineCopy(text: string): string {
+  if (!text) return text;
+  return text
+    .replaceAll("BLOCKED_BY_UNKNOWN", "waiting for evidence")
+    .replace(/\bis UNKNOWN\b/g, "has no evidence")
+    .replace(/\bUNKNOWN is not\b/g, "Missing evidence is not")
+    .replace(/\bUNKNOWN skills\b/gi, "unverified skills")
+    .replace(/\bUNKNOWN\b/g, "no evidence");
 }
 
 /** Top priority gaps for competency focus — derived from live gap diagnosis, never hardcoded per role. */

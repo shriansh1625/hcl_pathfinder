@@ -53,7 +53,7 @@ export function CompetencyRow({
             {inspecting ? "Hide evidence" : "Inspect evidence →"}
           </button>
         ) : null}
-        <Meter state={state} ratio={ratio} targetLevel={item.target_level} />
+        <Meter state={state} ratio={ratio} targetLevel={item.target_level} proficiency={item.proficiency} />
       </div>
       <div className="hidden flex-col md:flex">
         <p className="competency-col-label">Current</p>
@@ -81,18 +81,41 @@ export function CompetencyRow({
   );
 }
 
-function Meter({ state, ratio }: { state: VisualState; ratio: number | null; targetLevel?: number }) {
+function Meter({
+  state,
+  ratio,
+  targetLevel,
+  proficiency,
+}: {
+  state: VisualState;
+  ratio: number | null;
+  targetLevel?: number;
+  proficiency?: number | null;
+}) {
   if (ratio === null) {
     return (
       <div className="meter meter-unknown mt-3" aria-hidden>
         <span className="meter-unknown-mark" />
+        <span className="meter-target" style={{ left: "100%" }} title="Target" />
       </div>
     );
   }
+  const targetPct = 100;
+  const currentPct = Math.round(ratio * 100);
+  const gapPct = Math.max(0, targetPct - currentPct);
   return (
-    <div className={`meter mt-3 meter-${state.toLowerCase()}`} aria-hidden>
-      <span className="meter-fill" style={{ width: `${Math.round(ratio * 100)}%` }} />
-      <span className="meter-target" style={{ left: "100%" }} title="Target" />
+    <div className={`meter mt-3 meter-${state.toLowerCase()} ${gapPct > 0 && gapPct < 100 ? "has-gap" : ""}`} aria-hidden>
+      <span className="meter-fill" style={{ width: `${currentPct}%` }} />
+      {gapPct > 0 && gapPct < 100 ? (
+        <span className="meter-gap-zone" style={{ left: `${currentPct}%`, width: `${gapPct}%` }} />
+      ) : null}
+      <span className="meter-current" style={{ left: `${currentPct}%` }} title="Current" />
+      <span className="meter-target" style={{ left: `${targetPct}%` }} title="Target" />
+      {typeof proficiency === "number" && targetLevel ? (
+        <span className="meter-gap-label">
+          {(targetLevel - proficiency).toFixed(2)} to target
+        </span>
+      ) : null}
     </div>
   );
 }

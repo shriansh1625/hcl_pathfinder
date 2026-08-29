@@ -375,7 +375,16 @@ def _from_payload(
 def parse_goal(text: str, *, provider: LLMProvider | None = None) -> GoalIntake:
     """Turn a free-text goal into resolved, ontology-backed structure."""
     vocab = res.build_vocabulary(load_ontology())
+    rule = _rule_based(text, vocab)
+    # Deterministic resolution is authoritative when the ontology already matches.
+    # This keeps intake fast and reliable even when the optional LLM is slow or down.
+    if rule.role is not None:
+        return rule
+
     engine = provider or get_llm_provider()
+    if engine.name == "none":
+        return rule
+
     try:
         payload = engine.complete_json(
             system=EXTRACTION_SYSTEM,
@@ -383,13 +392,11 @@ def parse_goal(text: str, *, provider: LLMProvider | None = None) -> GoalIntake:
             schema=EXTRACTION_SCHEMA,
             max_tokens=MAX_TOKENS,
         )
-    except LLMUnavailable:
-        return _rule_based(text, vocab)
+    except (LLMUnavailable, Exception):
+        return rule
 
     result = _from_payload(text, payload, vocab, engine)
     if result.role is None and not result.skills and not result.ungraded:
-        # Extraction produced nothing usable; the rule-based scan may still hit.
-        fallback = _rule_based(text, vocab)
-        if fallback.role is not None or fallback.skills or fallback.ungraded:
-            return fallback
+        if rule.role is not None or rule.skills or rule.ungraded:
+            return rule
     return result

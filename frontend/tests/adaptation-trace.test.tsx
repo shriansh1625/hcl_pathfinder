@@ -98,7 +98,7 @@ describe("causal adaptation trace", () => {
 
     render(<AdaptationTrace steps={steps} />);
     expect(screen.getByTestId("adaptation-trace")).toBeInTheDocument();
-    expect(screen.getByText(/UNKNOWN → GAP/)).toBeInTheDocument();
+    expect(screen.getByText(/NO EVIDENCE → GAP/)).toBeInTheDocument();
     expect(screen.getByText(/Target: 0.80/)).toBeInTheDocument();
     expect(screen.getByText(/Observed: 0.00/)).toBeInTheDocument();
     expect(screen.getByText("REMEDIATE")).toBeInTheDocument();

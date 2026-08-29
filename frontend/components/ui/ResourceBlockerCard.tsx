@@ -6,7 +6,7 @@ import {
   requiredActionForBlocker,
   waitKindLabel,
 } from "@/lib/blockers";
-import { prettySkill } from "@/lib/status";
+import { humanizeEngineCopy, prettySkill } from "@/lib/status";
 import type { GapItem, PathItem, PrerequisiteRow } from "@/lib/types";
 
 function whyLabel(blocker: PrerequisiteRow): string {
@@ -27,7 +27,7 @@ export function ResourceBlockerCard({ item, gaps }: { item: PathItem; gaps: GapI
   return (
     <article className="resource-blocker-card" data-testid="resource-blocker-card">
       <Field label="What is blocked?" value={item.title || item.resource} />
-      <Field label="Why?" value={blocker ? whyLabel(blocker) : item.explanation || "—"} />
+      <Field label="Why?" value={blocker ? whyLabel(blocker) : humanizeEngineCopy(item.explanation || "—")} />
       <Field
         label="Current state"
         value={
