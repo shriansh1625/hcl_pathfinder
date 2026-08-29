@@ -1,0 +1,41 @@
+# PathFinder — Render blueprint (API + Postgres)
+# Dashboard: New → Blueprint → connect this repo, or apply from repo root.
+# After deploy: set PATHFINDER_AI_API_KEY and PATHFINDER_CORS_ORIGINS (Vercel URL).
+
+databases:
+  - name: pathfinder-db
+    plan: free
+    databaseName: pathfinder
+    user: pathfinder
+
+services:
+  - type: web
+    name: pathfinder-api
+    runtime: python
+    plan: free
+    region: oregon
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: cd backend && uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    preDeployCommand: cd backend && alembic upgrade head && cd .. && python scripts/seed.py
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.11.9"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: pathfinder-db
+          property: connectionString
+      - key: PATHFINDER_CORS_ORIGINS
+        sync: false
+      - key: PATHFINDER_AI_PROVIDER
+        value: groq
+      - key: PATHFINDER_AI_BASE_URL
+        value: https://api.groq.com/openai/v1
+      - key: PATHFINDER_AI_MODEL
+        value: openai/gpt-oss-120b
+      - key: PATHFINDER_AI_TIMEOUT_SECONDS
+        value: "30"
+      - key: PATHFINDER_SEMANTIC_ENABLED
+        value: "false"
+      - key: PATHFINDER_AI_API_KEY
+        sync: false

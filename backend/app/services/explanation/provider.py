@@ -98,6 +98,7 @@ def parse_model_json(content: str) -> GroundedAnswer:
 
 
 def get_provider() -> AIProvider:
-    if settings.ai_provider == "openai" and settings.ai_api_key:
+    provider = (settings.ai_provider or "stub").strip().lower()
+    if provider in {"openai", "groq", "openai-compatible"} and settings.ai_api_key:
         return OpenAICompatibleProvider()
     return StubProvider()

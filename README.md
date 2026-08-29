@@ -178,6 +178,8 @@ cd frontend && npm install && npm run build && PORT=3002 npm run start
 
 Full reproducibility guide: `docs/REPRODUCIBILITY_DEPLOYMENT.md`
 
+**Cloud deploy (Render + Vercel):** `docs/DEPLOY_VERCEL_RENDER.md` — includes Groq `openai/gpt-oss-120b` and `render.yaml` blueprint.
+
 ---
 
 ## Environment variables
