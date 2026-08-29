@@ -54,6 +54,8 @@ PATHFINDER_SEMANTIC_ENABLED=false
 
 `PATHFINDER_SEMANTIC_ENABLED=false` avoids a heavy `fastembed` cold start on Render free tier. Enable later if you upgrade the instance.
 
+> **Free tier note:** `preDeployCommand` is not available on Render free plans. Migrations and seed run via `scripts/render_start.sh` at service start instead.
+
 ### 3. Verify API
 
 After the first deploy (migrations + seed run automatically):
@@ -79,8 +81,7 @@ If you prefer the dashboard instead of the blueprint:
 |---------|--------|
 | Root Directory | *(repo root)* |
 | Build | `pip install -r backend/requirements.txt` |
-| Start | `cd backend && uvicorn app.main:app --host 0.0.0.0 --port $PORT` |
-| Pre-deploy | `cd backend && alembic upgrade head && cd .. && python scripts/seed.py` |
+| Start | `bash scripts/render_start.sh` |
 | Health check | `/health` |
 
 Use the same environment variables as in Option A. `DATABASE_URL` from Render is auto-normalized to `postgresql+psycopg2://` in `backend/app/core/config.py`.
@@ -156,7 +157,7 @@ Judge flow on Vercel URL: onboarding → AI/ML Engineer → dashboard → path �
 | Symptom | Fix |
 |---------|-----|
 | Vercel build fails: `NEXT_PUBLIC_API_URL is required` | Add env var in Vercel project settings, redeploy |
-| `/ready` 503 | Wait for DB; check `DATABASE_URL`; rerun pre-deploy (migrate + seed) |
+| `/ready` 503 | Wait for DB; check `DATABASE_URL`; restart service (start script runs migrate + seed) |
 | Empty careers | Run Render Shell: `python scripts/seed.py` |
 | AI shows “Explanation is unavailable” | Set `PATHFINDER_AI_API_KEY` on Render; confirm `PATHFINDER_AI_PROVIDER=groq` |
 | Slow first API request | Render free tier cold start (~30–60s) |
