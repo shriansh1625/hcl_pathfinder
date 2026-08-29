@@ -10,6 +10,8 @@ from typing import Sequence, Union
 import sqlalchemy as sa
 from alembic import op
 
+from app.db.migration_helpers import has_column, has_index
+
 revision: str = "0004_slice32_hardening"
 down_revision: Union[str, Sequence[str], None] = "0003_assessment_adaptation"
 branch_labels: Union[str, Sequence[str], None] = None
@@ -17,17 +19,19 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
-    op.add_column(
-        "assessments",
-        sa.Column("definition_hash", sa.String(64), nullable=True),
-    )
-    op.create_index(
-        "uq_learning_paths_user_role_active",
-        "learning_paths",
-        ["user_id", "role_id"],
-        unique=True,
-        postgresql_where=sa.text("status = 'ACTIVE'"),
-    )
+    if not has_column("assessments", "definition_hash"):
+        op.add_column(
+            "assessments",
+            sa.Column("definition_hash", sa.String(64), nullable=True),
+        )
+    if not has_index("learning_paths", "uq_learning_paths_user_role_active"):
+        op.create_index(
+            "uq_learning_paths_user_role_active",
+            "learning_paths",
+            ["user_id", "role_id"],
+            unique=True,
+            postgresql_where=sa.text("status = 'ACTIVE'"),
+        )
 
 
 def downgrade() -> None:
