@@ -1,0 +1,75 @@
+{
+  "pages": 13,
+  "critical": 0,
+  "serious": 0,
+  "moderate": 0,
+  "pass": true,
+  "pagesScanned": [
+    {
+      "name": "onboarding",
+      "issues": [],
+      "reducedMotion": false
+    },
+    {
+      "name": "career explorer",
+      "issues": [],
+      "reducedMotion": false
+    },
+    {
+      "name": "profile",
+      "issues": [],
+      "reducedMotion": false
+    },
+    {
+      "name": "dashboard",
+      "issues": [],
+      "reducedMotion": false
+    },
+    {
+      "name": "path",
+      "issues": [],
+      "reducedMotion": false
+    },
+    {
+      "name": "why drawer",
+      "issues": [],
+      "reducedMotion": false
+    },
+    {
+      "name": "progress",
+      "issues": [],
+      "reducedMotion": false
+    },
+    {
+      "name": "assessment",
+      "issues": [],
+      "reducedMotion": false
+    },
+    {
+      "name": "result",
+      "issues": [],
+      "reducedMotion": false
+    },
+    {
+      "name": "timeline",
+      "issues": [],
+      "reducedMotion": false
+    },
+    {
+      "name": "skill map",
+      "issues": [],
+      "reducedMotion": false
+    },
+    {
+      "name": "ai",
+      "issues": [],
+      "reducedMotion": false
+    },
+    {
+      "name": "judge mode",
+      "issues": [],
+      "reducedMotion": false
+    }
+  ],
+  "violations": []
+}

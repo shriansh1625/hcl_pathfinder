@@ -52,6 +52,9 @@ def _read(result: GoalIntake) -> GoalIntakeRead:
         source=result.source,
         provider=result.provider,
         model=result.model,
+        resolution_status=result.resolution_status,
+        goal_summary=result.goal_summary,
+        focus_mentions=list(result.focus_mentions),
     )
 
 

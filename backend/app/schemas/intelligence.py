@@ -61,6 +61,9 @@ class GoalIntakeRead(BaseModel):
     source: str
     provider: str
     model: str
+    resolution_status: str
+    goal_summary: str | None = None
+    focus_mentions: list[str] = Field(default_factory=list)
 
 
 class DemoEvidenceRead(BaseModel):

@@ -278,6 +278,9 @@ export type GoalIntake = {
   source: string;
   provider: string;
   model: string;
+  resolution_status: "RESOLVED" | "AMBIGUOUS" | "UNSUPPORTED";
+  goal_summary?: string | null;
+  focus_mentions?: string[];
 };
 
 export type RoleDetail = {

@@ -1,0 +1,129 @@
+{
+  "passed": 15,
+  "total": 15,
+  "results": [
+    {
+      "name": "desktop: I want to become a machine learning engineer foc",
+      "pass": true,
+      "detail": "resolved",
+      "expect": "resolved",
+      "console": [],
+      "network": []
+    },
+    {
+      "name": "desktop: I want to be a pen tester.",
+      "pass": true,
+      "detail": "resolved",
+      "expect": "resolved",
+      "console": [],
+      "network": []
+    },
+    {
+      "name": "desktop: I want to work in cloud security.",
+      "pass": true,
+      "detail": "ambiguous",
+      "expect": "ambiguous",
+      "console": [],
+      "network": []
+    },
+    {
+      "name": "desktop: I want to become an MLOps engineer.",
+      "pass": true,
+      "detail": "resolved",
+      "expect": "resolved",
+      "console": [],
+      "network": []
+    },
+    {
+      "name": "desktop: I want a career in data.",
+      "pass": true,
+      "detail": "ambiguous",
+      "expect": "ambiguous",
+      "console": [],
+      "network": []
+    },
+    {
+      "name": "desktop: I want to be a marine biologist.",
+      "pass": true,
+      "detail": "unsupported",
+      "expect": "unsupported",
+      "console": [],
+      "network": []
+    },
+    {
+      "name": "desktop: quantum potato infrastructure architect",
+      "pass": true,
+      "detail": "unsupported",
+      "expect": "unsupported",
+      "console": [],
+      "network": []
+    },
+    {
+      "name": "mobile: I want to become a machine learning engineer foc",
+      "pass": true,
+      "detail": "resolved",
+      "expect": "resolved",
+      "console": [],
+      "network": []
+    },
+    {
+      "name": "mobile: I want to be a pen tester.",
+      "pass": true,
+      "detail": "resolved",
+      "expect": "resolved",
+      "console": [],
+      "network": []
+    },
+    {
+      "name": "mobile: I want to work in cloud security.",
+      "pass": true,
+      "detail": "ambiguous",
+      "expect": "ambiguous",
+      "console": [],
+      "network": []
+    },
+    {
+      "name": "mobile: I want to become an MLOps engineer.",
+      "pass": true,
+      "detail": "resolved",
+      "expect": "resolved",
+      "console": [],
+      "network": []
+    },
+    {
+      "name": "mobile: I want a career in data.",
+      "pass": true,
+      "detail": "ambiguous",
+      "expect": "ambiguous",
+      "console": [],
+      "network": []
+    },
+    {
+      "name": "mobile: I want to be a marine biologist.",
+      "pass": true,
+      "detail": "unsupported",
+      "expect": "unsupported",
+      "console": [],
+      "network": []
+    },
+    {
+      "name": "mobile: quantum potato infrastructure architect",
+      "pass": true,
+      "detail": "unsupported",
+      "expect": "unsupported",
+      "console": [],
+      "network": []
+    },
+    {
+      "name": "provider failure recovery",
+      "pass": true,
+      "detail": "manual fallback visible",
+      "console": [
+        "Failed to load resource: net::ERR_FAILED"
+      ],
+      "network": []
+    }
+  ],
+  "base": "http://127.0.0.1:3002",
+  "at": "2026-08-30T17:08:14.135Z"
+}

@@ -78,8 +78,8 @@ PathFinder is an evidence-driven intelligence system:
 | Intelligence benchmark | **20/20** | `artifacts/intelligence_benchmark.json` |
 | Multi-career isolation | 3/3 unique paths | `artifacts/multi-career-proof/proof.json` |
 | Second-learner personalization | same role, different evidence → different path | `artifacts/second-learner-proof/proof.json` |
-| Accessibility | 0 critical / 0 serious | `artifacts/accessibility/summary.json` |
-| Regression | 218 pytest · 53 vitest · build | `docs/FINAL_PROOF_CLOSURE.md` |
+| Accessibility | 0 critical / 0 serious (dark + light) | `artifacts/accessibility/summary-dark.json` |
+| Regression | 237 pytest · 56 vitest · build | `docs/FINAL_PROOF_CLOSURE.md` |
 
 **Strongest demo moment:** complete an assessment → see Result → open **What changed** → Path V2 with completed steps frozen and new sequence ahead.
 
@@ -225,8 +225,8 @@ Short answers above; full hostile-judge Q&A in [`docs/JUDGE_FAQ.md`](docs/JUDGE_
 ## Tests & benchmark
 
 ```bash
-python -m pytest -q                    # 218 passed
-cd frontend && npm test                # 53 passed
+python -m pytest -q                    # 237 passed
+cd frontend && npm test                # 56 passed
 cd frontend && npm run build
 python scripts/intelligence_benchmark.py  # 20/20
 PATHFINDER_API_URL=http://127.0.0.1:8000 python scripts/api_smoke_test.py

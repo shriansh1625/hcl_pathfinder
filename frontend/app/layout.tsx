@@ -32,8 +32,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${sans.variable} ${display.variable} ${mono.variable} min-h-screen bg-ink-950 font-sans text-paper antialiased`}>
+    <html lang="en" data-theme="dark" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem("pathfinder-theme");if(t!=="dark"&&t!=="light"){t=window.matchMedia("(prefers-color-scheme: light)").matches?"light":"dark"}document.documentElement.dataset.theme=t}catch(e){document.documentElement.dataset.theme="dark"}})()`,
+          }}
+        />
+      </head>
+      <body className={`${sans.variable} ${display.variable} ${mono.variable} min-h-screen font-sans text-paper antialiased`}>
         <div className="app-root">
           <Providers>{children}</Providers>
         </div>

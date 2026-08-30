@@ -2,32 +2,32 @@
 
 ## Executive Verdict
 - Overall: **20/20** (100.0%)
-- Commit: `35b5fc84e4dadaf5d0c7ce4760e964ef8bd26dad`
-- Timestamp: 2026-08-29T22:02:55.275835+00:00
+- Commit: `ddea911c4ace61c810f91025fdc6df4558eb0b5b`
+- Timestamp: 2026-08-30T18:01:35.505887+00:00
 
 ## Scenario Matrix
 | ID | Scenario | Result | Duration ms |
 |----|----------|--------|-------------|
-| S01 | EMPTY EVIDENCE | PASS | 9243.26 |
-| S02 | TARGET-MET SKILL | PASS | 1164.65 |
-| S03 | DIAGNOSED GAP | PASS | 846.73 |
-| S04 | UNKNOWN BLOCKER | PASS | 895.62 |
-| S05 | KNOWN GAP BLOCKER | PASS | 799.02 |
-| S06 | ROLE CHANGE | PASS | 1135.23 |
-| S07 | LEARNER CHANGE | PASS | 1570.51 |
-| S08 | WEEKLY BUDGET | PASS | 892.71 |
-| S09 | LEARNING STYLE | PASS | 846.92 |
-| S10 | SEMANTIC OFF VS ON | PASS | 773.72 |
-| S11 | CONFLICTING EVIDENCE | PASS | 2224.26 |
-| S12 | POSITIVE SURPRISE | PASS | 1663.2 |
-| S13 | NEGATIVE SURPRISE | PASS | 1499.97 |
-| S14 | DOCKER UNKNOWN→KNOWN | PASS | 1325.42 |
-| S15 | NO-OP ADAPTATION | PASS | 957.37 |
-| S16 | DUPLICATE ATTEMPT | PASS | 2236.98 |
-| S17 | COMPLETED WORK | PASS | 1028.67 |
-| S18 | MULTI-VERSION CHAIN | PASS | 1284.03 |
-| S19 | ASSESSMENT DRIFT | PASS | 17.22 |
-| S20 | CAUSAL EXPLANATIONS | PASS | 660.84 |
+| S01 | EMPTY EVIDENCE | PASS | 5230.52 |
+| S02 | TARGET-MET SKILL | PASS | 757.84 |
+| S03 | DIAGNOSED GAP | PASS | 687.34 |
+| S04 | UNKNOWN BLOCKER | PASS | 772.58 |
+| S05 | KNOWN GAP BLOCKER | PASS | 689.05 |
+| S06 | ROLE CHANGE | PASS | 1026.89 |
+| S07 | LEARNER CHANGE | PASS | 1039.16 |
+| S08 | WEEKLY BUDGET | PASS | 494.51 |
+| S09 | LEARNING STYLE | PASS | 558.4 |
+| S10 | SEMANTIC OFF VS ON | PASS | 585.06 |
+| S11 | CONFLICTING EVIDENCE | PASS | 446.37 |
+| S12 | POSITIVE SURPRISE | PASS | 1769.02 |
+| S13 | NEGATIVE SURPRISE | PASS | 897.26 |
+| S14 | DOCKER UNKNOWN→KNOWN | PASS | 1279.79 |
+| S15 | NO-OP ADAPTATION | PASS | 886.11 |
+| S16 | DUPLICATE ATTEMPT | PASS | 1387.95 |
+| S17 | COMPLETED WORK | PASS | 1409.52 |
+| S18 | MULTI-VERSION CHAIN | PASS | 1739.26 |
+| S19 | ASSESSMENT DRIFT | PASS | 12.94 |
+| S20 | CAUSAL EXPLANATIONS | PASS | 480.01 |
 
 ## Quantitative Metrics
 
@@ -65,30 +65,30 @@ S11 and S12 expectations were corrected to match established domain semantics:
 
 ```json
 {
-  "startup_ms": 31549.28,
+  "startup_ms": 22564.0,
   "scenario_timings_ms": {
-    "S01": 9243.26,
-    "S02": 1164.65,
-    "S03": 846.73,
-    "S04": 895.62,
-    "S05": 799.02,
-    "S06": 1135.23,
-    "S07": 1570.51,
-    "S08": 892.71,
-    "S09": 846.92,
-    "S10": 773.72,
-    "S11": 2224.26,
-    "S12": 1663.2,
-    "S13": 1499.97,
-    "S14": 1325.42,
-    "S15": 957.37,
-    "S16": 2236.98,
-    "S17": 1028.67,
-    "S18": 1284.03,
-    "S19": 17.22,
-    "S20": 660.84
+    "S01": 5230.52,
+    "S02": 757.84,
+    "S03": 687.34,
+    "S04": 772.58,
+    "S05": 689.05,
+    "S06": 1026.89,
+    "S07": 1039.16,
+    "S08": 494.51,
+    "S09": 558.4,
+    "S10": 585.06,
+    "S11": 446.37,
+    "S12": 1769.02,
+    "S13": 897.26,
+    "S14": 1279.79,
+    "S15": 886.11,
+    "S16": 1387.95,
+    "S17": 1409.52,
+    "S18": 1739.26,
+    "S19": 12.94,
+    "S20": 480.01
   },
   "harness_timings_ms": {},
-  "total_ms": 31066.33
+  "total_ms": 22149.58
 }
 ```

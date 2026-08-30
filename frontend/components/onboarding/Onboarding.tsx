@@ -217,6 +217,11 @@ export function Onboarding() {
                 onResolve={resolveGoal}
                 onManual={() => setStep(1)}
                 onContinueFromResolution={() => setStep(1)}
+                onSelectAmbiguousRole={(slug) => {
+                  setRole(slug);
+                  setStep(1);
+                }}
+                onSeeSupportedCareers={() => setStep(1)}
               />
             ) : null}
 

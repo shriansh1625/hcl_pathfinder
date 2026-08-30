@@ -150,12 +150,15 @@ def test_semantically_relevant_resource_scores_higher_with_fixed_vectors():
     profile = _profile({"ml_fundamentals": 0.3})
     relevant = _resource("ml-focused", "ml_fundamentals")
     unrelated = _resource("unrelated", "javascript")
-    assert semantic_similarity(relevant, profile, store=store) > semantic_similarity(
-        unrelated, profile, store=store
+    assert semantic_similarity(relevant, profile, store=store, enabled=True) > semantic_similarity(
+        unrelated, profile, store=store, enabled=True
     )
 
 
 def test_semantic_similarity_can_change_ranking_when_other_factors_match():
+    from app.core import config
+
+    config.settings.semantic_enabled = True
     store = _fixed_store()
     stats = RoleCompetency("statistics", "Statistics", 0.8, 0.9, RequiredStatus.CORE)
     profile = build_gap_profile(
@@ -230,6 +233,9 @@ def test_semantic_similarity_cannot_bypass_zero_role_importance_selection():
 
 
 def test_semantic_similarity_cannot_bypass_prerequisite_eligibility():
+    from app.core import config
+
+    config.settings.semantic_enabled = True
     store = _fixed_store()
     profile = _profile({"python": None, "ml_fundamentals": 0.2})
     blocked = _resource(

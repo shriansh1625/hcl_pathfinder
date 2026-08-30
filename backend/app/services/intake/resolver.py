@@ -148,11 +148,32 @@ ROLE_ALIASES: dict[str, str] = {
     "security analyst": "cybersecurity-analyst", "infosec": "cybersecurity-analyst",
     "soc analyst": "cybersecurity-analyst", "security engineer": "cybersecurity-analyst",
     "pentester": "cybersecurity-analyst",
+    "pen tester": "cybersecurity-analyst",
+    "penetration tester": "cybersecurity-analyst",
+    "penetration testing": "cybersecurity-analyst",
+    "mlops engineer": "ai-ml-engineer",
+    "ml ops engineer": "ai-ml-engineer",
+    "mlops": "ai-ml-engineer",
+    "mobile developer": "frontend-developer",
+    "mobile app developer": "frontend-developer",
+    "mobile apps": "frontend-developer",
+    "ios developer": "frontend-developer",
+    "android developer": "frontend-developer",
     "devops": "cloud-devops-engineer", "dev ops": "cloud-devops-engineer",
     "cloud engineer": "cloud-devops-engineer", "sre": "cloud-devops-engineer",
     "platform engineer": "cloud-devops-engineer",
     "site reliability": "cloud-devops-engineer",
     "infrastructure engineer": "cloud-devops-engineer",
+}
+
+# Phrases that legitimately map to more than one canonical role — never auto-pick.
+AMBIGUOUS_ROLE_PHRASES: dict[str, tuple[str, ...]] = {
+    "career in data": ("data-engineer", "data-analyst"),
+    "work in data": ("data-engineer", "data-analyst"),
+    "data career": ("data-engineer", "data-analyst"),
+    "job in data": ("data-engineer", "data-analyst"),
+    "cloud security": ("cybersecurity-analyst", "cloud-devops-engineer"),
+    "security in the cloud": ("cybersecurity-analyst", "cloud-devops-engineer"),
 }
 
 # Qualitative experience wording -> observed proficiency.
@@ -207,6 +228,16 @@ class Vocabulary:
 
     def resolve_role(self, mention: str) -> ResolvedEntity | None:
         return _resolve(mention, self.role_by_key, self.role_names)
+
+    def role_entities(self, slugs: tuple[str, ...], mention: str, how: str = "ALIAS") -> tuple[ResolvedEntity, ...]:
+        out: list[ResolvedEntity] = []
+        seen: set[str] = set()
+        for slug in slugs:
+            if slug not in self.role_names or slug in seen:
+                continue
+            seen.add(slug)
+            out.append(ResolvedEntity(slug=slug, name=self.role_names[slug], mention=mention, how=how))
+        return tuple(out)
 
 
 def _normalise(text: str) -> str:
@@ -379,3 +410,34 @@ def timeframe_weeks_from_text(text: str) -> int | None:
     unit = match.group(2)
     weeks = count * {"week": 1, "month": 4, "year": 52}[unit]
     return weeks if 0 < weeks <= 260 else None
+
+
+def ambiguous_phrase_match(text: str) -> tuple[str, ...] | None:
+    """Return canonical role slugs when text hits a known ambiguous phrase."""
+    normalised = _normalise(text)
+    for phrase, slugs in AMBIGUOUS_ROLE_PHRASES.items():
+        if phrase in normalised:
+            return slugs
+    return None
+
+
+def collect_roles_from_text(text: str, vocab: Vocabulary) -> tuple[ResolvedEntity, ...]:
+    """Every distinct canonical role the text mentions, longest non-overlapping matches."""
+    haystack = f" {_normalise(text)} "
+    found: dict[str, ResolvedEntity] = {}
+    consumed: list[tuple[int, int]] = []
+    for key in sorted(vocab.role_by_key, key=len, reverse=True):
+        if len(key) < 3:
+            continue
+        for match in re.finditer(rf"\b{re.escape(key)}\b", haystack):
+            span = (match.start(), match.end())
+            if any(start < span[1] and span[0] < end for start, end in consumed):
+                continue
+            slug = vocab.role_by_key[key]
+            if slug not in found:
+                entity = vocab.resolve_role(key)
+                if entity is not None:
+                    found[slug] = entity
+                    consumed.append(span)
+            break
+    return tuple(found.values())

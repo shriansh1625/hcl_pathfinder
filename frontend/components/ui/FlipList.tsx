@@ -12,16 +12,24 @@ export function FlipList({
 }) {
   const root = useRef<HTMLDivElement>(null);
   const prior = useRef<Map<string, DOMRect>>(new Map());
+  const viewportWidth = useRef(0);
 
   useLayoutEffect(() => {
     const node = root.current;
     if (!node) return;
+
+    const width = window.innerWidth;
+    const widthChanged = viewportWidth.current > 0 && Math.abs(width - viewportWidth.current) > 2;
+    viewportWidth.current = width;
+
     const next = new Map<string, DOMRect>();
     node.querySelectorAll<HTMLElement>("[data-flip-key]").forEach((el) => {
       const key = el.dataset.flipKey;
       if (key) next.set(key, el.getBoundingClientRect());
     });
-    if (!prefersReducedMotion()) {
+
+    if (!prefersReducedMotion() && !widthChanged) {
+      const maxDx = Math.max(48, width * 0.12);
       next.forEach((rect, key) => {
         const before = prior.current.get(key);
         const el = Array.from(node.querySelectorAll<HTMLElement>("[data-flip-key]")).find(
@@ -32,6 +40,8 @@ export function FlipList({
         const dx = before.left - rect.left;
         const dy = before.top - rect.top;
         if (Math.abs(dx) < 0.5 && Math.abs(dy) < 0.5) return;
+        // Cross-layout FLIP deltas (e.g. 1440→390) must not run — they spill past the viewport.
+        if (Math.abs(dx) > maxDx) return;
         if (typeof el.animate === "function") {
           el.animate(
             [{ transform: `translate(${dx}px, ${dy}px)` }, { transform: "translate(0, 0)" }],
@@ -40,11 +50,12 @@ export function FlipList({
         }
       });
     }
+
     prior.current = next;
   }, [replay]);
 
   return (
-    <div ref={root} className="space-y-2">
+    <div ref={root} className="flip-list space-y-2">
       {children}
     </div>
   );

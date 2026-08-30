@@ -50,11 +50,12 @@ def test_goal_intake_resolves_ml_engineer_deterministically():
 def test_goal_intake_api_returns_structured_payload():
     response = client.post(
         "/v1/intake/goal",
-        json={"goal": "I want to move into cybersecurity and focus on cloud security."},
+        json={"goal": "I want to become a cybersecurity analyst focused on incident response."},
     )
     assert response.status_code == 200, response.text
     body = response.json()
     assert body["goal_text"]
+    assert body["resolution_status"] == "RESOLVED"
     assert body["role"]["slug"] == "cybersecurity-analyst"
 
 

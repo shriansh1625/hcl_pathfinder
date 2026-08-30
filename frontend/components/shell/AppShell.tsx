@@ -2,6 +2,7 @@
 
 import { AskPathFinder } from "@/components/ai/AskPathFinder";
 import { JudgeGuide } from "@/components/judge/JudgeGuide";
+import { ThemeSwitch } from "@/components/shell/ThemeSwitch";
 import Link from "next/link";
 import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { usePathname, useRouter } from "next/navigation";
@@ -83,6 +84,7 @@ export function AppShell({ children, className }: { children: ReactNode; classNa
             />
           </nav>
           <div className="flex items-center gap-3">
+            <ThemeSwitch />
             <p className="type-meta hidden lg:block normal-case tracking-normal text-mist">{roleName}</p>
             <Button
               variant="ghost"
@@ -128,7 +130,7 @@ export function AppShell({ children, className }: { children: ReactNode; classNa
       view !== "changed" &&
       view !== "map" &&
       continueNext ? (
-        <div className="sticky bottom-0 app-footer-bar border-t border-line bg-ink-950/95 backdrop-blur-sm">
+        <div className="sticky bottom-0 app-footer-bar border-t border-line backdrop-blur-sm">
           <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-3">
             <p className="type-meta normal-case tracking-[0.14em] text-mist">
               KNOW · DIAGNOSE · PROVE · ADAPT

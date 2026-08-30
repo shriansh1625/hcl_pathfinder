@@ -18,6 +18,7 @@ import {
 } from "./qa_helpers.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
+const THEME = process.env.PF_THEME || "dark";
 const OUT = join(__dirname, "..", "artifacts", "accessibility");
 mkdirSync(OUT, { recursive: true });
 
@@ -65,6 +66,13 @@ async function scanPage(page, name) {
 const browser = await launchBrowser();
 const page = await browser.newPage();
 await clearSession(page);
+await page.addInitScript((t) => {
+  try {
+    window.localStorage.setItem("pathfinder-theme", t);
+  } catch {
+    /* ignore */
+  }
+}, THEME);
 
 await page.goto(BASE);
 await page.getByRole("heading", { name: /Build the path/i }).waitFor();
@@ -155,6 +163,6 @@ const summary = {
   pagesScanned: pages,
   violations,
 };
-writeFileSync(join(OUT, "summary.json"), JSON.stringify(summary, null, 2));
-console.log("SUMMARY", JSON.stringify({ pass: summary.pass, critical: summary.critical, serious: summary.serious }));
+writeFileSync(join(OUT, `summary-${THEME}.json`), JSON.stringify(summary, null, 2));
+console.log("SUMMARY", THEME, JSON.stringify({ pass: summary.pass, critical: summary.critical, serious: summary.serious }));
 process.exit(summary.pass ? 0 : 1);
