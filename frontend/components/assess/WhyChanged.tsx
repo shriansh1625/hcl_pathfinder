@@ -19,7 +19,7 @@ export function WhyChanged() {
   return (
     <div className="forensic-inspect mx-auto max-w-2xl space-y-10" data-testid="why-changed">
       <div>
-        <ScreenKicker verb="ADAPT">Causality</ScreenKicker>
+        <ScreenKicker verb="ADAPT">Why your path changed</ScreenKicker>
         <h1 className="forensic-title mt-3 font-display text-paper">Why this changed</h1>
         <p className="mt-3 text-sm text-mist">Evidence → diagnosis → action → path change. Every statement comes from stored backend state.</p>
       </div>

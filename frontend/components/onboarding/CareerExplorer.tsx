@@ -96,7 +96,7 @@ export function CareerExplorer({
   return (
     <div className="career-explorer space-y-4">
       <div className="career-explorer-head">
-        <p className="type-section">{roles.length} careers from the live ontology</p>
+        <p className="type-section">{roles.length} careers to explore</p>
         <p className="mt-1 text-sm text-mist">Each role produces a different gap profile and sequenced path.</p>
       </div>
       <label className="sr-only" htmlFor="career-search">

@@ -13,9 +13,9 @@ import { useIntelligence } from "@/lib/session";
 import type { ViewId } from "@/lib/types";
 
 const NAV: { id: ViewId; label: string }[] = [
-  { id: "overview", label: "Overview" },
+  { id: "overview", label: "My Journey" },
   { id: "path", label: "My Path" },
-  { id: "prove", label: "Assessments" },
+  { id: "prove", label: "Skill Checks" },
   { id: "map", label: "Skill Map" },
   { id: "history", label: "History" },
 ];
@@ -86,6 +86,11 @@ export function AppShell({ children, className }: { children: ReactNode; classNa
           <div className="flex items-center gap-3">
             <ThemeSwitch />
             <p className="type-meta hidden lg:block normal-case tracking-normal text-mist">{roleName}</p>
+            <Link href="/#get-started">
+              <Button variant="secondary" className="hidden sm:inline-flex text-xs">
+                Build My Path
+              </Button>
+            </Link>
             <Button
               variant="ghost"
               onClick={() => {
@@ -133,7 +138,7 @@ export function AppShell({ children, className }: { children: ReactNode; classNa
         <div className="sticky bottom-0 app-footer-bar border-t border-line backdrop-blur-sm">
           <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-3">
             <p className="type-meta normal-case tracking-[0.14em] text-mist">
-              KNOW · DIAGNOSE · PROVE · ADAPT
+              Your career journey
               {attempt ? ` · ${attempt.adaptation}` : ""}
             </p>
             <Button onClick={continueFlow} showMark>

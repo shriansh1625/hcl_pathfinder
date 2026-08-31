@@ -22,13 +22,13 @@ const LABELS = {
 } as const;
 
 const CASCADE = [
-  { n: "01", label: "Path V1" },
+  { n: "01", label: "What we knew" },
   { n: "02", label: "New evidence" },
   { n: "03", label: "Affected skill" },
   { n: "04", label: "New diagnosis" },
-  { n: "05", label: "Action" },
-  { n: "06", label: "Path change" },
-  { n: "07", label: "Path V2" },
+  { n: "05", label: "Next action" },
+  { n: "06", label: "What changed" },
+  { n: "07", label: "Your new path" },
 ] as const;
 
 function pathKey(item: PathItem): string {
@@ -130,9 +130,9 @@ export function PathChanged() {
   return (
     <div className="path-hero space-y-10" data-testid="path-changed-hero">
       <div>
-        <ScreenKicker verb="ADAPT">Path changed</ScreenKicker>
-        <h1 className="mt-3 font-display text-4xl font-medium text-paper">PATH CHANGED</h1>
-        <p className="mt-3 text-sm text-mist">Same learning objects. New plan — because evidence changed.</p>
+        <ScreenKicker verb="ADAPT">Your path updated</ScreenKicker>
+        <h1 className="mt-3 font-display text-4xl font-medium text-paper">Your path changed</h1>
+        <p className="mt-3 text-sm text-mist">Completed work stays preserved. What is ahead reshapes when your evidence changes.</p>
         {!skipped && liveIndex < CASCADE.length - 1 ? (
           <button type="button" className="adapt-skip mt-3 text-xs uppercase tracking-wider text-mist underline-offset-2 hover:underline" onClick={skipSequence}>
             Skip

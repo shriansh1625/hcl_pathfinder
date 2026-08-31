@@ -24,7 +24,7 @@ export function ProveIt() {
   return (
     <div className="prove-instrument mx-auto max-w-xl space-y-10">
       <div>
-        <ScreenKicker verb="PROVE">Assessment</ScreenKicker>
+        <ScreenKicker verb="PROVE">Skill check</ScreenKicker>
         <h1 className="prove-title mt-3 font-display text-paper">Skill under evaluation</h1>
         <p className="mt-3 text-sm text-mist">Some of your skills are still unverified.</p>
       </div>

@@ -1,0 +1,47 @@
+{
+  "console": [],
+  "network": [],
+  "hydration": [],
+  "themeFlash": [
+    {
+      "theme": "dark",
+      "flashOk": true,
+      "atDom": "dark",
+      "ok": true
+    },
+    {
+      "theme": "light",
+      "flashOk": true,
+      "atDom": "light",
+      "ok": true
+    }
+  ],
+  "overflow": [],
+  "screens": [
+    {
+      "theme": "dark",
+      "captured": [
+        "onboarding",
+        "dashboard",
+        "path-v1",
+        "assessment",
+        "result",
+        "path-v2",
+        "ai"
+      ]
+    },
+    {
+      "theme": "light",
+      "captured": [
+        "onboarding",
+        "dashboard",
+        "path-v1",
+        "assessment",
+        "result",
+        "path-v2",
+        "ai"
+      ]
+    }
+  ],
+  "pass": true
+}

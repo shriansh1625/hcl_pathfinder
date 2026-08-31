@@ -54,7 +54,7 @@ import { PathChanged } from "@/components/path/PathChanged";
 describe("V1/V2 adaptation display", () => {
   it("renders backend PathDiff change kinds", () => {
     render(<PathChanged />);
-    expect(screen.getByText("PATH CHANGED")).toBeInTheDocument();
+    expect(screen.getByText("Your path changed")).toBeInTheDocument();
     expect(screen.getByText("ADDED")).toBeInTheDocument();
     expect(screen.getByText("BLOCKED")).toBeInTheDocument();
     expect(screen.getByText("scikit-learn model evaluation")).toBeInTheDocument();
@@ -64,8 +64,8 @@ describe("V1/V2 adaptation display", () => {
   it("renders the causal cascade sequence", () => {
     render(<PathChanged />);
     expect(screen.getByTestId("adapt-cascade")).toBeInTheDocument();
-    expect(screen.getByTestId("cascade-path-v1")).toBeInTheDocument();
-    expect(screen.getByTestId("cascade-path-v2")).toBeInTheDocument();
+    expect(screen.getByTestId("cascade-what-we-knew")).toBeInTheDocument();
+    expect(screen.getByTestId("cascade-your-new-path")).toBeInTheDocument();
   });
 
   it("highlights completed work preservation from the active path", () => {

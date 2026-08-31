@@ -106,10 +106,10 @@ export function SkillMap() {
   return (
     <div className="skill-instrument space-y-10">
       <div>
-        <ScreenKicker verb="DIAGNOSE">Dependencies</ScreenKicker>
-        <h1 className="skill-instrument-title mt-3 font-display text-paper">What blocks what?</h1>
+        <ScreenKicker verb="DIAGNOSE">Skill connections</ScreenKicker>
+        <h1 className="skill-instrument-title mt-3 font-display text-3xl text-paper">See how skills depend on each other</h1>
         <p className="mt-3 max-w-2xl text-sm text-mist">
-          Select a skill to illuminate HARD blockers, HARD dependents, and SOFT preparation. Unselected relationships recede.
+          Select a skill to see what it unlocks, what blocks it, and what helps you prepare.
         </p>
       </div>
 

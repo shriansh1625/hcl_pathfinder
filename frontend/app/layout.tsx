@@ -1,24 +1,27 @@
 import type { Metadata } from "next";
-import { IBM_Plex_Mono, IBM_Plex_Sans, Source_Serif_4 } from "next/font/google";
+import { Bodoni_Moda, IBM_Plex_Mono, IBM_Plex_Sans } from "next/font/google";
 import { Providers } from "@/components/shell/Providers";
 import "./globals.css";
 
-const sans = IBM_Plex_Sans({
+const display = Bodoni_Moda({
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
-  variable: "--font-sans",
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-soria",
+  display: "swap",
 });
 
-const display = Source_Serif_4({
+const ui = IBM_Plex_Sans({
   subsets: ["latin"],
   weight: ["400", "500", "600"],
-  variable: "--font-display",
+  variable: "--font-ui",
+  display: "swap",
 });
 
 const mono = IBM_Plex_Mono({
   subsets: ["latin"],
   weight: ["400", "500"],
   variable: "--font-mono",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -32,15 +35,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" data-theme="dark" suppressHydrationWarning>
+    <html lang="en" data-theme="light" suppressHydrationWarning>
       <head>
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var t=localStorage.getItem("pathfinder-theme");if(t!=="dark"&&t!=="light"){t=window.matchMedia("(prefers-color-scheme: light)").matches?"light":"dark"}document.documentElement.dataset.theme=t}catch(e){document.documentElement.dataset.theme="dark"}})()`,
+            __html: `(function(){try{var t=localStorage.getItem("pathfinder-theme");if(t!=="dark"&&t!=="light"){t="light"}document.documentElement.dataset.theme=t}catch(e){document.documentElement.dataset.theme="light"}})()`,
           }}
         />
       </head>
-      <body className={`${sans.variable} ${display.variable} ${mono.variable} min-h-screen font-sans text-paper antialiased`}>
+      <body className={`${display.variable} ${ui.variable} ${mono.variable} min-h-screen font-sans text-paper antialiased`}>
         <div className="app-root">
           <Providers>{children}</Providers>
         </div>

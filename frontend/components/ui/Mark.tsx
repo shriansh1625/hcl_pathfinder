@@ -59,6 +59,14 @@ export function Waypoint({
   );
 }
 
+const KICKER_LABEL: Record<"KNOW" | "DIAGNOSE" | "PROVE" | "ADAPT" | "PATH", string> = {
+  KNOW: "My journey",
+  DIAGNOSE: "Diagnosis",
+  PROVE: "Skill check",
+  ADAPT: "Adaptation",
+  PATH: "Learning path",
+};
+
 export function ScreenKicker({
   verb,
   children,
@@ -67,10 +75,10 @@ export function ScreenKicker({
   children?: ReactNode;
 }) {
   return (
-    <p className="type-section flex items-center gap-2">
-      <Mark className="h-3 w-[18px] shrink-0 text-paper/70" />
-      <span>{verb}</span>
-      {children ? <span className="font-normal tracking-[0.14em] text-mist/70">· {children}</span> : null}
+    <p className="screen-kicker type-section flex items-center gap-2">
+      <Mark className="h-3 w-[18px] shrink-0 text-accent/80" />
+      <span className="text-paper">{KICKER_LABEL[verb]}</span>
+      {children ? <span className="font-normal tracking-normal text-mist">· {children}</span> : null}
     </p>
   );
 }

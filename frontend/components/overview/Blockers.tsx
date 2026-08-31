@@ -20,7 +20,7 @@ export function Blockers() {
   return (
     <div className="space-y-10">
       <div>
-        <ScreenKicker verb="DIAGNOSE">Blockers</ScreenKicker>
+        <ScreenKicker verb="DIAGNOSE">What&apos;s holding you back</ScreenKicker>
         <h1 className="mt-3 font-display text-4xl font-medium text-paper">What is blocking your path</h1>
         <p className="mt-3 max-w-2xl text-sm leading-relaxed text-mist">
           Each blocked resource is waiting on a prerequisite skill state from the backend — not a score,

@@ -51,7 +51,7 @@ export function TimelineView() {
   return (
     <div className="archive-view space-y-10">
       <div>
-        <ScreenKicker verb="ADAPT">History</ScreenKicker>
+        <ScreenKicker verb="ADAPT">Your path over time</ScreenKicker>
         <h1 className="archive-title mt-3 font-display text-paper">Path history</h1>
         <p className="mt-2 text-sm text-mist">An archival record of how your path evolved as evidence changed.</p>
       </div>

@@ -89,7 +89,7 @@ await page.getByRole("button", { name: /Judge demo/i }).click();
 await page.waitForURL("**/workspace**", { timeout: 240000 });
 await page.getByTestId("judge-guide").waitFor({ timeout: 120000 });
 
-await primaryNav(page).getByRole("button", { name: "Overview" }).click();
+await primaryNav(page).getByRole("button", { name: "My Journey" }).click();
 await page.getByText(/KNOW/).first().waitFor({ timeout: 30000 });
 await scanPage(page, "dashboard");
 
@@ -98,7 +98,7 @@ if (await blockersBtn.first().isVisible().catch(() => false)) {
   await blockersBtn.first().click();
   await page.waitForTimeout(400);
   await scanPage(page, "blockers");
-  await primaryNav(page).getByRole("button", { name: "Overview" }).click();
+  await primaryNav(page).getByRole("button", { name: "My Journey" }).click();
 }
 
 await openPathTab(page);
@@ -141,7 +141,7 @@ await primaryNav(page).getByRole("button", { name: "Skill Map" }).click();
 await page.getByTestId("skill-plot").waitFor({ timeout: 30000 }).catch(() => undefined);
 await scanPage(page, "skill map");
 
-await primaryNav(page).getByRole("button", { name: "Overview" }).click();
+await primaryNav(page).getByRole("button", { name: "My Journey" }).click();
 const ask = page.getByTestId("ask-pathfinder");
 if (await ask.isVisible().catch(() => false)) {
   await ask.scrollIntoViewIfNeeded();

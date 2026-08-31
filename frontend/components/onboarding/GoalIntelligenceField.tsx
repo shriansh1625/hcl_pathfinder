@@ -46,6 +46,10 @@ export function GoalIntelligenceField({
 }: Props) {
   const [phase, setPhase] = useState<Phase>("idle");
   const [focused, setFocused] = useState(false);
+  const [validationError, setValidationError] = useState<string | null>(null);
+  const [activeIntake, setActiveIntake] = useState<GoalIntake | null>(null);
+
+  const displayIntake = activeIntake ?? resolvedIntake;
 
   const inputLocked = busy || phase === "reading" || phase === "matching";
   const showInput =
@@ -55,11 +59,17 @@ export function GoalIntelligenceField({
     phase === "matching";
 
   async function handleResolve() {
-    if (goalText.trim().length < 3 || busy) return;
+    if (inputLocked) return;
+    if (goalText.trim().length < 3) {
+      setValidationError("Please describe your goal in at least a few words.");
+      return;
+    }
+    setValidationError(null);
     const started = Date.now();
     setPhase("reading");
     try {
       const result = await withMinimumDuration(started, onResolve());
+      setActiveIntake(result);
       setPhase("matching");
       await new Promise((r) =>
         window.setTimeout(r, Math.max(0, MIN_RESOLVE_MS * 0.35 - (Date.now() - started))),
@@ -71,12 +81,13 @@ export function GoalIntelligenceField({
   }
 
   function handleEditGoal() {
+    setActiveIntake(null);
     setPhase("idle");
   }
 
   return (
     <div className={`goal-intel-field ${focused ? "is-focused" : ""} ${phase !== "idle" ? `phase-${phase}` : ""}`}>
-      <p className="goal-intel-kicker">Your goal</p>
+      <p className="goal-intel-kicker">What are you trying to become?</p>
 
       {showInput ? (
         <>
@@ -84,12 +95,20 @@ export function GoalIntelligenceField({
             className="goal-intel-input"
             placeholder="I want to become a machine learning engineer focused on computer vision…"
             value={goalText}
-            onChange={(event) => onGoalTextChange(event.target.value)}
+            onChange={(event) => {
+              onGoalTextChange(event.target.value);
+              if (validationError) setValidationError(null);
+            }}
             onFocus={() => setFocused(true)}
             onBlur={() => setFocused(false)}
             disabled={inputLocked}
           />
           <p className="goal-intel-hint">Describe the career you want in your own words.</p>
+          {validationError ? (
+            <p className="goal-intel-error" role="alert">
+              {validationError}
+            </p>
+          ) : null}
           {phase === "error" ? (
             <p className="goal-intel-error" role="alert">
               Goal interpretation did not complete. You can try again or pick a career manually.
@@ -106,25 +125,32 @@ export function GoalIntelligenceField({
           <div className="mt-4 flex flex-wrap gap-2">
             <Button
               className={phase === "reading" ? "btn-compress" : ""}
-              disabled={busy || goalText.trim().length < 3 || inputLocked}
+              disabled={inputLocked}
               onClick={() => void handleResolve()}
             >
               {inputLocked ? "Resolving…" : "Resolve goal"}
             </Button>
-            <Button variant="ghost" disabled={busy} onClick={onManual}>
+            <Button
+              variant="ghost"
+              disabled={phase === "reading" || phase === "matching"}
+              onClick={() => {
+                setValidationError(null);
+                onManual();
+              }}
+            >
               Pick career manually
             </Button>
           </div>
         </>
       ) : null}
 
-      {phase === "resolved" && resolvedIntake?.role ? (
+      {phase === "resolved" && displayIntake?.role ? (
         <div className="goal-resolved-card">
           <p className="goal-resolved-kicker">Goal understood</p>
-          <p className="goal-resolved-role">{resolvedIntake.role.name}</p>
-          {resolvedIntake.focus_mentions?.length ? (
+          <p className="goal-resolved-role">{displayIntake.role.name}</p>
+          {displayIntake.focus_mentions?.length ? (
             <p className="goal-intel-focus">
-              Focus: {resolvedIntake.focus_mentions.join(", ")}
+              Focus: {displayIntake.focus_mentions.join(", ")}
             </p>
           ) : null}
           <p className="goal-intel-match-note">Matched to PathFinder&apos;s supported career ontology.</p>
@@ -133,10 +159,10 @@ export function GoalIntelligenceField({
               <dt>Role fit</dt>
               <dd>Canonical career ontology</dd>
             </div>
-            {resolvedIntake.role.how ? (
+            {displayIntake.role.how ? (
               <div>
                 <dt>Match</dt>
-                <dd>{resolvedIntake.role.how}</dd>
+                <dd>{displayIntake.role.how}</dd>
               </div>
             ) : null}
           </dl>
@@ -146,14 +172,14 @@ export function GoalIntelligenceField({
         </div>
       ) : null}
 
-      {phase === "ambiguous" && resolvedIntake ? (
+      {phase === "ambiguous" && displayIntake ? (
         <div className="goal-ambiguous-card">
           <p className="goal-resolved-kicker">Which route fits your goal?</p>
           <p className="goal-intel-match-note">
             Your goal could fit more than one PathFinder route. Choose the career that best matches what you want.
           </p>
           <ul className="goal-candidate-list">
-            {resolvedIntake.role_alternatives.map((item) => (
+            {displayIntake.role_alternatives.map((item) => (
               <li key={item.slug}>
                 <button
                   type="button"
@@ -177,13 +203,13 @@ export function GoalIntelligenceField({
         </div>
       ) : null}
 
-      {phase === "unsupported" && resolvedIntake ? (
+      {phase === "unsupported" && displayIntake ? (
         <div className="goal-unsupported-card">
           <p className="goal-resolved-kicker">Goal not mapped yet</p>
           <p className="goal-unsupported-copy">
             We couldn&apos;t map that goal to one of PathFinder&apos;s current career routes.
-            {resolvedIntake.unresolved.length
-              ? ` Unrecognized: ${resolvedIntake.unresolved.join(", ")}.`
+            {displayIntake.unresolved.length
+              ? ` Unrecognized: ${displayIntake.unresolved.join(", ")}.`
               : ""}
           </p>
           <p className="goal-intel-preserved">Your text is preserved — you can edit it or choose from supported careers.</p>

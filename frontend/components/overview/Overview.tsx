@@ -49,8 +49,8 @@ export function Overview() {
     <div className="command-center">
       <header className="command-hero">
         <div>
-          <ScreenKicker verb="KNOW">Dashboard</ScreenKicker>
-          <p className="type-section mt-1">Destination</p>
+          <ScreenKicker verb="KNOW">Overview</ScreenKicker>
+          <p className="type-section mt-1">Your destination</p>
           <h1 className="type-hero mt-2 text-paper">{roleName}</h1>
           {dashboard?.goal_text ? (
             <p className="mt-4 max-w-xl text-[1.02rem] leading-relaxed text-paper/90" data-testid="dashboard-goal">

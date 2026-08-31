@@ -7,19 +7,28 @@ export function OnboardAlert({
   message,
   onDismiss,
   onRetry,
+  onManual,
 }: {
   message: string;
   onDismiss?: () => void;
   onRetry?: () => void;
+  onManual?: () => void;
 }) {
   return (
     <div className="onboard-alert-region" role="region" aria-label="Onboarding error">
       <ErrorState message={message} onRetry={onRetry} />
-      {onDismiss ? (
-        <Button variant="ghost" className="mt-3 px-0 text-xs" onClick={onDismiss}>
-          Dismiss and continue manually
-        </Button>
-      ) : null}
+      <div className="mt-3 flex flex-wrap gap-2">
+        {onManual ? (
+          <Button variant="secondary" className="px-3 py-1.5 text-xs" onClick={onManual}>
+            Pick career manually
+          </Button>
+        ) : null}
+        {onDismiss ? (
+          <Button variant="ghost" className="px-0 text-xs" onClick={onDismiss}>
+            Dismiss
+          </Button>
+        ) : null}
+      </div>
     </div>
   );
 }

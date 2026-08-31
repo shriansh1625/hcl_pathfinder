@@ -48,7 +48,7 @@ export function AskPathFinder() {
     <section className="ask-analyst" data-testid="ask-pathfinder" aria-label="Ask PathFinder">
       <div className="ask-analyst-head">
         <div>
-          <p className="grounded-kicker">Contextual analyst</p>
+          <p className="grounded-kicker">Your learning guide</p>
           <h2 className="mt-1 font-display text-xl text-paper">Ask PathFinder</h2>
         </div>
         <div className="ask-context-chips" aria-label="Verified context">

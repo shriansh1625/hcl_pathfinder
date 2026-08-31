@@ -35,12 +35,15 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     },
   });
   if (!response.ok) {
-    let detail: unknown = response.statusText;
-    try {
-      const body = await response.json();
-      detail = body.detail ?? body;
-    } catch {
-      detail = await response.text();
+    const text = await response.text();
+    let detail: unknown = text || response.statusText;
+    if (text) {
+      try {
+        const body = JSON.parse(text) as { detail?: unknown };
+        detail = body.detail ?? body;
+      } catch {
+        /* keep raw text */
+      }
     }
     throw new ApiError(response.status, detail);
   }

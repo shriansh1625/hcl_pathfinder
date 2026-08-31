@@ -1,11 +1,16 @@
 from contextlib import asynccontextmanager
+import asyncio
+import logging
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api import api_router
 from app.core.config import settings
+from app.db.bootstrap import ensure_database_ready
 from app.ontology.load import load_ontology
+
+logger = logging.getLogger(__name__)
 
 
 def _cors_origins() -> list[str]:
@@ -15,6 +20,13 @@ def _cors_origins() -> list[str]:
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
     load_ontology()
+
+    async def _bootstrap() -> None:
+        ready = await asyncio.to_thread(ensure_database_ready)
+        if ready:
+            logger.info("Database ready.")
+
+    asyncio.create_task(_bootstrap())
     yield
 
 

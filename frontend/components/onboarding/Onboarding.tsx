@@ -7,20 +7,12 @@ import { useIntelligence } from "@/lib/session";
 import type { GoalIntake, Role } from "@/lib/types";
 import { Button } from "@/components/ui/Button";
 import { LoadingState } from "@/components/ui/States";
-import { Mark } from "@/components/ui/Mark";
-import { AmbientPathGraph } from "@/components/onboarding/AmbientPathGraph";
 import { CareerExplorer } from "@/components/onboarding/CareerExplorer";
 import { GoalIntelligenceField } from "@/components/onboarding/GoalIntelligenceField";
 import { OnboardStepPanel } from "@/components/onboarding/OnboardStepPanel";
 import { OnboardStepRail } from "@/components/onboarding/OnboardStepRail";
 import { OnboardAlert } from "@/components/onboarding/OnboardAlert";
 import { prettySkill } from "@/lib/status";
-
-const THESIS = [
-  { n: "01", verb: "KNOW", line: "It knows what you know — from evidence, not guesses." },
-  { n: "02", verb: "DIAGNOSE", line: "It knows what the target career still requires." },
-  { n: "03", verb: "ADAPT", line: "It changes the path when new evidence changes the diagnosis." },
-] as const;
 
 const STYLE_LABEL: Record<string, string> = {
   MIXED: "Mixed",
@@ -38,16 +30,10 @@ const EXPERIENCE = [
 
 const INTEREST_SUGGESTIONS = ["cloud security", "computer vision", "APIs", "MLOps", "data pipelines"];
 
-function thesisActiveIndex(step: number): number {
-  if (step === 0) return 0;
-  if (step >= 6) return 2;
-  return 1;
-}
-
 function intakeErrorMessage(err: unknown): string {
   if (err instanceof ApiError) {
     if (err.status === 404) {
-      return "Goal intake API not found (/v1/intake/goal). Restart the backend or use “Pick career manually”.";
+      return "Goal service unavailable. Restart the backend or use “Pick career manually”.";
     }
     return typeof err.detail === "string" ? err.detail : err.message;
   }
@@ -70,31 +56,44 @@ export function Onboarding() {
   const [style, setStyle] = useState("MIXED");
   const [withDemoEvidence, setWithDemoEvidence] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [rolesError, setRolesError] = useState<string | null>(null);
+  const [rolesLoading, setRolesLoading] = useState(true);
   const [launching, setLaunching] = useState(false);
-  const [headlineReady, setHeadlineReady] = useState(false);
+
+  async function loadRoles() {
+    setRolesLoading(true);
+    setRolesError(null);
+    try {
+      const items = await api.roles();
+      setRoles(items);
+      setRole((current) => current || items[0]?.slug || "");
+      return items;
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Could not load careers";
+      setRolesError(message);
+      return [];
+    } finally {
+      setRolesLoading(false);
+    }
+  }
 
   useEffect(() => {
-    api
-      .roles()
-      .then((items) => {
-        setRoles(items);
-        if (!role && items.length) setRole(items[0].slug);
-      })
-      .catch((err: Error) => setLoadError(err.message));
-  }, [role]);
+    void loadRoles().catch(() => undefined);
+  }, []);
+
+  useEffect(() => {
+    if (step === 1 && !roles.length) {
+      void loadRoles().catch(() => undefined);
+    }
+  }, [step, roles.length]);
 
   useEffect(() => {
     if (learnerId) router.replace("/workspace");
   }, [learnerId, router]);
 
-  useEffect(() => {
-    const t = window.setTimeout(() => setHeadlineReady(true), 40);
-    return () => window.clearTimeout(t);
-  }, []);
-
   const selected = roles.find((item) => item.slug === role);
-  const busy = mutating || launching || intakeLoading;
-  const activeThesis = thesisActiveIndex(step);
+  const goalBusy = intakeLoading || launching;
+  const wizardBusy = mutating || launching;
 
   async function resolveGoal(): Promise<GoalIntake> {
     setIntakeLoading(true);
@@ -145,64 +144,32 @@ export function Onboarding() {
   };
 
   return (
-    <div
-      className={`mx-auto grid min-h-screen max-w-6xl items-start gap-16 px-6 py-16 onboard-shell lg:grid-cols-[1.15fr_0.85fr] ${launching ? "onboard-launching" : ""}`}
-    >
-      <div className="onboard-hero relative">
-        <AmbientPathGraph step={step} resolved={Boolean(intake?.role)} launching={launching} />
-        <p className="onboard-reveal type-section flex items-center gap-2.5" style={{ animationDelay: "0ms" }}>
-          <Mark className="h-3.5 w-5 text-paper" title="PathFinder" />
-          PathFinder
-        </p>
-        <h1
-          className={`type-hero onboard-headline mt-6 max-w-[22ch] text-paper ${headlineReady ? "is-ready" : ""}`}
-        >
-          Build the path to the career you actually want.
-        </h1>
-        <p className="onboard-reveal mt-5 max-w-lg text-base leading-relaxed text-mist" style={{ animationDelay: "120ms" }}>
-          Describe your goal in your own words. PathFinder resolves it against a fixed career ontology —
-          never inventing roles, skills, or prerequisites.
-        </p>
-        <ul className="mt-10 space-y-1">
-          {THESIS.map((item, index) => (
-            <li key={item.verb}>
-              <button
-                type="button"
-                className={`thesis-row w-full text-left ${activeThesis === index ? "is-active" : ""}`}
-              >
-                <span className="thesis-index">{item.n}</span>
-                <span className="thesis-verb">
-                  <span className="thesis-waypoint" aria-hidden />
-                  {item.verb}
-                </span>
-                <span className="thesis-line">{item.line}</span>
-              </button>
-            </li>
-          ))}
-        </ul>
-        <div className="onboard-reveal mt-10 hidden lg:block" style={{ animationDelay: "280ms" }}>
-          <p className="type-section">Why PathFinder is different</p>
-          <ul className="mt-3 space-y-2 text-sm text-mist">
-            <li>No evidence (UNKNOWN) means missing proof — not failure or 0%.</li>
-            <li>Gaps are dependency-aware, not keyword matches.</li>
-            <li>Semantic ML is bounded; the LLM explains but cannot change the path.</li>
-          </ul>
-        </div>
-      </div>
-
-      <div className="onboard-destination">
-        <Mark
-          className="onboard-destination-mark absolute right-6 top-6 h-3 w-[18px] text-accent/60"
-          style={{ width: 18, height: 12 }}
-          aria-hidden
-        />
+    <div className={`onboard-wizard ${launching ? "onboard-launching" : ""}`}>
+      <div className="onboard-destination onboard-destination-standalone">
         <OnboardStepRail step={step} />
 
-        {(loadError || error) ? (
+        {(loadError || (step > 0 && (rolesError || error))) ? (
           <OnboardAlert
-            message={loadError ?? error ?? "Request failed"}
-            onDismiss={loadError ? () => setLoadError(null) : undefined}
-            onRetry={step === 0 && loadError ? () => void resolveGoal() : undefined}
+            message={loadError ?? rolesError ?? error ?? "Request failed"}
+            onDismiss={loadError || rolesError ? () => {
+              setLoadError(null);
+              setRolesError(null);
+            } : undefined}
+            onRetry={
+              step === 0 && loadError
+                ? () => void resolveGoal()
+                : rolesError
+                  ? () => void loadRoles()
+                  : undefined
+            }
+            onManual={
+              step === 0 && loadError
+                ? () => {
+                    setLoadError(null);
+                    setStep(1);
+                  }
+                : undefined
+            }
           />
         ) : null}
 
@@ -212,10 +179,13 @@ export function Onboarding() {
               <GoalIntelligenceField
                 goalText={goalText}
                 onGoalTextChange={setGoalText}
-                busy={busy}
+                busy={goalBusy}
                 resolvedIntake={intake}
                 onResolve={resolveGoal}
-                onManual={() => setStep(1)}
+                onManual={() => {
+                  setLoadError(null);
+                  setStep(1);
+                }}
                 onContinueFromResolution={() => setStep(1)}
                 onSelectAmbiguousRole={(slug) => {
                   setRole(slug);
@@ -227,11 +197,11 @@ export function Onboarding() {
 
             {step === 1 ? (
               <div>
-                <p className="type-section">Target career</p>
+                <p className="type-section">Choose your destination career</p>
                 {intake?.role ? (
                   <p className="mt-2 text-sm text-mist">
-                    Inferred: <span className="text-paper">{intake.role.name}</span>
-                    {intake.unresolved.length ? ` · Unresolved: ${intake.unresolved.join(", ")}` : ""}
+                    Suggested: <span className="text-paper">{intake.role.name}</span>
+                    {intake.unresolved.length ? ` · Also mentioned: ${intake.unresolved.join(", ")}` : ""}
                   </p>
                 ) : null}
                 <div className="mt-4">
@@ -258,7 +228,7 @@ export function Onboarding() {
 
             {step === 2 ? (
               <div>
-                <p className="type-section">Current experience</p>
+                <p className="type-section">Where are you starting from?</p>
                 <div className="mt-4 grid gap-2">
                   {EXPERIENCE.map((item) => (
                     <button
@@ -283,7 +253,7 @@ export function Onboarding() {
 
             {step === 3 ? (
               <div>
-                <p className="type-section">Interests & specialization</p>
+                <p className="type-section">What interests you most?</p>
                 <input
                   className="field-inline mt-4 w-full text-paper"
                   placeholder="computer vision, cloud security, APIs…"
@@ -317,7 +287,7 @@ export function Onboarding() {
 
             {step === 4 ? (
               <div>
-                <p className="type-section">Time & learning preference</p>
+                <p className="type-section">How do you like to learn?</p>
                 <div className="schedule-control mt-4">
                   <label className="schedule-field">
                     <span className="schedule-label">Hours / week</span>
@@ -352,9 +322,9 @@ export function Onboarding() {
 
             {step === 5 ? (
               <div>
-                <p className="type-section">What PathFinder knows</p>
+                <p className="type-section">Your starting evidence</p>
                 <p className="mt-2 text-sm text-mist">
-                  Role-specific demo evidence seeds your competency model. Without it, gaps remain without evidence.
+                  Demo evidence seeds your profile so you can see a realistic path. Without it, skills start as “not yet proven.”
                 </p>
                 <label className="evidence-toggle mt-4">
                   <input
@@ -362,7 +332,7 @@ export function Onboarding() {
                     checked={withDemoEvidence}
                     onChange={(event) => setWithDemoEvidence(event.target.checked)}
                   />
-                  <span>Load demo evidence for {selected?.name ?? "this role"}</span>
+                  <span>Load sample evidence for {selected?.name ?? "this role"}</span>
                 </label>
                 {intake?.skills.length ? (
                   <div className="evidence-from-goal mt-4">
@@ -377,7 +347,7 @@ export function Onboarding() {
                     </ul>
                   </div>
                 ) : (
-                  <p className="mt-4 text-xs text-mist">No goal claims yet — evidence will start as missing, not zero.</p>
+                  <p className="mt-4 text-xs text-mist">No skills mentioned yet — we will start from an honest baseline.</p>
                 )}
                 <div className="mt-4 flex gap-2">
                   <Button variant="ghost" onClick={() => setStep(4)}>
@@ -390,7 +360,7 @@ export function Onboarding() {
 
             {step === 6 ? (
               <div className="path-config-summary">
-                <p className="type-section">Your path configuration</p>
+                <p className="type-section">Ready to build your path</p>
                 <dl className="path-config-grid mt-4">
                   <div>
                     <dt>Destination</dt>
@@ -416,37 +386,36 @@ export function Onboarding() {
                   </div>
                   <div>
                     <dt>Evidence</dt>
-                    <dd>{withDemoEvidence ? "Verified + self-reported" : "Self-reported only"}</dd>
+                    <dd>{withDemoEvidence ? "Sample + self-reported" : "Self-reported only"}</dd>
                   </div>
                 </dl>
-                <div className="mt-8 space-y-3">
+                <div className="path-config-actions mt-8">
                   <Button
-                    className="cta-go w-full justify-between py-3.5"
-                    disabled={busy}
+                    className="cta-go w-full justify-center gap-2.5 py-3.5"
+                    disabled={wizardBusy}
                     showMark
                     onClick={() => void runLaunch(() => startCustom(profileOpts))}
                   >
-                    <span>{busy ? "Building your path…" : "Build my path"}</span>
-                    <Mark className="mark-arrow inline-flex h-3 w-[18px]" aria-hidden />
+                    <span>{wizardBusy ? "Building your path…" : "Build my path"}</span>
                   </Button>
-                  <Button variant="ghost" className="w-full" disabled={busy} onClick={() => void runLaunch(() => launchDemo(profileOpts))}>
+                  <Button variant="ghost" className="mt-3 w-full justify-center" disabled={wizardBusy} onClick={() => void runLaunch(() => launchDemo(profileOpts))}>
                     Quick demo launch
                   </Button>
-                  <Button variant="ghost" className="w-full" disabled={busy} onClick={() => void runLaunch(() => launchJudgeDemo(profileOpts))}>
+                  <Button variant="ghost" className="mt-3 w-full justify-center" disabled={wizardBusy} onClick={() => void runLaunch(() => launchJudgeDemo(profileOpts))}>
                     Judge demo (~90s)
                   </Button>
+                  <Button variant="ghost" className="mt-3 w-full justify-center" onClick={() => setStep(5)}>
+                    Back
+                  </Button>
                 </div>
-                <Button variant="ghost" className="mt-3 w-full" onClick={() => setStep(5)}>
-                  Back
-                </Button>
               </div>
             ) : null}
           </OnboardStepPanel>
         </div>
 
-        {busy && !(step === 0 && intakeLoading) ? (
+        {wizardBusy && !(step === 0 && intakeLoading) ? (
           <div className="onboard-inline-status" aria-live="polite">
-            <LoadingState label={launching ? "Building your path" : "Preparing your career intelligence"} />
+            <LoadingState label={launching ? "Building your path" : "Preparing your profile"} />
           </div>
         ) : null}
       </div>

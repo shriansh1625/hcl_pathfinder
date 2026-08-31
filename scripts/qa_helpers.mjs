@@ -81,7 +81,7 @@ export async function advanceToEvidenceStep(page, roleName = "Backend Developer"
   for (let i = 0; i < 4; i++) {
     await page.getByRole("button", { name: "Continue" }).click();
   }
-  await page.getByText(/What PathFinder knows/i).waitFor({ timeout: 15000 });
+  await page.getByText(/Your starting evidence/i).waitFor({ timeout: 15000 });
   const toggle = page.locator(".evidence-toggle input[type='checkbox']");
   if (await toggle.isVisible().catch(() => false)) {
     const checked = await toggle.isChecked();
@@ -90,7 +90,7 @@ export async function advanceToEvidenceStep(page, roleName = "Backend Developer"
     }
   }
   await page.getByRole("button", { name: "Review profile" }).click();
-  await page.getByText(/Your path configuration/i).waitFor({ timeout: 15000 });
+  await page.getByText(/Ready to build your path/i).waitFor({ timeout: 15000 });
 }
 
 export async function advanceToProfile(page, roleName = "Backend Developer") {
@@ -127,7 +127,7 @@ export async function openPathTab(page) {
 
 export async function openAssessments(page) {
   await page.setViewportSize({ width: 1440, height: 900 });
-  await primaryNav(page).getByRole("button", { name: "Assessments" }).click();
+  await primaryNav(page).getByRole("button", { name: "Skill Checks" }).click();
   await page.getByRole("button", { name: /Prove this skill/i }).waitFor({ timeout: 60000 });
   await page.getByRole("button", { name: /Prove this skill/i }).click();
   await page.waitForSelector(".assess-index", { timeout: 60000 });

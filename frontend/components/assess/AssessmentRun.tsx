@@ -20,7 +20,7 @@ export function AssessmentRun() {
     return (
       <div className="mx-auto max-w-lg py-16">
         <LoadingState
-          label="Updating your competency model…"
+          label="Updating your profile…"
           detail="Scoring, fusion, and adaptation are running on the backend. This screen does not fake progress."
         />
       </div>

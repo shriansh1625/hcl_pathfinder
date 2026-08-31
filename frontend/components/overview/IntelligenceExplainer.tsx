@@ -3,7 +3,7 @@
 export function IntelligenceExplainer({ compact = false }: { compact?: boolean }) {
   return (
     <section className={`intel-explainer ${compact ? "is-compact" : ""}`} data-testid="intelligence-explainer">
-      <p className="type-section">How PathFinder thinks</p>
+      <p className="type-section">How recommendations work</p>
       <p className="mt-2 max-w-2xl text-sm leading-relaxed text-mist">
         PathFinder diagnoses what you know, what your target role still requires, and changes your path when new
         evidence changes the diagnosis. The LLM explains — it does not decide.

@@ -192,7 +192,7 @@ describe("contextual grounded explanations", () => {
 
   it("answers Ask PathFinder from verified state, not a chatbot transcript", async () => {
     render(<AskPathFinder />);
-    expect(screen.getByText(/Contextual analyst/i)).toBeInTheDocument();
+    expect(screen.getByText(/Your learning guide/i)).toBeInTheDocument();
     expect(screen.queryByText(/Chat with AI/i)).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Why am I learning this skill?" }));
     await waitFor(() =>

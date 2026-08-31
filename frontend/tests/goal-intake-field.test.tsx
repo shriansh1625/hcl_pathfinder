@@ -107,4 +107,130 @@ describe("GoalIntelligenceField", () => {
     fireEvent.click(screen.getByRole("button", { name: /Pick career manually/i }));
     expect(onManual).toHaveBeenCalled();
   });
+
+  it("shows validation when resolve is clicked with empty goal", () => {
+    render(
+      <GoalIntelligenceField
+        goalText=""
+        onGoalTextChange={() => undefined}
+        busy={false}
+        onResolve={vi.fn()}
+        onManual={() => undefined}
+        resolvedIntake={null}
+        onContinueFromResolution={() => undefined}
+        onSelectAmbiguousRole={() => undefined}
+        onSeeSupportedCareers={() => undefined}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: /Resolve goal/i }));
+    expect(screen.getByRole("alert")).toHaveTextContent(/at least a few words/i);
+  });
+
+  it("calls onManual even while parent busy state is true", () => {
+    const onManual = vi.fn();
+
+    render(
+      <GoalIntelligenceField
+        goalText=""
+        onGoalTextChange={() => undefined}
+        busy={true}
+        onResolve={vi.fn()}
+        onManual={onManual}
+        resolvedIntake={null}
+        onContinueFromResolution={() => undefined}
+        onSelectAmbiguousRole={() => undefined}
+        onSeeSupportedCareers={() => undefined}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: /Pick career manually/i }));
+    expect(onManual).toHaveBeenCalled();
+  });
+
+  it("calls onResolve when resolve is clicked with valid goal", async () => {
+    const onResolve = vi.fn().mockResolvedValue({
+      ...baseIntake,
+      resolution_status: "RESOLVED",
+      role: { slug: "ai-ml-engineer", name: "AI/ML Engineer", mention: "ml", how: "ALIAS" },
+    });
+
+    render(
+      <GoalIntelligenceField
+        goalText="I want to become an ML engineer focused on computer vision"
+        onGoalTextChange={() => undefined}
+        busy={false}
+        onResolve={onResolve}
+        onManual={() => undefined}
+        resolvedIntake={null}
+        onContinueFromResolution={() => undefined}
+        onSelectAmbiguousRole={() => undefined}
+        onSeeSupportedCareers={() => undefined}
+      />,
+    );
+
+    expect(screen.getByRole("button", { name: /Resolve goal/i })).toBeEnabled();
+    fireEvent.click(screen.getByRole("button", { name: /Resolve goal/i }));
+    expect(onResolve).toHaveBeenCalledTimes(1);
+    expect(await screen.findByText("Goal understood")).toBeTruthy();
+    expect(screen.getByText("AI/ML Engineer")).toBeTruthy();
+  });
+
+  it("shows error recovery and preserves goal text after API failure", async () => {
+    const onResolve = vi.fn().mockRejectedValue(new Error("network down"));
+    const onManual = vi.fn();
+
+    render(
+      <GoalIntelligenceField
+        goalText="I want to become a penetration tester"
+        onGoalTextChange={() => undefined}
+        busy={false}
+        onResolve={onResolve}
+        onManual={onManual}
+        resolvedIntake={null}
+        onContinueFromResolution={() => undefined}
+        onSelectAmbiguousRole={() => undefined}
+        onSeeSupportedCareers={() => undefined}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: /Resolve goal/i }));
+    expect(await screen.findByRole("alert")).toHaveTextContent(/did not complete/i);
+    expect(screen.getByRole("textbox")).toHaveValue("I want to become a penetration tester");
+    fireEvent.click(screen.getByRole("button", { name: /Pick career manually/i }));
+    expect(onManual).toHaveBeenCalled();
+  });
+
+  it("re-enables resolve after failure for retry", async () => {
+    const onResolve = vi
+      .fn()
+      .mockRejectedValueOnce(new Error("temporary"))
+      .mockResolvedValueOnce({
+        ...baseIntake,
+        resolution_status: "RESOLVED",
+        role: { slug: "cybersecurity-analyst", name: "Cybersecurity Analyst", mention: "cyber", how: "ALIAS" },
+      });
+
+    render(
+      <GoalIntelligenceField
+        goalText="cybersecurity analyst cloud security"
+        onGoalTextChange={() => undefined}
+        busy={false}
+        onResolve={onResolve}
+        onManual={() => undefined}
+        resolvedIntake={null}
+        onContinueFromResolution={() => undefined}
+        onSelectAmbiguousRole={() => undefined}
+        onSeeSupportedCareers={() => undefined}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: /Resolve goal/i }));
+    await screen.findByRole("alert");
+    const retry = screen.getByRole("button", { name: /Resolve goal/i });
+    expect(retry).toBeEnabled();
+    fireEvent.click(retry);
+    expect(await screen.findByText("Goal understood")).toBeTruthy();
+    expect(onResolve).toHaveBeenCalledTimes(2);
+  });
 });

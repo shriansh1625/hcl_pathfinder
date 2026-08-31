@@ -22,7 +22,7 @@ import { AssessmentRun } from "@/components/assess/AssessmentRun";
 describe("assessment submission state", () => {
   it("shows a real backend update transition, not a fake progress bar", () => {
     render(<AssessmentRun />);
-    expect(screen.getByText("Updating your competency model…")).toBeInTheDocument();
+    expect(screen.getByText("Updating your profile…")).toBeInTheDocument();
     expect(
       screen.getByText(/Scoring, fusion, and adaptation are running on the backend/),
     ).toBeInTheDocument();

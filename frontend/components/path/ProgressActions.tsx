@@ -86,9 +86,9 @@ export function ProgressActions({ item, pathId }: ProgressActionsProps) {
   if (mode === "COMPLETED" || mode === "STRUGGLED") {
     return (
       <div className="progress-surface is-active max-w-full" data-testid="progress-confidence">
-        <p className="progress-kicker">Evidence, not a shortcut</p>
+        <p className="progress-kicker">Share your confidence</p>
         <p className="mt-1 text-xs text-mist">
-          Your report enters the competency model as PROGRESS evidence — weighted below assessments.
+          This helps update your profile — assessments carry more weight than self-reports.
         </p>
         <label htmlFor={`progress-level-${item.position}`} className="progress-confidence-label">
           How confident are you now?
@@ -139,7 +139,7 @@ export function ProgressActions({ item, pathId }: ProgressActionsProps) {
 
   return (
     <div className="progress-surface max-w-full" data-testid="progress-actions">
-      <p className="progress-kicker">Report progress on {prettySkill(item.target_skill)}</p>
+      <p className="progress-kicker">How did this feel?</p>
       <div className="mt-2 flex flex-wrap gap-2" role="group" aria-label="Progress outcome">
         <Button
           variant="secondary"

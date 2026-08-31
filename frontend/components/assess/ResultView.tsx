@@ -43,9 +43,9 @@ export function ResultView() {
   return (
     <div className="result-report adapt-hero mx-auto max-w-xl space-y-8" data-testid="result-hero">
       <div className="adapt-hero-pulse">
-        <ScreenKicker verb="PROVE">Evidence recorded</ScreenKicker>
+        <ScreenKicker verb="PROVE">Your result</ScreenKicker>
         <h1 className="result-skill mt-3 font-display text-paper">{prettySkill(primary?.skill || attempt.assessment)}</h1>
-        <p className="mt-3 text-sm text-mist">Assessment evidence recorded on the backend.</p>
+        <p className="mt-3 text-sm text-mist">Because your evidence changed, your path can change too.</p>
       </div>
 
       {!skipped && phase < 3 ? (
